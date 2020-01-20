@@ -3,17 +3,21 @@ from app import app, app_blueprint
 from ..flickr_service import *
 from flask import request
 import json
-from io import BytesIO
-from PIL import Image
 
 
 @app_blueprint.route("/upload", methods=['POST'])
 def upload_file():
-    file = request.files['file']
+    r = request
+    files = r.files
 
-    response = upload(file)
-
-    return json.dumps(response.__dict__), 200
+    try:
+        upload(files)  # ['file']
+        return json.dumps({"message": "Cadastrado com sucesso"}), 200
+    except Exception as e:
+        return json.dumps({
+            "message": "Erro ao tentar salvar imagem",
+            "error": e.args[0]
+        }), 400
 
 
 @app_blueprint.route("/getAllImages", methods=['GET'])
