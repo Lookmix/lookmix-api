@@ -1,6 +1,6 @@
 import flickr_api
 import uuid
-
+from utils import image_converter
 
 def upload(files):
     try:
@@ -8,7 +8,9 @@ def upload(files):
         flickr_api.set_auth_handler("app/.auth.txt")
 
         for f in files:
-            flickr_api.upload(photo_file=files[f].filename, title=str(uuid.uuid4()), photo_file_data=files[f])
+            imageJPG = image_converter.converter_para_JPG(files[f])
+
+            flickr_api.upload(photo_file=files[f].filename, title=str(uuid.uuid4()), photo_file_data=imageJPG)
     except Exception as e:
         raise e
 
