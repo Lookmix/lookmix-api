@@ -10,7 +10,7 @@ def upload(files):
         for f in files:
             imageJPG = image_converter.converter_para_JPG(files[f])
 
-            flickr_api.upload(photo_file=files[f].filename, title=str(uuid.uuid4()), photo_file_data=imageJPG)
+            flickr_api.upload(photo_file=files[f].filename, title=str(uuid.uuid4()), photo_file_data=imageJPG, is_public='0', is_friend='0', is_family='0')
     except Exception as e:
         raise e
 
