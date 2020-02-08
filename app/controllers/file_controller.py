@@ -1,6 +1,6 @@
 # from 'módulo' import 'variável'
 from app import app, app_blueprint
-from ..flickr_service import *
+from services import flickr_service
 from flask import request
 import json
 
@@ -11,7 +11,7 @@ def upload_file():
     files = r.files
 
     try:
-        upload(files)  # ['file']
+        flickr_service.upload(files)  # ['file']
         return json.dumps({"message": "Cadastrado com sucesso"}), 200
     except Exception as e:
         return json.dumps({
@@ -22,7 +22,7 @@ def upload_file():
 
 @app_blueprint.route("/getAllImages", methods=['GET'])
 def get_all_images():
-    response = get_all()
+    response = flickr_service.get_all()
     return json.dumps(response.__dict__), 200
 
 

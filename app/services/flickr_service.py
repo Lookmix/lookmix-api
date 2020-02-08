@@ -2,10 +2,10 @@ import flickr_api
 import uuid
 from utils import image_converter
 
+
 def upload(files):
     try:
-        flickr_api.set_keys(api_key="9259843e2fab63be76733f4a8593aa7f", api_secret="913f8a2084e9a985")
-        flickr_api.set_auth_handler("app/.auth.txt")
+        set_auth_handler()
 
         for f in files:
             imageJPG = image_converter.converter_para_JPG(files[f])
@@ -23,3 +23,6 @@ def delete():
     return
 
 
+def set_auth_handler():
+    flickr_api.set_keys(api_key="9259843e2fab63be76733f4a8593aa7f", api_secret="913f8a2084e9a985")
+    flickr_api.set_auth_handler("app/.auth.txt")
