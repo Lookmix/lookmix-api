@@ -11,8 +11,11 @@ def upload_file():
     files = r.files
 
     try:
-        flickr_service.upload(files)  # ['file']
-        return json.dumps({"message": "Cadastrado com sucesso"}), 200
+        photos = flickr_service.upload(files)  # ['file']
+        # response = []
+        # for photo in photos:
+            # response.append(json.loads(photo))
+        return json.dumps(photos), 200
     except Exception as e:
         return json.dumps({
             "message": "Erro ao tentar salvar imagem",
