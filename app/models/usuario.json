@@ -1,0 +1,21 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "properties": {
+        "id": {"type": "string"},
+        "username": {"type": "string"},
+        "numero_telefone": {"type": "string"},
+        "password": {"type": "string"},
+        "data_cadatro": {"type": "string"},
+        "nome": {"type": "string"},
+        "email": {"type": "string"},
+        "is_admin": {"type": "boolean"}
+    },
+    "required": [
+        "username",
+        "password",
+        "numero_telefone",
+        "is_admin"
+    ],
+    "additionalProperties": false
+}
