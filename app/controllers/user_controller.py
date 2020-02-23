@@ -5,17 +5,17 @@ from flask import jsonify
 import json
 from services import user_service
 from jsonschema import ValidationError
+from flask_jwt_extended import jwt_required
 
-
-from flask_jwt import jwt_required, current_identity
+# from flask_jwt import jwt_required, current_identity
 
 
 @app_blueprint.route('/protected', methods=['POST'])
-@jwt_required()
+@jwt_required
 def protected():
-    response = '%s' % current_identity
-    return response, 200
-
+    # response = '%s' % current_identity
+    # return response, 200
+    return jsonify([True]), 200
 
 @app_blueprint.route("/save", methods=['POST'])
 def cadastrar_usuario():

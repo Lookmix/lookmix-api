@@ -12,9 +12,7 @@ def upload_file():
 
     try:
         photos = flickr_service.upload(files)  # ['file']
-        # response = []
-        # for photo in photos:
-            # response.append(json.loads(photo))
+
         return json.dumps(photos), 200
     except Exception as e:
         return json.dumps({

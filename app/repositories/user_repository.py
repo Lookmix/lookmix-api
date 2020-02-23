@@ -7,6 +7,10 @@ def save(usuario):
     return id
 
 
+def get_by_username(username):
+    return db['usuarios'].find_one({'username': username})
+
+
 def get_all():
     usuarios = db['usuarios'].find({}, {"password": 0 })
 

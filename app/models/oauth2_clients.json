@@ -5,16 +5,12 @@
         "client_id": {"type": "string"},
         "client_secret": {"type": "string"},
         "client_type": {"type": "string"},
-        "redirect_uris": {"type": "array"},
-        "default_redirect_uri": {"type": "string"},
         "default_scopes": {"type": "array"}
     },
     "required": [
         "client_id",
         "client_secret",
         "client_type",
-        "redirect_uris",
-        "default_redirect_uri",
         "default_scopes"
     ],
     "additionalProperties": false
