@@ -3,11 +3,9 @@ from app import app, app_blueprint
 from flask import request
 from flask import jsonify
 import json
-from services import user_service
+from app.services import user_service
 from jsonschema import ValidationError
 from flask_jwt_extended import jwt_required
-
-# from flask_jwt import jwt_required, current_identity
 
 
 @app_blueprint.route('/protected', methods=['POST'])

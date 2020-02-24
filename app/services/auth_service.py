@@ -1,7 +1,7 @@
 from app import app
-from auth import authentication
+from app.auth import authentication
 from flask import jsonify
-from repositories import auth_repository, user_repository
+from app.repositories import auth_repository, user_repository
 
 
 def criar_tokens(request_data):

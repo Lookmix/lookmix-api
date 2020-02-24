@@ -6,7 +6,7 @@ from flask_jwt_extended import (
     decode_token
 )
 from bson.objectid import ObjectId
-from exceptions.error import (
+from app.exceptions.error import (
     TokenNaoExisteException,
     DadosLoginInvalidosException
 )

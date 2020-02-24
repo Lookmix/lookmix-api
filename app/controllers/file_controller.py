@@ -1,6 +1,6 @@
 # from 'módulo' import 'variável'
 from app import app, app_blueprint
-from services import flickr_service
+from app.services import flickr_service
 from flask import request
 import json
 

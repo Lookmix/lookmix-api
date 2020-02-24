@@ -1,8 +1,8 @@
-from services import flickr_service
+from app.services import flickr_service
 import flickr_api
 import json
-from repositories import user_repository
-from utils import validator_json
+from app.repositories import user_repository
+from app.utils import validator_json
 from werkzeug.security import generate_password_hash
 from bson.json_util import dumps
 

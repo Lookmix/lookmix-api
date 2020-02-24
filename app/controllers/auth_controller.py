@@ -4,8 +4,8 @@ from flask_jwt_extended import (
 )
 from app import app, app_blueprint, jwt
 from flask import request, jsonify
-from services import auth_service
-from exceptions.error import TokenNaoExisteException, DadosLoginInvalidosException
+from app.services import auth_service
+from app.exceptions.error import TokenNaoExisteException, DadosLoginInvalidosException
 
 
 @app_blueprint.route('/auth/login', methods=['POST'])

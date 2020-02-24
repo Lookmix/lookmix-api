@@ -1,7 +1,7 @@
 import flickr_api
 import uuid
 import json
-from utils import image_converter
+from app.utils import image_converter
 
 
 def upload(files):
@@ -23,7 +23,7 @@ def upload(files):
 
 
 def get_all():
-    return None
+    return []
 
 
 def delete():
