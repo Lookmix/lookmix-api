@@ -29,7 +29,7 @@ def refresh_token(user_id):
     return create_tokens(user_id)
 
 
-def revoke_token(token_data):
+def set_revoke_token(token_data):
     if token_data:
         token_data['revoked'] = True
         return token_data

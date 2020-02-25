@@ -7,7 +7,7 @@ from flask_jwt_extended import JWTManager
 
 app = Flask(__name__)
 
-# TODO: colocar em um arquivo de constants
+# TODO: colocar em um arquivo .env
 client = MongoClient("mongodb+srv://hanger:h4n6%26r.%40pp@cluster-xslqb.gcp.mongodb.net/test?retryWrites=true&w=majority")
 db = client['hanger']
 app.secret_key = "@n6ul4r"

@@ -14,8 +14,7 @@
     "required": [
         "username",
         "password",
-        "numero_telefone",
-        "is_admin"
+        "numero_telefone"
     ],
     "additionalProperties": false
 }

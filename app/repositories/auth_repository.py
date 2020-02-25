@@ -19,8 +19,14 @@ def update_revoke(jti, token_data):
                                           upsert=False)
 
 
-def get_non_revoked_refresh_tokens_by_user_id(user_id):
-    return db["oauth2_tokens"].find({"user_id": user_id,
+def get_non_revoked_refresh_token(user_id):
+    return db["oauth2_tokens"].find_one({"user_id": user_id,
                                      "token_type": "refresh",
                                      "revoked": False})
+
+
+def get_non_revoked_access_token(user_id):
+    return db['oauth2_tokens'].find_one({"user_id": user_id,
+                                        "token_type": "access",
+                                        "revoked": False})
 

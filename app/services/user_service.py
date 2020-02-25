@@ -1,26 +1,23 @@
-from app.services import flickr_service
 import flickr_api
 import json
+from app.services import flickr_service
 from app.repositories import user_repository
-from app.utils import validator_json
+from app.utils import validation
+from app.exceptions.error import TelefoneDuplicadoException, UsernameDuplicadoException
 from werkzeug.security import generate_password_hash
 from bson.json_util import dumps
 
 
-def save(usuario):
+def save(user):
     try:
-        if 'is_admin' not in usuario:
-            usuario['is_admin'] = False
+        validate_user_data(user)
 
-        validator_json.assert_valid_schema(usuario, "usuario.json")
+        encrypted_password = encrypt_passoword(user['password'])
 
-        password_encrypted = generate_password_hash(usuario['password'])
+        user['is_admin'] = False
+        user['password'] = encrypted_password
 
-        usuario['password'] = password_encrypted
-
-        id = user_repository.save(usuario)
-
-        return dumps(id)
+        return dumps(user_repository.save(user))
     except Exception as e:
         raise e
 
@@ -39,16 +36,9 @@ def get_photos():
     photos = user.getPhotos()
     photos_data = photos.data
     photos_list_json = []
-    for photo in photos_data:
-        # photo.owner.token.access_token = json.dumps(photo.owner.token.access_token.__dict__)
-        # photo.owner.token.consumer = json.dumps(photo.owner.token.consumer.__dict__)
-        # photo.owner.token = json.dumps(photo.owner.token.__dict__)
-        default = lambda o: f"<<non-serializable: {type(o).__qualname__}>>"
-        # photo.owner = json.dumps(photo.owner.__dict__, default=default)
 
-        # photo.token.access_token = json.dumps(photo.token.access_token.__dict__)
-        # photo.token.consumer = json.dumps(photo.token.consumer.__dict__)
-        # photo.token = json.dumps(photo.token.__dict__)
+    for photo in photos_data:
+        default = lambda o: f"<<non-serializable: {type(o).__qualname__}>>"
         photo_json = json.dumps(photo.__dict__, default=default)
         photos_list_json.append(json.loads(photo_json))
     return photos_list_json
@@ -56,5 +46,20 @@ def get_photos():
 
 def get_user_flickr():
     flickr_service.set_auth_handler()
+    
     return flickr_api.test.login()
+
+
+def validate_user_data(user):
+    validation.assert_valid_schema(user, "usuario.json")
+
+    if not validation.is_unique_phone(user['numero_telefone']):
+        raise TelefoneDuplicadoException()
+    
+    if not validation.is_unique_username(user['username']):
+        raise UsernameDuplicadoException()
+
+
+def encrypt_passoword(password):
+    return generate_password_hash(password)
 

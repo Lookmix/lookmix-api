@@ -1,11 +1,12 @@
 # from 'módulo' import 'variável'
+import json
 from app import app, app_blueprint
 from flask import request
 from flask import jsonify
-import json
 from app.services import user_service
 from jsonschema import ValidationError
 from flask_jwt_extended import jwt_required
+from app.exceptions.error import TelefoneDuplicadoException, UsernameDuplicadoException
 
 
 @app_blueprint.route('/protected', methods=['POST'])
@@ -15,16 +16,21 @@ def protected():
     # return response, 200
     return jsonify([True]), 200
 
+
 @app_blueprint.route("/save", methods=['POST'])
 def cadastrar_usuario():
     try:
         request_data = request.json
 
-        id = user_service.save(request_data)
+        user_id = user_service.save(request_data)
 
-        return id, 200
+        return user_id, 200
     except ValidationError as validationError:
         return json.dumps({'erro': validationError.message}), 400
+    except TelefoneDuplicadoException:
+        return json.dumps({'erro': 'Telefone duplicado'})
+    except UsernameDuplicadoException:
+        return json.dumps({'erro': 'Username duplicado'})
     except Exception as e:
         retorno = str(e)
         return json.dumps(retorno), 400

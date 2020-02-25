@@ -21,9 +21,9 @@ def login():
 @app_blueprint.route('/auth/refresh', methods=['POST'])
 @jwt_refresh_token_required
 def refresh():
-    current_user = get_jwt_identity()
+    current_user_id = get_jwt_identity()
 
-    tokens = auth_service.refresh_token(current_user)
+    tokens = auth_service.refresh_token(current_user_id)
 
     return tokens, 201
 
@@ -32,17 +32,15 @@ def refresh():
 @jwt_required
 def logout(token_id):
     try:
-        return auth_service.revoke_token(token_id), 200
+        current_user_id = get_jwt_identity()
+
+        auth_service.revoke_old_refresh_token(current_user_id)
+
+        auth_service.revoke_token(token_id)
+
+        return jsonify({'is_revoked': True})
     except TokenNaoExisteException:
         return jsonify({'erro': 'The specified token was not found'}), 404
-
-
-@jwt.token_in_blacklist_loader
-def is_token_revoked(decoded_token):
-    jti = decoded_token['jti']
-
-    return auth_service.is_token_revoked(jti)
-# jti = get_raw_jwt()['jti']
 
 
 app.register_blueprint(app_blueprint, url_prefix="/api")
