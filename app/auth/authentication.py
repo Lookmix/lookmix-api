@@ -3,13 +3,16 @@ from werkzeug.security import check_password_hash
 from flask_jwt_extended import (
     create_access_token,
     create_refresh_token,
-    decode_token
+    decode_token, set_access_cookies,
+    set_refresh_cookies, unset_jwt_cookies
 )
 from bson.objectid import ObjectId
 from app.exceptions.error import (
     TokenNaoExisteException,
     DadosLoginInvalidosException
 )
+from flask import jsonify
+
 
 # TODO: colocar em um arquivo de constants
 expires_access_token = datetime.timedelta(minutes=15)
@@ -18,9 +21,9 @@ expires_refresh_token = datetime.timedelta(days=2)
 
 def attempt_login(dados_login, user):
 
-    user_id = str(ObjectId(user['_id']))
+    user_id = str(ObjectId(user["_id"]))
 
-    if user and check_password_hash(user['password'], dados_login['password']):
+    if user and check_password_hash(user["password"], dados_login["password"]):
         return create_tokens(user_id)
     raise DadosLoginInvalidosException()
 
@@ -31,14 +34,19 @@ def refresh_token(user_id):
 
 def set_revoke_token(token_data):
     if token_data:
-        token_data['revoked'] = True
-        return token_data
+        token_data["revoked"] = True
+
+        response = {"is_disconnected": True}
+
+        unset_jwt_cookies(jsonify(response))
+
+        return {"is_disconnected": response, "token_data": token_data}
     raise TokenNaoExisteException()
 
 
 def check_is_token_revoked(token_data):
     if token_data:
-        response = token_data['revoked']
+        response = token_data["revoked"]
         return response
     return True
 
@@ -46,18 +54,18 @@ def check_is_token_revoked(token_data):
 def create_data_token(encoded_token, identity_claim):
     decoded_token = decode_token(encoded_token)
 
-    jti = decoded_token['jti']
-    token_type = decoded_token['type']
+    jti = decoded_token["jti"]
+    token_type = decoded_token["type"]
     user_id = decoded_token[identity_claim]
-    expires = datetime.datetime.fromtimestamp(decoded_token['exp'])
+    expires = datetime.datetime.fromtimestamp(decoded_token["exp"])
     revoked = False
 
     data_token = {
-        "jti":jti,
-        "token_type":token_type,
-        "user_id":user_id,
-        "expires":expires,
-        "revoked":revoked,
+        "jti": jti,
+        "token_type": token_type,
+        "user_id": user_id,
+        "expires": expires,
+        "revoked": revoked,
     }
     return data_token
 
@@ -68,7 +76,14 @@ def create_tokens(user_id):
                                        fresh=True)
     refresh_token = create_refresh_token(user_id,
                                          expires_delta=expires_refresh_token)
+    response = jsonify({"is_logged": True})
+
+    set_access_cookies(response, access_token)
+    set_refresh_cookies(response, refresh_token)
+
     return {
-        'access_token': access_token,
-        'refresh_token': refresh_token
+        "response": response,
+        "access_token": access_token,
+        "refresh_token": refresh_token
     }
+

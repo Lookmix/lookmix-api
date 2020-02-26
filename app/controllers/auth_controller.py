@@ -11,7 +11,7 @@ from app.exceptions.error import TokenNaoExisteException, DadosLoginInvalidosExc
 @app_blueprint.route('/auth/login', methods=['POST'])
 def login():
     try:
-        response = auth_service.criar_tokens(request.json)
+        response = auth_service.attempt_login(request.json)
 
         return response, 201
     except DadosLoginInvalidosException:
@@ -23,9 +23,9 @@ def login():
 def refresh():
     current_user_id = get_jwt_identity()
 
-    tokens = auth_service.refresh_token(current_user_id)
+    response = auth_service.refresh_token(current_user_id)
 
-    return tokens, 201
+    return response, 201
 
 
 @app_blueprint.route('/auth/token/<token_id>', methods=['PUT'])
@@ -36,9 +36,9 @@ def logout(token_id):
 
         auth_service.revoke_old_refresh_token(current_user_id)
 
-        auth_service.revoke_token(token_id)
+        response = auth_service.revoke_token(token_id)
 
-        return jsonify({'is_revoked': True})
+        return response, 200
     except TokenNaoExisteException:
         return jsonify({'erro': 'The specified token was not found'}), 404
 

@@ -13,6 +13,14 @@ db = client['hanger']
 app.secret_key = "@n6ul4r"
 app.config['JWT_BLACKLIST_ENABLED'] = True
 app.config['JWT_BLACKLIST_TOKEN_CHECKS'] = ['access', 'refresh']
+app.config['JWT_TOKEN_LOCATION'] = ['cookies']
+
+# TODO: mudar para True em produção
+app.config['JWT_COOKIE_SECURE'] = False
+
+app.config['JWT_ACCESS_COOKIE_PATH'] = '/api/'
+app.config['JWT_REFRESH_COOKIE_PATH'] = '/api/auth/refresh'
+app.config['JWT_COOKIE_CSRF_PROTECT'] = True
 
 CORS(app)
 jwt = JWTManager(app)
