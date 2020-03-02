@@ -5,7 +5,7 @@ from app.repositories import auth_repository, user_repository
 
 
 def attempt_login(request_data):
-    user = user_repository.get_by_username(request_data["username"])
+    user = user_repository.get_by_phone(request_data["phone"])
 
     response = authentication.attempt_login(request_data, user)
 

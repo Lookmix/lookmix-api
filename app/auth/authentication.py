@@ -54,18 +54,12 @@ def check_is_token_revoked(token_data):
 def create_data_token(encoded_token, identity_claim):
     decoded_token = decode_token(encoded_token)
 
-    jti = decoded_token["jti"]
-    token_type = decoded_token["type"]
-    user_id = decoded_token[identity_claim]
-    expires = datetime.datetime.fromtimestamp(decoded_token["exp"])
-    revoked = False
-
     data_token = {
-        "jti": jti,
-        "token_type": token_type,
-        "user_id": user_id,
-        "expires": expires,
-        "revoked": revoked,
+        "jti": decoded_token["jti"],
+        "token_type": decoded_token["type"],
+        "user_id": decoded_token[identity_claim],
+        "expires": datetime.datetime.fromtimestamp(decoded_token["exp"]),
+        "revoked": False,
     }
     return data_token
 
@@ -76,8 +70,19 @@ def create_tokens(user_id):
                                        fresh=True)
     refresh_token = create_refresh_token(user_id,
                                          expires_delta=expires_refresh_token)
-    response = jsonify({"is_logged": True})
-
+    decoded_access_token = decode_token(access_token)
+    decoded_refresh_token = decode_token(refresh_token)
+    
+    response = jsonify({
+        "access_token_data": {
+            "expires": datetime.datetime.fromtimestamp(decoded_access_token["exp"]),
+            "jti": decoded_access_token["jti"]
+        },
+        "refresh_token_data": {
+            "expires": datetime.datetime.fromtimestamp(decoded_refresh_token["exp"]),
+            "jti": decoded_refresh_token["jti"]
+        }
+    })
     set_access_cookies(response, access_token)
     set_refresh_cookies(response, refresh_token)
 

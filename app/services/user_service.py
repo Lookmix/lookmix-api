@@ -1,5 +1,6 @@
 import flickr_api
 import json
+from flask import jsonify
 from app.services import flickr_service
 from app.repositories import user_repository
 from app.utils import validation
@@ -53,13 +54,20 @@ def get_user_flickr():
 def validate_user_data(user):
     validation.assert_valid_schema(user, "usuario.json")
 
-    if not validation.is_unique_phone(user['numero_telefone']):
+    if not validation.is_phone_unique(user['numero_telefone']):
         raise TelefoneDuplicadoException()
     
-    if not validation.is_unique_username(user['username']):
+    if not validation.is_username_unique(user['username']):
         raise UsernameDuplicadoException()
 
 
 def encrypt_passoword(password):
     return generate_password_hash(password)
 
+
+def is_username_unique(username):
+    return jsonify({"is_unique": validation.is_username_unique(username)})
+
+
+def is_phone_unique(phone):
+    return jsonify({"is_unique": validation.is_phone_unique(phone)})

@@ -24,7 +24,7 @@ def _load_json_schema(filename):
         return jsonref.loads(schema_file.read(), base_uri=base_uri, jsonschema=True)
 
 
-def is_unique_username(username):
+def is_username_unique(username):
     user = user_repository.get_by_username(username)
     
     if user:
@@ -32,7 +32,7 @@ def is_unique_username(username):
     return True
 
 
-def is_unique_phone(phone):
+def is_phone_unique(phone):
     user = user_repository.get_by_phone(phone)
 
     if user:

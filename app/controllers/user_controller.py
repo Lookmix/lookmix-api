@@ -60,4 +60,14 @@ def get_photos():
     return json.dumps(photos), 200
 
 
+@app_blueprint.route("/is_phone_unique/<phone>", methods=['GET'])
+def is_phone_unique(phone):
+    return user_service.is_phone_unique(phone), 200
+
+
+@app_blueprint.route("/is_username_unique/<phone>", methods=['GET'])
+def is_username_unique(phone):
+    return user_service.is_username_unique(phone), 200
+
+
 app.register_blueprint(app_blueprint, url_prefix="/api/usuarios")

@@ -22,9 +22,9 @@ app.config['JWT_ACCESS_COOKIE_PATH'] = '/api/'
 app.config['JWT_REFRESH_COOKIE_PATH'] = '/api/auth/refresh'
 app.config['JWT_COOKIE_CSRF_PROTECT'] = True
 
-CORS(app)
 jwt = JWTManager(app)
 app_blueprint = flask.Blueprint("blueprint", __name__)
+CORS(app_blueprint, supports_credentials=True)
 
 
 from app.controllers import user_controller
