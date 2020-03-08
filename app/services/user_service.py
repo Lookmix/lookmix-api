@@ -15,6 +15,7 @@ def save(user):
 
         encrypted_password = encrypt_passoword(user['password'])
 
+        user['username'] = user['username'].lower()
         user['is_admin'] = False
         user['password'] = encrypted_password
 
@@ -66,6 +67,7 @@ def encrypt_passoword(password):
 
 
 def is_username_unique(username):
+    username = username.lower()
     return jsonify({"is_unique": validation.is_username_unique(username)})
 
 

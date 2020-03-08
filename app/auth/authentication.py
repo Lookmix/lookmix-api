@@ -92,3 +92,6 @@ def create_tokens(user_id):
         "refresh_token": refresh_token
     }
 
+
+def verify_validation_phone_code():
+    return 
