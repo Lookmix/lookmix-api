@@ -15,7 +15,7 @@ from flask import jsonify
 
 
 # TODO: colocar em um arquivo de constants
-expires_access_token = datetime.timedelta(minutes=15)
+expires_access_token = datetime.timedelta(minutes=2)
 expires_refresh_token = datetime.timedelta(days=2)
 
 

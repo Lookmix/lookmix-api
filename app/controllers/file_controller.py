@@ -1,3 +1,6 @@
+# TODO: Renomear prefixo do endpoint e do
+# arquivo para 'guarda-roupa'
+
 # from 'módulo' import 'variável'
 from app import app, app_blueprint
 from app.services import flickr_service
