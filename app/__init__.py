@@ -23,7 +23,7 @@ app.config['JWT_COOKIE_SECURE'] = False
 app.config['JWT_ACCESS_COOKIE_PATH'] = '/api/'
 app.config['JWT_REFRESH_COOKIE_PATH'] = '/api/auth/refresh'
 app.config['JWT_COOKIE_CSRF_PROTECT'] = True
-# app.config['JWT_COOKIE_DOMAIN'] = 'http://192.168.0.17:4200'
+app.config['JWT_COOKIE_DOMAIN'] = 'http://192.168.0.17:4200'
 
 jwt = JWTManager(app)
 app_blueprint = flask.Blueprint("blueprint", __name__)
