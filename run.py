@@ -2,5 +2,6 @@ from app import app
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="192.168.0.3", port=5000, debug=True)
+    # app.run(debug=True)
 

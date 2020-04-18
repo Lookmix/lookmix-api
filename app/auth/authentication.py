@@ -20,10 +20,9 @@ expires_refresh_token = datetime.timedelta(days=2)
 
 
 def attempt_login(dados_login, user):
-
-    user_id = str(ObjectId(user["_id"]))
-
     if user and check_password_hash(user["password"], dados_login["password"]):
+        user_id = str(ObjectId(user["_id"]))
+
         return create_tokens(user_id)
     raise DadosLoginInvalidosException()
 
