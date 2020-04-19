@@ -7,6 +7,7 @@ from app.utils import validation
 from app.exceptions.error import TelefoneDuplicadoException, UsernameDuplicadoException
 from werkzeug.security import generate_password_hash
 from bson.json_util import dumps
+from app import client_nexmo
 
 
 def save(user):
@@ -73,3 +74,25 @@ def is_username_unique(username):
 
 def is_phone_unique(phone):
     return jsonify({"is_unique": validation.is_phone_unique(phone)})
+
+
+def send_verify_code(phone):
+    response = client_nexmo.start_verification(
+        number="55" + phone,
+        brand="Lookmix",
+        workflow_id="6",
+        pin_expiry="3600",
+        code_length="6")
+
+    if response["status"] == "0":
+        return jsonify({"request_id": response["request_id"]})
+    return jsonify({"error": response["error_text"]})
+
+
+def verify_code(request_id, code):
+    response = client_nexmo.check_verification(request_id, code=code)
+
+    if response["status"] == "0":
+        return jsonify({"is_valid": True})
+    else:
+        return jsonify({"is_valid": False, "error": response["error_text"]})

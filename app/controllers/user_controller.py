@@ -24,16 +24,16 @@ def cadastrar_usuario():
 
         user_id = user_service.save(request_data)
 
-        return user_id, 200
+        return jsonify({"id": user_id}), 200
     except ValidationError as validationError:
         return json.dumps({'erro': validationError.message}), 400
     except TelefoneDuplicadoException:
-        return json.dumps({'erro': 'Telefone duplicado'})
+        return json.dumps({'erro': 'Telefone duplicado'}), 400
     except UsernameDuplicadoException:
-        return json.dumps({'erro': 'Username duplicado'})
+        return json.dumps({'erro': 'Username duplicado'}), 400
     except Exception as e:
-        retorno = str(e)
-        return json.dumps(retorno), 400
+        resposta = str(e)
+        return json.dumps(resposta), 400
 
 
 @app_blueprint.route("/get_all", methods=['GET'])
@@ -70,4 +70,18 @@ def is_username_unique(phone):
     return user_service.is_username_unique(phone), 200
 
 
+@app_blueprint.route("/send_verify_code", methods=['GET'])
+def send_verify_code():
+    phone = request.args.get("phone")
+    return user_service.send_verify_code(phone)
+
+
+@app_blueprint.route("/verify_code", methods=['GET'])
+def verify_code():
+    code = request.args.get("code")
+    request_id = request.args.get("request_id")
+    return user_service.verify_code(request_id, code)
+
+
 app.register_blueprint(app_blueprint, url_prefix="/api/usuarios")
+

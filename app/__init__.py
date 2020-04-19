@@ -20,10 +20,11 @@ app.config['JWT_TOKEN_LOCATION'] = ['cookies']
 # TODO: mudar para True em produção
 app.config['JWT_COOKIE_SECURE'] = False
 
-app.config['JWT_ACCESS_COOKIE_PATH'] = '/api/'
-app.config['JWT_REFRESH_COOKIE_PATH'] = '/api/auth/refresh'
+app.config['JWT_ACCESS_COOKIE_PATH'] = '/'
+app.config['JWT_REFRESH_COOKIE_PATH'] = '/'
 app.config['JWT_COOKIE_CSRF_PROTECT'] = True
-# app.config['JWT_COOKIE_DOMAIN'] = '192.168.0.17:4200'
+app.config['JWT_COOKIE_SAMESITE'] = 'Lax'
+# app.config['JWT_COOKIE_DOMAIN'] = 'lookmix.app'
 
 jwt = JWTManager(app)
 app_blueprint = flask.Blueprint("blueprint", __name__)
@@ -33,3 +34,4 @@ CORS(app_blueprint, supports_credentials=True)
 from app.controllers import user_controller
 from app.controllers import file_controller
 from app.controllers import auth_controller
+
