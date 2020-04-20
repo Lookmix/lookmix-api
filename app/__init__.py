@@ -24,6 +24,7 @@ app.config['JWT_ACCESS_COOKIE_PATH'] = '/'
 app.config['JWT_REFRESH_COOKIE_PATH'] = '/'
 app.config['JWT_COOKIE_CSRF_PROTECT'] = True
 app.config['JWT_COOKIE_SAMESITE'] = 'Lax'
+app.config['JWT_SESSION_COOKIE'] = False
 # app.config['JWT_COOKIE_DOMAIN'] = 'lookmix.app'
 
 jwt = JWTManager(app)

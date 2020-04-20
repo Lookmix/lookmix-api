@@ -13,3 +13,6 @@ class UsernameDuplicadoException(Exception):
 class TelefoneDuplicadoException(Exception):
    pass
 
+
+class TelefoneNaoExisteException(Exception):
+   pass

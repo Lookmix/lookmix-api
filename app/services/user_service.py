@@ -4,7 +4,7 @@ from flask import jsonify
 from app.services import flickr_service
 from app.repositories import user_repository
 from app.utils import validation
-from app.exceptions.error import TelefoneDuplicadoException, UsernameDuplicadoException
+from app.exceptions.error import TelefoneDuplicadoException, TelefoneNaoExisteException
 from werkzeug.security import generate_password_hash
 from bson.json_util import dumps
 from app import client_nexmo
@@ -16,7 +16,6 @@ def save(user):
 
         encrypted_password = encrypt_passoword(user['password'])
 
-        user['username'] = user['username'].lower()
         user['is_admin'] = False
         user['password'] = encrypted_password
 
@@ -32,6 +31,14 @@ def get_all():
         return dumps(usuarios)
     except Exception as e:
         raise e
+
+
+def get_by_phone(phone):
+    user = user_repository.get_by_phone(phone)
+
+    if user:
+        return jsonify({"user": user})
+    return jsonify({})
 
 
 def get_photos():
@@ -58,9 +65,6 @@ def validate_user_data(user):
 
     if not validation.is_phone_unique(user['numero_telefone']):
         raise TelefoneDuplicadoException()
-    
-    if not validation.is_username_unique(user['username']):
-        raise UsernameDuplicadoException()
 
 
 def encrypt_passoword(password):
@@ -96,3 +100,16 @@ def verify_code(request_id, code):
         return jsonify({"is_valid": True})
     else:
         return jsonify({"is_valid": False, "error": response["error_text"]})
+
+
+def update_password(password, phone):
+    try:
+        response = get_by_phone(phone)
+
+        if response.json['user']:
+            encrypted_password = encrypt_passoword(password)
+
+            return dumps(user_repository.update_password(encrypted_password, phone))
+        raise TelefoneNaoExisteException()
+    except Exception as e:
+        raise e

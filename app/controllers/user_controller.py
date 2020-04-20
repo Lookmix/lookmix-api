@@ -6,7 +6,7 @@ from flask import jsonify
 from app.services import user_service
 from jsonschema import ValidationError
 from flask_jwt_extended import jwt_required
-from app.exceptions.error import TelefoneDuplicadoException, UsernameDuplicadoException
+from app.exceptions.error import TelefoneDuplicadoException, UsernameDuplicadoException, TelefoneNaoExisteException
 
 
 @app_blueprint.route('/protected', methods=['POST'])
@@ -51,6 +51,21 @@ def get_user_flickr():
     user = user_service.get_user_flickr()
 
     return json.dumps(user.__dict__), 200
+
+
+@app_blueprint.route("/update_password/<phone>", methods=['PUT'])
+def update_password(phone):
+    try:
+        request_data = request.json
+
+        response = user_service.update_password(request_data['password'], phone)
+
+        return jsonify({"Sucesso": response}), 200
+    except TelefoneNaoExisteException:
+        return jsonify({'erro': 'Telefone não existe'}), 400
+    except Exception as e:
+        resposta = str(e)
+        return json.dumps(resposta), 400
 
 
 @app_blueprint.route("/get_photos", methods=['GET'])

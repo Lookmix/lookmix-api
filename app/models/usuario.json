@@ -12,7 +12,6 @@
         "is_admin": {"type": "boolean"}
     },
     "required": [
-        "username",
         "password",
         "numero_telefone"
     ],
