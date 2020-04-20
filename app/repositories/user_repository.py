@@ -13,8 +13,9 @@ def get_by_username(username):
 
 def get_by_phone(phone):
     usuario = db['usuarios'].find_one({'numero_telefone': phone})
-    usuario['_id'] = str(usuario['_id'])
 
+    if usuario:
+        usuario['_id'] = str(usuario['_id'])
     return usuario
 
 
