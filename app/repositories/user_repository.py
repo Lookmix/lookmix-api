@@ -24,6 +24,7 @@ def get_all():
 
     return list(usuarios)
 
+
 def update_password(new_password, phone):
     return db['usuarios'].update_one({'numero_telefone': phone},
                                      {'$set':
