@@ -4,9 +4,10 @@ from flask import jsonify
 from app.services import flickr_service
 from app.repositories import user_repository
 from app.utils import validation
-from app.exceptions.error import TelefoneDuplicadoException, UsernameDuplicadoException
+from app.exceptions.error import TelefoneDuplicadoException, TelefoneNaoExisteException
 from werkzeug.security import generate_password_hash
 from bson.json_util import dumps
+from app import client_nexmo
 
 
 def save(user):
@@ -15,7 +16,6 @@ def save(user):
 
         encrypted_password = encrypt_passoword(user['password'])
 
-        user['username'] = user['username'].lower()
         user['is_admin'] = False
         user['password'] = encrypted_password
 
@@ -31,6 +31,14 @@ def get_all():
         return dumps(usuarios)
     except Exception as e:
         raise e
+
+
+def get_by_phone(phone):
+    user = user_repository.get_by_phone(phone)
+
+    if user:
+        return jsonify({"user": user})
+    return jsonify({})
 
 
 def get_photos():
@@ -57,9 +65,6 @@ def validate_user_data(user):
 
     if not validation.is_phone_unique(user['numero_telefone']):
         raise TelefoneDuplicadoException()
-    
-    if not validation.is_username_unique(user['username']):
-        raise UsernameDuplicadoException()
 
 
 def encrypt_passoword(password):
@@ -73,3 +78,38 @@ def is_username_unique(username):
 
 def is_phone_unique(phone):
     return jsonify({"is_unique": validation.is_phone_unique(phone)})
+
+
+def send_verify_code(phone):
+    response = client_nexmo.start_verification(
+        number="55" + phone,
+        brand="Lookmix",
+        workflow_id="6",
+        pin_expiry="3600",
+        code_length="6")
+
+    if response["status"] == "0":
+        return jsonify({"request_id": response["request_id"]})
+    return jsonify({"error": response["error_text"]})
+
+
+def verify_code(request_id, code):
+    response = client_nexmo.check_verification(request_id, code=code)
+
+    if response["status"] == "0":
+        return jsonify({"is_valid": True})
+    else:
+        return jsonify({"is_valid": False, "error": response["error_text"]})
+
+
+def update_password(password, phone):
+    try:
+        response = get_by_phone(phone)
+
+        if response.json['user']:
+            encrypted_password = encrypt_passoword(password)
+
+            return dumps(user_repository.update_password(encrypted_password, phone))
+        raise TelefoneNaoExisteException()
+    except Exception as e:
+        raise e

@@ -6,7 +6,7 @@ from flask import jsonify
 from app.services import user_service
 from jsonschema import ValidationError
 from flask_jwt_extended import jwt_required
-from app.exceptions.error import TelefoneDuplicadoException, UsernameDuplicadoException
+from app.exceptions.error import TelefoneDuplicadoException, UsernameDuplicadoException, TelefoneNaoExisteException
 
 
 @app_blueprint.route('/protected', methods=['POST'])
@@ -24,16 +24,16 @@ def cadastrar_usuario():
 
         user_id = user_service.save(request_data)
 
-        return user_id, 200
+        return jsonify({"id": user_id}), 200
     except ValidationError as validationError:
         return json.dumps({'erro': validationError.message}), 400
     except TelefoneDuplicadoException:
-        return json.dumps({'erro': 'Telefone duplicado'})
+        return json.dumps({'erro': 'Telefone duplicado'}), 400
     except UsernameDuplicadoException:
-        return json.dumps({'erro': 'Username duplicado'})
+        return json.dumps({'erro': 'Username duplicado'}), 400
     except Exception as e:
-        retorno = str(e)
-        return json.dumps(retorno), 400
+        resposta = str(e)
+        return json.dumps(resposta), 400
 
 
 @app_blueprint.route("/get_all", methods=['GET'])
@@ -53,6 +53,21 @@ def get_user_flickr():
     return json.dumps(user.__dict__), 200
 
 
+@app_blueprint.route("/update_password/<phone>", methods=['PUT'])
+def update_password(phone):
+    try:
+        request_data = request.json
+
+        response = user_service.update_password(request_data['password'], phone)
+
+        return jsonify({"Sucesso": response}), 200
+    except TelefoneNaoExisteException:
+        return jsonify({'erro': 'Telefone não existe'}), 400
+    except Exception as e:
+        resposta = str(e)
+        return json.dumps(resposta), 400
+
+
 @app_blueprint.route("/get_photos", methods=['GET'])
 def get_photos():
     photos = user_service.get_photos()
@@ -70,4 +85,18 @@ def is_username_unique(phone):
     return user_service.is_username_unique(phone), 200
 
 
+@app_blueprint.route("/send_verify_code", methods=['GET'])
+def send_verify_code():
+    phone = request.args.get("phone")
+    return user_service.send_verify_code(phone)
+
+
+@app_blueprint.route("/verify_code", methods=['GET'])
+def verify_code():
+    code = request.args.get("code")
+    request_id = request.args.get("request_id")
+    return user_service.verify_code(request_id, code)
+
+
 app.register_blueprint(app_blueprint, url_prefix="/api/usuarios")
+

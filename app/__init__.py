@@ -25,6 +25,7 @@ app.config['JWT_REFRESH_COOKIE_PATH'] = '/'
 app.config['JWT_COOKIE_CSRF_PROTECT'] = True
 app.config['JWT_COOKIE_SAMESITE'] = 'Lax'
 app.config['JWT_COOKIE_DOMAIN'] = 'lookmix.app'
+app.config['JWT_SESSION_COOKIE'] = False
 
 jwt = JWTManager(app)
 app_blueprint = flask.Blueprint("blueprint", __name__)
@@ -34,3 +35,4 @@ CORS(app_blueprint, supports_credentials=True)
 from app.controllers import user_controller
 from app.controllers import file_controller
 from app.controllers import auth_controller
+
