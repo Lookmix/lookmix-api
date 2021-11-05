@@ -4,7 +4,7 @@ from flask import jsonify
 from app.services import flickr_service
 from app.repositories import user_repository
 from app.utils import validation
-from app.exceptions.error import TelefoneDuplicadoException, TelefoneNaoExisteException
+from app.exceptions.error import DuplicatedPhoneException, PhoneNotFoundException
 from werkzeug.security import generate_password_hash
 from bson.json_util import dumps
 
@@ -60,10 +60,10 @@ def get_user_flickr():
 
 
 def validate_user_data(user):
-    validation.assert_valid_schema(user, "usuario.json")
+    validation.assert_valid_schema(user, "users.json")
 
-    if not validation.is_phone_unique(user['numero_telefone']):
-        raise TelefoneDuplicadoException()
+    if not validation.is_phone_unique(user['phone']):
+        raise DuplicatedPhoneException()
 
 
 def encrypt_passoword(password):
@@ -87,6 +87,6 @@ def update_password(password, phone):
             encrypted_password = encrypt_passoword(password)
 
             return dumps(user_repository.update_password(encrypted_password, phone))
-        raise TelefoneNaoExisteException()
+        raise PhoneNotFoundException()
     except Exception as e:
         raise e
