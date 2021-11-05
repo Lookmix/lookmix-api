@@ -6,7 +6,7 @@ from flask import jsonify
 from app.services import user_service
 from jsonschema import ValidationError
 from flask_jwt_extended import jwt_required
-from app.exceptions.error import TelefoneDuplicadoException, UsernameDuplicadoException, TelefoneNaoExisteException
+from app.exceptions.error import DuplicatedPhoneException, DuplicatedUsernameException, PhoneNotFoundException
 
 
 @app_blueprint.route('/protected', methods=['POST'])
@@ -18,7 +18,7 @@ def protected():
 
 
 @app_blueprint.route("/save", methods=['POST'])
-def cadastrar_usuario():
+def add_user():
     try:
         request_data = request.json
 
@@ -26,24 +26,24 @@ def cadastrar_usuario():
 
         return jsonify({"id": user_id}), 200
     except ValidationError as validationError:
-        return json.dumps({'erro': validationError.message}), 400
-    except TelefoneDuplicadoException:
-        return json.dumps({'erro': 'Telefone duplicado'}), 400
-    except UsernameDuplicadoException:
-        return json.dumps({'erro': 'Username duplicado'}), 400
+        return json.dumps({'error': validationError.message}), 400
+    except DuplicatedPhoneException:
+        return json.dumps({'error': 'Telefone duplicado'}), 400
+    except DuplicatedUsernameException:
+        return json.dumps({'error': 'Username duplicado'}), 400
     except Exception as e:
-        resposta = str(e)
-        return json.dumps(resposta), 400
+        response = str(e)
+        return json.dumps(response), 400
 
 
 @app_blueprint.route("/get_all", methods=['GET'])
 def get_all():
     try:
-        usuarios = user_service.get_all()
+        users = user_service.get_all()
 
-        return usuarios, 200
+        return users, 200
     except Exception as e:
-        return jsonify({'Erro': e}), 400
+        return jsonify({'error': e}), 400
 
 
 @app_blueprint.route("/get_user", methods=['GET'])
@@ -60,12 +60,12 @@ def update_password(phone):
 
         response = user_service.update_password(request_data['password'], phone)
 
-        return jsonify({"Sucesso": response}), 200
-    except TelefoneNaoExisteException:
-        return jsonify({'erro': 'Telefone não existe'}), 400
+        return jsonify({"success": response}), 200
+    except PhoneNotFoundException:
+        return jsonify({'error': 'Telefone não existe'}), 400
     except Exception as e:
-        resposta = str(e)
-        return json.dumps(resposta), 400
+        response = str(e)
+        return json.dumps(response), 400
 
 
 @app_blueprint.route("/get_photos", methods=['GET'])
@@ -75,8 +75,9 @@ def get_photos():
     return json.dumps(photos), 200
 
 
-@app_blueprint.route("/is_phone_unique/<phone>", methods=['GET'])
-def is_phone_unique(phone):
+@app_blueprint.route("/is_phone_unique", methods=['GET'])
+def is_phone_unique():
+    phone = request.args.get("phone")
     return user_service.is_phone_unique(phone), 200
 
 
@@ -85,5 +86,5 @@ def is_username_unique(phone):
     return user_service.is_username_unique(phone), 200
 
 
-app.register_blueprint(app_blueprint, url_prefix="/api/usuarios")
+app.register_blueprint(app_blueprint, url_prefix="/users")
 
