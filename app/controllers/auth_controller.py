@@ -5,20 +5,20 @@ from flask_jwt_extended import (
 from app import app, app_blueprint
 from flask import request, jsonify
 from app.services import auth_service
-from app.exceptions.error import TokenNaoExisteException, DadosLoginInvalidosException
+from app.exceptions.error import BadCredentialsException
 
 
-@app_blueprint.route('/auth/login', methods=['POST'])
+@app_blueprint.route('/login', methods=['POST'])
 def login():
     try:
         response = auth_service.attempt_login(request.json)
 
         return response, 201
-    except DadosLoginInvalidosException:
+    except BadCredentialsException:
         return jsonify({"erro":"Dados de login inválidos"}), 401
 
 
-@app_blueprint.route('/auth/refresh', methods=['POST'])
+@app_blueprint.route('/refresh', methods=['POST'])
 @jwt_refresh_token_required
 def refresh():
     current_user_id = get_jwt_identity()
@@ -28,19 +28,16 @@ def refresh():
     return response, 201
 
 
-@app_blueprint.route('/auth/token/<token_id>', methods=['PUT'])
+@app_blueprint.route('/token', methods=['PUT'])
 @jwt_required
-def logout(token_id):
-    try:
-        current_user_id = get_jwt_identity()
+def logout(): # token_id):
+    # current_user_id = get_jwt_identity()
 
-        auth_service.revoke_old_refresh_token(current_user_id)
+    # auth_service.revoke_old_refresh_token(current_user_id)
 
-        response = auth_service.revoke_token(token_id)
+    response = auth_service.revoke_token() # token_id)
 
-        return response, 200
-    except TokenNaoExisteException:
-        return jsonify({'erro': 'The specified token was not found'}), 404
+    return response, 200
 
 
 @app_blueprint.route("/send_verify_code", methods=['GET'])
@@ -56,4 +53,4 @@ def verify_code():
     return auth_service.verify_code(request_id, code)
 
 
-app.register_blueprint(app_blueprint, url_prefix="/api")
+app.register_blueprint(app_blueprint, url_prefix="/auth")
