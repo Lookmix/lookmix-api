@@ -1,7 +1,3 @@
-class TokenNaoExisteException(Exception):
-   pass
-
-
 class BadCredentialsException(Exception):
    pass
 
