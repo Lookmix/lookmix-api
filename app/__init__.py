@@ -3,16 +3,16 @@ from flask import Flask
 from flask_cors import CORS
 from pymongo import MongoClient
 from flask_jwt_extended import JWTManager
-import nexmo
+# import nexmo
 
 
 app = Flask(__name__)
 
 # TODO: colocar em um arquivo .env
-client = MongoClient("mongodb+srv://hanger:h4n6%26r.%40pp@cluster-xslqb.gcp.mongodb.net/test?retryWrites=true&w=majority")
+client = MongoClient("mongodb+srv://hanger:h4n6%26r.%40pp@cluster.xslqb.gcp.mongodb.net/db?retryWrites=true&w=majority")
 db = client['hanger']
-client_nexmo = nexmo.Client(key='c40c2038', secret='zbnV7nN9AfmshWN1')
-app.secret_key = "@n6ul4r"
+# client_nexmo = nexmo.Client(key='c40c2038', secret='zbnV7nN9AfmshWN1')
+app.secret_key = "CyFGMMt49gq4YZe"
 app.config['JWT_BLACKLIST_ENABLED'] = True
 app.config['JWT_BLACKLIST_TOKEN_CHECKS'] = ['access', 'refresh']
 app.config['JWT_TOKEN_LOCATION'] = ['cookies']
