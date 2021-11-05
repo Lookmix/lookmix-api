@@ -2,17 +2,17 @@ class TokenNaoExisteException(Exception):
    pass
 
 
-class DadosLoginInvalidosException(Exception):
+class BadCredentialsException(Exception):
    pass
 
 
-class UsernameDuplicadoException(Exception):
+class DuplicatedUsernameException(Exception):
    pass
 
 
-class TelefoneDuplicadoException(Exception):
+class DuplicatedPhoneException(Exception):
    pass
 
 
-class TelefoneNaoExisteException(Exception):
+class PhoneNotFoundException(Exception):
    pass
