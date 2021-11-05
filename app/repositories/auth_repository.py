@@ -1,32 +1,42 @@
 from app import db
 
 
-def save_data_token(data_token):
-    db["oauth2_tokens"].insert_one(data_token)
+def save_auth_metadata(data):
+    db["auth_metadata"].insert_one(data)
 
 
-def save_data_tokens(data_tokens):
-    db["oauth2_tokens"].insert_many(data_tokens)
+def save_many_auth_metadata(data):
+    db["auth_metadata"].insert_many(data)
 
 
-def get_by_jti(jti):
-    return db["oauth2_tokens"].find_one({"jti": jti})
+def save_otp_metadata(data):
+    db["otp_metadata"].insert_one(data)
 
 
-def update_revoke(jti, token_data):
-    return db["oauth2_tokens"].update_one({"jti": jti},
-                                          {"$set": token_data},
-                                          upsert=False)
+def increment_otp_attempts(data):
+    db["otp_metadata"].update_one(
+        { "_id": data },
+        {"$inc": { "attempts": 1 }}
+    )
+
+# def get_by_jti(jti):
+#     return db["auth_meta"].find_one({"jti": jti})
 
 
-def get_non_revoked_refresh_token(user_id):
-    return db["oauth2_tokens"].find_one({"user_id": user_id,
-                                     "token_type": "refresh",
-                                     "revoked": False})
+# def update_revoke(jti, token_data):
+# =    return db["auth_meta"].update_one({"jti": jti},
+#                                           {"$set": token_data},
+#                                           upsert=False)
 
 
-def get_non_revoked_access_token(user_id):
-    return db['oauth2_tokens'].find_one({"user_id": user_id,
-                                        "token_type": "access",
-                                        "revoked": False})
+# def get_non_revoked_refresh_token(user_id):
+#     return db["auth_meta"].find_one({"user_id": user_id,
+#                                      "token_type": "refresh",
+#                                      "revoked": False})
+
+
+# def get_non_revoked_access_token(user_id):
+#     return db['auth_meta'].find_one({"user_id": user_id,
+#                                         "token_type": "access",
+#                                         "revoked": False})
 
