@@ -4,16 +4,15 @@
     "properties": {
         "id": {"type": "string"},
         "username": {"type": "string"},
-        "numero_telefone": {"type": "string"},
+        "phone": {"type": "string"},
         "password": {"type": "string"},
-        "data_cadatro": {"type": "string"},
-        "nome": {"type": "string"},
+        "timestamp": {"type": "string"},
+        "name": {"type": "string"},
         "email": {"type": "string"},
-        "is_admin": {"type": "boolean"}
     },
     "required": [
         "password",
-        "numero_telefone"
+        "phone"
     ],
     "additionalProperties": false
 }
