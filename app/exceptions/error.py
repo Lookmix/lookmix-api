@@ -12,3 +12,7 @@ class DuplicatedPhoneException(Exception):
 
 class PhoneNotFoundException(Exception):
    pass
+
+
+class FailToGenerateVerifyCodeException(Exception):
+   pass
