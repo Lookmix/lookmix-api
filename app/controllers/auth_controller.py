@@ -5,7 +5,10 @@ from flask_jwt_extended import (
 from app import app, app_blueprint
 from flask import request, jsonify
 from app.services import auth_service
-from app.exceptions.error import BadCredentialsException
+from app.exceptions.error import (
+    BadCredentialsException,
+    FailToGenerateVerifyCodeException
+)
 
 
 @app_blueprint.route('/login', methods=['POST'])
@@ -42,8 +45,11 @@ def logout(): # token_id):
 
 @app_blueprint.route("/send_verify_code", methods=['GET'])
 def send_verify_code():
-    phone = request.args.get("phone")
-    return auth_service.send_verify_code(phone)
+    try:
+        phone = request.args.get("phone")
+        return auth_service.handle_OTP(phone)
+    except FailToGenerateVerifyCodeException as e:
+        return jsonify({"error": str(e)}), 400
 
 
 @app_blueprint.route("/verify_code", methods=['GET'])
