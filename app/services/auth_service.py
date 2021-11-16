@@ -15,7 +15,12 @@ from flask_jwt_extended import (
 )
 from bson.objectid import ObjectId
 from app.exceptions.error import (
-    BadCredentialsException
+    BadCredentialsException,
+    FailToGenerateVerifyCodeException
+)
+from bson.json_util import (
+    dumps,
+    loads
 )
 
 JWT_ALG = "HS256"
@@ -111,7 +116,6 @@ def create_auth_metadata(encoded_token, identity_claim):
 def generate_verify_code():
     # TODO: Adicionar blacklist para descartar
     #  códigos pouco seguros, ex: 111111
-    # return 123456
     return random.sample(range(100000, 999999), 1)[0]
 
 
@@ -123,13 +127,13 @@ def generate_zenvia_payload (phone, verify_code):
             "from": "Lookmix",
             "to": "55%s" % phone,
             "schedule": schedule,
-            "msg": "Lookmix: Não compartilhe este dado com ninguém. Seu código de verificação é %s" % verify_code,
+            "msg": "Não compartilhe este dado com ninguém. Seu código de verificação é %s" % verify_code,
             "callbackOption": "NONE",
-            "id": uuid.uuid4(),
+            "id": str(uuid.uuid4()),
             "flashSms": False
         }
     }
-    return payload
+    return dumps(payload)
 
 
 def send_verify_code(payload):
@@ -153,9 +157,8 @@ def generate_OTP_jwt(sms_id, verify_code):
             "smsId": sms_id,
             "exp": expiration
         },
-        verify_code,
-        algorithms=[JWT_ALG])
-
+        str(verify_code),
+        algorithm=JWT_ALG)
     return encoded
 
 
@@ -170,15 +173,17 @@ def handle_OTP(phone):
 
     data = response.json()
 
-    if status_code == 201:
-        sms_id = data["id"]
+    if status_code == 201 or status_code == 200:
+        payload_zenvia = loads(payload_zenvia)
+
+        sms_id = payload_zenvia.get("sendSmsRequest", {}).get("id", None)
 
         otp_jwt = generate_OTP_jwt(sms_id, verify_code)
 
         save_OTP_meta(sms_id, phone)
 
         return jsonify({"verify_token": otp_jwt})
-    return jsonify({"error": data["details"]["message"]})
+    raise FailToGenerateVerifyCodeException(data.get("exception", {}).get("message", {}))
 
 
 def verify_code(token, code):
@@ -196,7 +201,7 @@ def verify_code(token, code):
 def save_OTP_meta(id, phone):
     otp_meta = {
         "attempts": 0,
-        "id": id,
+        "_id": id,
         "phone": phone,
         "timestamp": datetime.now(),
         "expires": set_otp_expires_time()
