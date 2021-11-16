@@ -1,8 +1,8 @@
 from app import db
 
 
-def save(usuario):
-    id = db['users'].insert_one(usuario).inserted_id
+def save(user):
+    id = db['users'].insert_one(user).inserted_id
 
     return id
 
