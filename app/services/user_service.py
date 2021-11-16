@@ -18,7 +18,9 @@ def save(user):
         user['is_admin'] = False
         user['password'] = encrypted_password
 
-        return dumps(user_repository.save(user))
+        saved_user = user_repository.save(user)
+
+        return dumps(saved_user)
     except Exception as e:
         raise e
 
