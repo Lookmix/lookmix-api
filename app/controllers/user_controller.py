@@ -18,6 +18,7 @@ def protected():
 
 
 @app_blueprint.route("/save", methods=['POST'])
+@jwt_required
 def add_user():
     try:
         request_data = request.json
@@ -41,6 +42,7 @@ def add_user():
 
 
 @app_blueprint.route("/get_all", methods=['GET'])
+@jwt_required
 def get_all():
     try:
         users = user_service.get_all()
@@ -51,6 +53,7 @@ def get_all():
 
 
 @app_blueprint.route("/get_user", methods=['GET'])
+@jwt_required
 def get_user_flickr():
     user = user_service.get_user_flickr()
 
@@ -58,6 +61,7 @@ def get_user_flickr():
 
 
 @app_blueprint.route("/update_password/<phone>", methods=['PUT'])
+@jwt_required
 def update_password(phone):
     try:
         request_data = request.json
@@ -73,6 +77,7 @@ def update_password(phone):
 
 
 @app_blueprint.route("/get_photos", methods=['GET'])
+@jwt_required
 def get_photos():
     photos = user_service.get_photos()
 
