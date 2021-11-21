@@ -7,8 +7,10 @@ from flask import request, jsonify
 from app.services import auth_service
 from app.exceptions.error import (
     BadCredentialsException,
-    FailToGenerateVerifyCodeException
+    FailToGenerateVerifyCodeException,
+    AttemptsExceedException
 )
+from jsonschema import ValidationError
 
 
 @app_blueprint.route('/login', methods=['POST'])
@@ -54,9 +56,13 @@ def send_verify_code():
 
 @app_blueprint.route("/verify_code", methods=['GET'])
 def verify_code():
-    code = request.args.get("code")
-    request_id = request.args.get("request_id")
-    return auth_service.verify_code(request_id, code)
+    try:
+        request_data = request.json
 
+        return auth_service.verify_code(request_data)
+    except ValidationError as error:
+        return jsonify({'error': error.message}), 400
+    except AttemptsExceedException:
+        return jsonify({"attempsExceed": True}), 400
 
 app.register_blueprint(app_blueprint, url_prefix="/auth")
