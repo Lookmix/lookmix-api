@@ -16,12 +16,15 @@ from flask_jwt_extended import (
 from bson.objectid import ObjectId
 from app.exceptions.error import (
     BadCredentialsException,
-    FailToGenerateVerifyCodeException
+    FailToGenerateVerifyCodeException,
+    AttemptsExceedException
 )
 from bson.json_util import (
     dumps,
     loads
 )
+from app.utils import validation
+
 
 JWT_ALG = "HS256"
 # TODO: colocar em um arquivo de constants
@@ -55,11 +58,11 @@ def create_tokens(user_id):
     
     response = jsonify({
         "access_metadata": {
-            "expires": datetime.datetime.fromtimestamp(decoded_access_token["exp"]),
+            "expires": datetime.fromtimestamp(decoded_access_token["exp"]),
             "jti": decoded_access_token["jti"]
         },
         "refresh_metadata": {
-            "expires": datetime.datetime.fromtimestamp(decoded_refresh_token["exp"]),
+            "expires": datetime.fromtimestamp(decoded_refresh_token["exp"]),
             "jti": decoded_refresh_token["jti"]
         }
     })
@@ -182,20 +185,38 @@ def handle_OTP(phone):
 
         save_OTP_meta(sms_id, phone)
 
-        return jsonify({"verify_token": otp_jwt})
+        return jsonify({
+            "verify_token": otp_jwt, 
+            "id": sms_id
+        })
     raise FailToGenerateVerifyCodeException(data.get("exception", {}).get("message", {}))
 
+ 
+def verify_code(data):
+    id = None
 
-def verify_code(token, code):
     try:
+        validate_verify_token_data(data)
+
+        token = data.get("token")
+        code = data.get("code")
+        id = data.get("id")
+
         jwt.decode(token, code, algorithms=[JWT_ALG])
 
-        return jsonify({"is_valid": True})
+        return jsonify({"valid": True})
     except jwt.ExpiredSignatureError:
-        return jsonify({"is_valid": False, "error": "Code has been expirated"})
+        return jsonify({"expired": True, "error": "Token has been expirated"})
     except jwt.InvalidSignatureError:
-        update_OTP_attempts()
-        return jsonify({"is_valid": False, "error": "Invalid code"})
+        update_OTP_attempts(id)
+
+        attemps = get_OTP_attempts(id)
+
+        if attemps > 2:
+            raise AttemptsExceedException()
+        return jsonify({"invalidCode": True, "error": "Invalid OTP"})
+    except Exception as e:
+        raise e
 
 
 def save_OTP_meta(id, phone):
@@ -209,6 +230,9 @@ def save_OTP_meta(id, phone):
     auth_repository.save_otp_metadata(otp_meta)
     return otp_meta
 
+
+def get_OTP_attempts(id):
+    return auth_repository.get_otp_attempts(id)
 
 def update_OTP_attempts(id):
     auth_repository.increment_otp_attempts(id)
@@ -231,3 +255,8 @@ def set_otp_expires_time():
     if len(result) == 2:
         index = 1
     return "%s-%s-%s %s" % (year, month, day, result[index])
+
+
+def validate_verify_token_data(verify_token_data):
+    validation.assert_valid_schema(verify_token_data, "verify_token.json")
+
