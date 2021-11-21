@@ -25,15 +25,19 @@ def add_user():
         user_id = user_service.save(request_data)
 
         return jsonify({"id": user_id}), 200
-    except ValidationError as validationError:
-        return json.dumps({'error': validationError.message}), 400
+    except ValidationError as error:
+        validator = error.validator
+        customErrorMessage = error.schema.get("errorMessage", {}).get(validator)
+        message = error.message
+
+        if customErrorMessage is not None:
+            message = customErrorMessage
+        return jsonify({'error': message}), 400
     except DuplicatedPhoneException:
-        return json.dumps({'error': 'Telefone duplicado'}), 400
-    except DuplicatedUsernameException:
-        return json.dumps({'error': 'Username duplicado'}), 400
+        return jsonify({'error': 'Telefone duplicado'}), 400
     except Exception as e:
         response = str(e)
-        return json.dumps(response), 400
+        return jsonify(response), 400
 
 
 @app_blueprint.route("/get_all", methods=['GET'])
@@ -65,7 +69,7 @@ def update_password(phone):
         return jsonify({'error': 'Telefone não existe'}), 400
     except Exception as e:
         response = str(e)
-        return json.dumps(response), 400
+        return jsonify(response), 400
 
 
 @app_blueprint.route("/get_photos", methods=['GET'])
