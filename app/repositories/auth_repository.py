@@ -19,6 +19,14 @@ def increment_otp_attempts(data):
         {"$inc": { "attempts": 1 }}
     )
 
+def get_otp_attempts(data):
+    otp_metadata = db['otp_metadata'].find_one({'_id': data})
+
+    if otp_metadata:
+        return otp_metadata['attempts']
+    return -1
+
+
 # def get_by_jti(jti):
 #     return db["auth_meta"].find_one({"jti": jti})
 
