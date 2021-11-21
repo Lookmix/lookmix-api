@@ -16,3 +16,7 @@ class PhoneNotFoundException(Exception):
 
 class FailToGenerateVerifyCodeException(Exception):
    pass
+
+
+class AttemptsExceedException(Exception):
+   pass
