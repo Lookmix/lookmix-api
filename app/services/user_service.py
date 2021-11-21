@@ -7,10 +7,13 @@ from app.utils import validation
 from app.exceptions.error import DuplicatedPhoneException, PhoneNotFoundException
 from werkzeug.security import generate_password_hash
 from bson.json_util import dumps
+from datetime import datetime
 
 
 def save(user):
     try:
+        user['timestamp'] = str(datetime.now())
+
         validate_user_data(user)
 
         encrypted_password = encrypt_passoword(user['password'])
@@ -20,7 +23,7 @@ def save(user):
 
         saved_user = user_repository.save(user)
 
-        return dumps(saved_user)
+        return str(saved_user)
     except Exception as e:
         raise e
 
