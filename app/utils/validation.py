@@ -1,27 +1,22 @@
-import jsonref
+import json
+from os.path import join, dirname, realpath, split
+from jsonschema import validate, RefResolver
 from app.repositories import user_repository
-from os.path import join, dirname
-from jsonschema import validate
+
+
+def load_json_schema(filename):
+	relative_path = join('../models', filename)
+	absolute_path = join(dirname(__file__), relative_path)
+	with open(absolute_path) as schema_file:
+		schema = json.loads(schema_file.read())
+		return schema
 
 
 def assert_valid_schema(data, schema_file):
-    """ Checks whether the given data matches the schema """
-
-    schema = _load_json_schema(schema_file)
-    return validate(data, schema)
-
-
-def _load_json_schema(filename):
-    """ Loads the given schema file """
-
-    relative_path = join('../models', filename)
-    absolute_path = join(dirname(__file__), relative_path)
-
-    base_path = dirname(absolute_path)
-    base_uri = 'file://{}/'.format(base_path)
-
-    with open(absolute_path) as schema_file:
-        return jsonref.loads(schema_file.read(), base_uri=base_uri, jsonschema=True)
+	schema = load_json_schema(schema_file)
+	dir = split(dirname(realpath(__file__)))[0] + '/models'
+	resolver = RefResolver(referrer=schema, base_uri='file://' + dir + '/')
+	return validate(data, schema, resolver=resolver)
 
 
 def is_username_unique(username):
