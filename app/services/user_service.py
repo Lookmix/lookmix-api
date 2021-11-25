@@ -65,7 +65,7 @@ def get_user_flickr():
 
 
 def validate_user_data(user):
-    validation.assert_valid_schema(user, "users.json")
+    validation.assert_valid_schema(user, "user.json")
 
     if not validation.is_phone_unique(user['phone']):
         raise DuplicatedPhoneException()
