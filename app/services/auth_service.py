@@ -1,33 +1,39 @@
-from app import app #, jwt
-from flask import jsonify
-from app.repositories import auth_repository, user_repository
 import requests
 import jwt
 import random
-from datetime import datetime, timedelta
 import uuid
+from flask import jsonify
+from datetime import datetime, timedelta
 from werkzeug.security import check_password_hash
 from flask_jwt_extended import (
     create_access_token,
     create_refresh_token,
-    decode_token, set_access_cookies,
-    set_refresh_cookies, unset_jwt_cookies
+    decode_token, 
+    set_access_cookies,
+    set_refresh_cookies, 
+    unset_jwt_cookies
 )
 from bson.objectid import ObjectId
+from bson.json_util import (
+    dumps,
+    loads
+)
+from app import app #, jwt
 from app.exceptions.error import (
     BadCredentialsException,
     FailToGenerateVerifyCodeException,
     AttemptsExceedException
 )
-from bson.json_util import (
-    dumps,
-    loads
+from app.repositories import (
+    auth_repository, 
+    user_repository
 )
 from app.utils import validation
+from app.services import user_service
 
 
 JWT_ALG = "HS256"
-# TODO: colocar em um arquivo de constants
+# TODO: colocar em um arquivo de constantes
 expires_access_token = timedelta(minutes=30)
 expires_refresh_token = timedelta(days=2)
 
@@ -196,6 +202,12 @@ def verify_code(data):
     id = None
 
     try:
+        user = data.get("user")
+
+        if user is not None:
+            user["timestamp"] = str(datetime.now())
+            data["user"] = user
+
         validate_verify_token_data(data)
 
         token = data.get("token")
@@ -203,6 +215,8 @@ def verify_code(data):
         id = data.get("id")
 
         jwt.decode(token, code, algorithms=[JWT_ALG])
+
+        user_service.save(user)
 
         return jsonify({"valid": True})
     except jwt.ExpiredSignatureError:
@@ -233,6 +247,7 @@ def save_OTP_meta(id, phone):
 
 def get_OTP_attempts(id):
     return auth_repository.get_otp_attempts(id)
+
 
 def update_OTP_attempts(id):
     auth_repository.increment_otp_attempts(id)
