@@ -1,7 +1,12 @@
 import requests
-import jwt
 import random
 import uuid
+
+from jwt import (
+    InvalidSignatureError, 
+    decode, 
+    encode
+)
 from flask import jsonify
 from datetime import datetime, timedelta
 from werkzeug.security import check_password_hash
@@ -161,7 +166,7 @@ def send_verify_code(payload):
 def generate_OTP_jwt(sms_id, verify_code):
     expiration = datetime.utcnow() + timedelta(seconds=80)
 
-    encoded = jwt.encode(
+    encoded = encode(
         {
             "smsId": sms_id,
             "exp": expiration
@@ -214,23 +219,19 @@ def verify_code(data):
         code = data.get("code")
         id = data.get("id")
 
-        jwt.decode(token, code, algorithms=[JWT_ALG])
+        decode(token, code, algorithms=[JWT_ALG])
 
         user_service.save(user)
 
         return jsonify({"valid": True})
-    except jwt.ExpiredSignatureError:
-        return jsonify({"expired": True, "error": "Token has been expirated"})
-    except jwt.InvalidSignatureError:
+    except InvalidSignatureError:
         update_OTP_attempts(id)
 
         attemps = get_OTP_attempts(id)
 
         if attemps > 2:
             raise AttemptsExceedException()
-        return jsonify({"invalidCode": True, "error": "Invalid OTP"})
-    except Exception as e:
-        raise e
+        raise InvalidSignatureError
 
 
 def save_OTP_meta(id, phone):
