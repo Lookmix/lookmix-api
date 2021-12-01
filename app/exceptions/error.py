@@ -20,3 +20,7 @@ class FailToGenerateVerifyCodeException(Exception):
 
 class AttemptsExceedException(Exception):
    pass
+
+
+class RequiredParamException(Exception):
+   pass
