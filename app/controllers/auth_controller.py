@@ -8,10 +8,11 @@ from app.services import auth_service
 from app.exceptions.error import (
     BadCredentialsException,
     FailToGenerateVerifyCodeException,
-    AttemptsExceedException
+    AttemptsExceedException,
+    RequiredParamException
 )
 from jsonschema import ValidationError
-
+from jwt import InvalidSignatureError, ExpiredSignatureError
 
 @app_blueprint.route('/login', methods=['POST'])
 def login():
@@ -49,20 +50,41 @@ def logout(): # token_id):
 def send_verify_code():
     try:
         phone = request.args.get("phone")
-        return auth_service.handle_OTP(phone)
+        
+        if phone is not None:
+            return auth_service.handle_OTP(phone)
+        raise RequiredParamException("'phone' param is required")
     except FailToGenerateVerifyCodeException as e:
+        return jsonify({"error": str(e)}), 400
+    except RequiredParamException as e:
         return jsonify({"error": str(e)}), 400
 
 
-@app_blueprint.route("/verify_code", methods=['GET'])
+@app_blueprint.route("/verify_code", methods=['POST'])
 def verify_code():
     try:
         request_data = request.json
 
         return auth_service.verify_code(request_data)
     except ValidationError as error:
-        return jsonify({'error': error.message}), 400
+        return jsonify({
+            "error": "validationError",
+            "message": error.message
+        }), 400
     except AttemptsExceedException:
-        return jsonify({"attempsExceed": True}), 400
+        return jsonify({
+            "error": "attempsExceed",
+            "message": "Attemps Exceed"
+        }), 400
+    except InvalidSignatureError:
+        return jsonify({
+            "error": "invalidOTP",
+            "message": "Invalid OTP"
+        }), 400
+    except ExpiredSignatureError:
+        return jsonify({
+            "error": "expired",
+            "message": "Token has been expirated"
+        }), 400
 
 app.register_blueprint(app_blueprint, url_prefix="/auth")
