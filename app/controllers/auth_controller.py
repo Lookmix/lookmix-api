@@ -1,5 +1,5 @@
 from flask_jwt_extended import (
-    jwt_refresh_token_required, jwt_required,
+    jwt_required,
     get_jwt_identity
 )
 from app import app, app_blueprint
@@ -19,13 +19,13 @@ def login():
     try:
         response = auth_service.attempt_login(request.json)
 
-        return response, 201
+        return response, 200
     except BadCredentialsException:
         return jsonify({"erro":"Dados de login inválidos"}), 401
 
 
 @app_blueprint.route('/refresh', methods=['POST'])
-@jwt_refresh_token_required
+@jwt_required(refresh=True)
 def refresh():
     current_user_id = get_jwt_identity()
 
@@ -35,7 +35,7 @@ def refresh():
 
 
 @app_blueprint.route('/token', methods=['PUT'])
-@jwt_required
+@jwt_required()
 def logout(): # token_id):
     # current_user_id = get_jwt_identity()
 
