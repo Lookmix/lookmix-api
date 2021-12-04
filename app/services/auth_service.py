@@ -38,7 +38,6 @@ from app.services import user_service
 
 
 JWT_ALG = "HS256"
-# TODO: colocar em um arquivo de constantes
 expires_access_token = timedelta(minutes=30)
 expires_refresh_token = timedelta(days=2)
 
@@ -60,9 +59,8 @@ def attempt_login(request_data):
 
 def create_tokens(user_id):
     access_token = create_access_token(identity=user_id,
-                                       expires_delta=expires_access_token,
-                                       fresh=True)
-    refresh_token = create_refresh_token(user_id,
+                                       expires_delta=expires_access_token)
+    refresh_token = create_refresh_token(identity=user_id,
                                          expires_delta=expires_refresh_token)
     decoded_access_token = decode_token(access_token)
     decoded_refresh_token = decode_token(refresh_token)
@@ -106,10 +104,11 @@ def revoke_token(): # token_id):
 
 
 def save_auth_metadata(response):
-    access_metadata = create_auth_metadata(response["access_token"],
-                                   app.config["JWT_IDENTITY_CLAIM"])
-    refresh_metadata = create_auth_metadata(response["refresh_token"],
-                                   app.config["JWT_IDENTITY_CLAIM"])
+    jwt_identity_claim = app.config["JWT_IDENTITY_CLAIM"]
+    access_token = response["access_token"]
+    refresh_token = response["refresh_token"]
+    access_metadata = create_auth_metadata(access_token, jwt_identity_claim)
+    refresh_metadata = create_auth_metadata(refresh_token, jwt_identity_claim)
     auth_repository.save_many_auth_metadata([access_metadata, refresh_metadata])
 
 
@@ -128,8 +127,7 @@ def create_auth_metadata(encoded_token, identity_claim):
 
 
 def generate_verify_code():
-    # TODO: Adicionar blacklist para descartar
-    #  códigos pouco seguros, ex: 111111
+    # TODO: add blacklist to avoid codes like 111111
     return random.sample(range(100000, 999999), 1)[0]
 
 
@@ -139,9 +137,9 @@ def generate_zenvia_payload (phone, verify_code):
     payload = {
         "sendSmsRequest": {
             "from": "Lookmix",
-            "to": "55%s" % phone,
+            "to": f"55{phone}",
             "schedule": schedule,
-            "msg": "Não compartilhe este dado com ninguém. Seu código de verificação é %s" % verify_code,
+            "msg": "Nao compartilhe este dado com ninguem. Seu codigo de verificacao é %s" % verify_code,
             "callbackOption": "NONE",
             "id": str(uuid.uuid4()),
             "flashSms": False
@@ -153,8 +151,11 @@ def generate_zenvia_payload (phone, verify_code):
 def send_verify_code(payload):
     uri = "https://api-rest.zenvia.com/services/send-sms"
 
+    # TODO: Move to .env file
+    security = "dmluaWNpdXMub3RhdmlvLnNtczo0TmF4cko0NURY"
+
     headers = {
-        "Authorization": "Basic dmluaWNpdXMub3RhdmlvLnNtczo0TmF4cko0NURY",
+        "Authorization": f"Basic {security}",
         "Content-Type": "application/json",
         "Accept": "application/json"
     }
@@ -200,7 +201,9 @@ def handle_OTP(phone):
             "verify_token": otp_jwt, 
             "id": sms_id
         })
-    raise FailToGenerateVerifyCodeException(data.get("exception", {}).get("message", {}))
+    error_message = data.get("exception", {}).get("message", {})
+
+    raise FailToGenerateVerifyCodeException(error_message)
 
  
 def verify_code(data):
