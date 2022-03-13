@@ -5,16 +5,12 @@
     "properties": {
         "token": {"type": "string"},
         "code": {"type": "string"},
-        "id": {"type": "string"},
-        "user": { 
-            "$ref": "user.json"
-        }
+        "id": {"type": "string"}
     },
     "required": [
         "id",
         "token",
-        "code",
-        "user"
+        "code"
     ],
     "additionalProperties": false
 }
