@@ -5,21 +5,15 @@ from pymongo import MongoClient
 from flask_jwt_extended import JWTManager
 
 app = Flask(__name__)
+app.config.from_object('app.config')
+app.config.from_envvar('ENVVAR_FILE')
 
-# TODO: move to .env file
-client = MongoClient("mongodb+srv://hanger:h4n6%26r.%40pp@cluster.xslqb.gcp.mongodb.net/db?retryWrites=true&w=majority")
+print(f" * HEALTH-CHECK-ENV-VAR: {app.config.get('HEALTH')}")
+
+mongodb_url = app.config.get("MONGODB_HOST")
+
+client = MongoClient(mongodb_url)
 db = client['db']
-
-# TODO: move to .env file
-app.config["JWT_SECRET_KEY"] = "CyFGMMt49gq4YZe" # app.secret_key = "CyFGMMt49gq4YZe"
-app.config['JWT_COOKIE_SECURE'] = False # TODO: True in prod
-app.config['JWT_TOKEN_LOCATION'] = ['cookies']
-app.config['JWT_ACCESS_COOKIE_PATH'] = '/'
-app.config['JWT_REFRESH_COOKIE_PATH'] = '/'
-app.config['JWT_COOKIE_CSRF_PROTECT'] = True
-app.config['JWT_COOKIE_SAMESITE'] = 'Lax'
-app.config['JWT_COOKIE_DOMAIN'] = 'lookmix.app'
-app.config['JWT_SESSION_COOKIE'] = False
 
 jwt = JWTManager(app)
 app_blueprint = flask.Blueprint("blueprint", __name__)
