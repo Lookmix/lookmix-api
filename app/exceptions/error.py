@@ -14,7 +14,7 @@ class PhoneNotFoundException(Exception):
    pass
 
 
-class FailToGenerateVerifyCodeException(Exception):
+class FailToGenerateOTPException(Exception):
    pass
 
 
