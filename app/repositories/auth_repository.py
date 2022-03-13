@@ -5,10 +5,6 @@ def save_auth_metadata(data):
     db["auth_metadata"].insert_one(data)
 
 
-def save_many_auth_metadata(data):
-    db["auth_metadata"].insert_many(data)
-
-
 def save_otp_metadata(data):
     db["otp_metadata"].insert_one(data)
 
@@ -48,3 +44,5 @@ def get_otp_attempts(data):
 #                                         "token_type": "access",
 #                                         "revoked": False})
 
+# def save_many_auth_metadata(data):
+#     db["auth_metadata"].insert_many(data)
