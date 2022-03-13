@@ -1,6 +1,4 @@
-import requests
 import random
-import uuid
 
 from jwt import (
     InvalidSignatureError, 
@@ -18,15 +16,11 @@ from flask_jwt_extended import (
     set_refresh_cookies, 
     unset_jwt_cookies
 )
-from bson.objectid import ObjectId
-from bson.json_util import (
-    dumps,
-    loads
-)
+from bson.json_util import loads
 from app import app #, jwt
 from app.exceptions.error import (
     BadCredentialsException,
-    FailToGenerateVerifyCodeException,
+    FailToGenerateOTPException,
     AttemptsExceedException
 )
 from app.repositories import (
@@ -34,8 +28,10 @@ from app.repositories import (
     user_repository
 )
 from app.utils import validation
-from app.services import user_service
-
+from app.services.integrations.zenvia_sms import (
+    generate_zenvia_payload, 
+    send_sms
+)
 
 JWT_ALG = "HS256"
 expires_access_token = timedelta(minutes=30)
@@ -43,17 +39,32 @@ expires_refresh_token = timedelta(days=2)
 
 
 def attempt_login(request_data):
-    user = user_repository.get_by_phone(request_data["phone"])
+    try:
+        phone = request_data["phone"]
 
-    if user and check_password_hash(user["password"], request_data["password"]):
-        user_id = str(ObjectId(user["_id"]))
+        request_password = request_data["password"]
 
-        response = create_tokens(user_id)
+        user = user_repository.get_by_phone(phone)
 
-        save_auth_metadata(response)
+        user_password = user["password"]
 
-        return response["data"]
-    else:
+        user_id = user["_id"]
+
+        is_password_valid = check_password_hash(user_password, request_password)
+
+        if user and is_password_valid:
+            tokens = create_tokens(user_id)
+
+            access = tokens.get("access_token")
+            refresh = tokens.get("refresh_token")
+            auth_metadata = tokens.get("data")
+
+            save_auth_metadata(access)
+            save_auth_metadata(refresh)
+
+            return auth_metadata
+        raise BadCredentialsException()
+    except:
         raise BadCredentialsException()
 
 
@@ -88,83 +99,50 @@ def create_tokens(user_id):
 def refresh_token(user_id):
     # revoke_old_refresh_token(user_id)
 
-    response = create_tokens(user_id)
+    tokens = create_tokens(user_id)
 
-    save_auth_metadata(response)
+    access = tokens.get("access_token")
+    refresh = tokens.get("refresh_token")
+    auth_metadata = tokens.get("data")
 
-    return response["data"]
+    save_auth_metadata(access)
+    save_auth_metadata(refresh)
+
+    return auth_metadata
+
 
 # Remove from cookie
 def revoke_token(): # token_id):
     response = {"is_disconnected": True}
 
-    unset_jwt_cookies(jsonify(response))
+    unset_jwt_cookies(response)
     
-    return jsonify(response["is_disconnected"])
+    return response
 
 
-def save_auth_metadata(response):
-    jwt_identity_claim = app.config["JWT_IDENTITY_CLAIM"]
-    access_token = response["access_token"]
-    refresh_token = response["refresh_token"]
-    access_metadata = create_auth_metadata(access_token, jwt_identity_claim)
-    refresh_metadata = create_auth_metadata(refresh_token, jwt_identity_claim)
-    auth_repository.save_many_auth_metadata([access_metadata, refresh_metadata])
-
-
-def create_auth_metadata(encoded_token, identity_claim):
+def save_auth_metadata(encoded_token, is_reset_password_token=False, is_new_user_token=False):
+    identity_claim = app.config["JWT_IDENTITY_CLAIM"]
     decoded_token = decode_token(encoded_token)
 
-    data_token = {
+    metadata = {
         "jti": decoded_token["jti"],
         "timestamp": datetime.now(),
-        # "token_type": decoded_token["type"],
-        "user_id": decoded_token[identity_claim],
+        "token_type": decoded_token["type"],
+        "id": decoded_token[identity_claim],
+        "is_reset_password_token": is_reset_password_token,
+        "is_new_user_token": is_new_user_token
         # "expires": datetime.datetime.fromtimestamp(decoded_token["exp"]),
         # "revoked": False,
     }
-    return data_token
+    auth_repository.save_auth_metadata(metadata)
 
 
-def generate_verify_code():
+def generate_otp():
     # TODO: add blacklist to avoid codes like 111111
     return random.sample(range(100000, 999999), 1)[0]
 
 
-def generate_zenvia_payload (phone, verify_code):
-    schedule = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
-
-    payload = {
-        "sendSmsRequest": {
-            "from": "Lookmix",
-            "to": f"55{phone}",
-            "schedule": schedule,
-            "msg": "Nao compartilhe este dado com ninguem. Seu codigo de verificacao é %s" % verify_code,
-            "callbackOption": "NONE",
-            "id": str(uuid.uuid4()),
-            "flashSms": False
-        }
-    }
-    return dumps(payload)
-
-
-def send_verify_code(payload):
-    uri = "https://api-rest.zenvia.com/services/send-sms"
-
-    # TODO: Move to .env file
-    security = "dmluaWNpdXMub3RhdmlvLnNtczo0TmF4cko0NURY"
-
-    headers = {
-        "Authorization": f"Basic {security}",
-        "Content-Type": "application/json",
-        "Accept": "application/json"
-    }
-    response = requests.post(uri, data=payload, headers=headers)
-
-    return response
-
-
-def generate_OTP_jwt(sms_id, verify_code):
+def generate_otp_jwt(sms_id, otp):
     expiration = datetime.utcnow() + timedelta(seconds=80)
 
     encoded = encode(
@@ -172,17 +150,21 @@ def generate_OTP_jwt(sms_id, verify_code):
             "smsId": sms_id,
             "exp": expiration
         },
-        str(verify_code),
+        str(otp), # secret
         algorithm=JWT_ALG)
     return encoded
 
 
-def handle_OTP(phone):
-    verify_code = generate_verify_code()
+def handle_otp(phone):
+    otp = generate_otp()
 
-    payload_zenvia = generate_zenvia_payload(phone, verify_code)
+    schedule = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
 
-    response = send_verify_code(payload_zenvia)
+    msg = "Nao compartilhe este dado com ninguem. Seu codigo de verificacao é %s" % otp
+
+    payload_zenvia = generate_zenvia_payload(phone, schedule, msg)
+
+    response = send_sms(payload_zenvia)
 
     status_code = response.status_code
 
@@ -193,30 +175,24 @@ def handle_OTP(phone):
 
         sms_id = payload_zenvia.get("sendSmsRequest", {}).get("id", None)
 
-        otp_jwt = generate_OTP_jwt(sms_id, verify_code)
+        otp_jwt = generate_otp_jwt(sms_id, otp)
 
-        save_OTP_meta(sms_id, phone)
+        save_otp_meta(sms_id, phone)
 
         return jsonify({
-            "verify_token": otp_jwt, 
+            "token": otp_jwt, 
             "id": sms_id
         })
     error_message = data.get("exception", {}).get("message", {})
 
-    raise FailToGenerateVerifyCodeException(error_message)
+    raise FailToGenerateOTPException(error_message)
 
- 
-def verify_code(data):
+
+def verify_otp(data):
     id = None
 
     try:
-        user = data.get("user")
-
-        if user is not None:
-            user["timestamp"] = str(datetime.now())
-            data["user"] = user
-
-        validate_verify_token_data(data)
+        validate_otp_data_model(data)
 
         token = data.get("token")
         code = data.get("code")
@@ -224,40 +200,38 @@ def verify_code(data):
 
         decode(token, code, algorithms=[JWT_ALG])
 
-        user_service.save(user)
-
-        return jsonify({"valid": True})
+        return { "valid": True }
     except InvalidSignatureError:
-        update_OTP_attempts(id)
+        update_otp_attempts(id)
 
-        attemps = get_OTP_attempts(id)
+        attemps = get_otp_attempts(id)
 
         if attemps > 2:
             raise AttemptsExceedException()
         raise InvalidSignatureError
 
 
-def save_OTP_meta(id, phone):
+def save_otp_meta(id, phone):
     otp_meta = {
         "attempts": 0,
         "_id": id,
         "phone": phone,
         "timestamp": datetime.now(),
-        "expires": set_otp_expires_time()
+        "expires": generate_otp_expires_time()
     }
     auth_repository.save_otp_metadata(otp_meta)
     return otp_meta
 
 
-def get_OTP_attempts(id):
+def get_otp_attempts(id):
     return auth_repository.get_otp_attempts(id)
 
 
-def update_OTP_attempts(id):
+def update_otp_attempts(id):
     auth_repository.increment_otp_attempts(id)
 
 
-def set_otp_expires_time():
+def generate_otp_expires_time():
     timestamp = datetime.now()
     date = timestamp.date()
     day = date.day
@@ -276,6 +250,7 @@ def set_otp_expires_time():
     return "%s-%s-%s %s" % (year, month, day, result[index])
 
 
-def validate_verify_token_data(verify_token_data):
-    validation.assert_valid_schema(verify_token_data, "verify_token.json")
+def validate_otp_data_model(otp_data_model):
+    validation.assert_valid_schema(otp_data_model, "otp.json")
+
 
