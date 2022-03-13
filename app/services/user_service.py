@@ -41,8 +41,8 @@ def get_by_phone(phone):
     user = user_repository.get_by_phone(phone)
 
     if user:
-        return jsonify({"user": user})
-    return jsonify({})
+        return user
+    return None
 
 
 def get_photos():
@@ -66,8 +66,10 @@ def get_user_flickr():
 
 def validate_user_data(user):
     validation.assert_valid_schema(user, "user.json")
+    
+    phone = user['phone']
 
-    if not validation.is_phone_unique(user['phone']):
+    if not is_phone_unique(phone):
         raise DuplicatedPhoneException()
 
 
@@ -77,21 +79,36 @@ def encrypt_passoword(password):
 
 def is_username_unique(username):
     username = username.lower()
-    return jsonify({"is_unique": validation.is_username_unique(username)})
+
+    user = user_repository.get_by_username(username)
+
+    result = True
+
+    if user:
+        result = False
+    return jsonify({"is_unique": result})
 
 
 def is_phone_unique(phone):
-    return jsonify({"is_unique": validation.is_phone_unique(phone)})
+    user = user_repository.get_by_phone(phone)
+
+    result = True
+
+    if user:
+        result = False
+    return result
 
 
 def update_password(password, phone):
     try:
-        response = get_by_phone(phone)
+        user = get_by_phone(phone)
 
-        if response.json['user']:
+        if user:
             encrypted_password = encrypt_passoword(password)
 
-            return dumps(user_repository.update_password(encrypted_password, phone))
+            result = user_repository.update_password(encrypted_password, phone)
+            
+            return dumps(result)
         raise PhoneNotFoundException()
     except Exception as e:
         raise e
