@@ -7,7 +7,7 @@ from jsonschema import (
 )
 
 def load_json_schema(filename):
-	relative_path = join('../models', filename)
+	relative_path = join('./', filename)
 	absolute_path = join(dirname(__file__), relative_path)
 	with open(absolute_path) as schema_file:
 		schema = json.loads(schema_file.read())
@@ -15,7 +15,7 @@ def load_json_schema(filename):
 
 def assert_valid_schema(data, schema_file):
 	schema = load_json_schema(schema_file)
-	dir = split(dirname(realpath(__file__)))[0] + '/models'
+	dir = split(dirname(realpath(__file__)))[0] + '/tests'
 	resolver = RefResolver(referrer=schema, base_uri='file://' + dir + '/')
 	return validate(data, schema, resolver=resolver)
 
@@ -26,10 +26,11 @@ def validate_verify_token_schema():
     "id": "4948daa2-8cbd-4a02-b496-d0fcd41b4f72",
     "user": {
 			"phone": "11951672083",
-			"password": "vinicius"
+			"password": "vinicius",
+			"timestamp": "06/03/2022 15:11"
     }
 	}
-	schema = "verify_token.json"
+	schema = "verify_token_test.json"
 	assert_valid_schema(data, schema)
 
 
