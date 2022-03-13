@@ -19,18 +19,3 @@ def assert_valid_schema(data, schema_file):
 	return validate(data, schema, resolver=resolver)
 
 
-def is_username_unique(username):
-    user = user_repository.get_by_username(username)
-    
-    if user:
-        return False
-    return True
-
-
-def is_phone_unique(phone):
-    user = user_repository.get_by_phone(phone)
-
-    if user:
-        return False
-    return True
-
