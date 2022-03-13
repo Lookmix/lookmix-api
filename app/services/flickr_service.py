@@ -11,7 +11,7 @@ def upload(files):
         response_data = []
 
         for f in files:
-            imageJPG = image_converter.converter_para_JPG(files[f])
+            imageJPG = image_converter.convert_to_JPG(files[f])
 
             response = flickr_api.upload(photo_file=files[f].filename, title=str(uuid.uuid4()),
                               photo_file_data=imageJPG, is_public='0',
@@ -31,5 +31,6 @@ def delete():
 
 
 def set_auth_handler():
+    # TODO: move to .env file
     flickr_api.set_keys(api_key="9259843e2fab63be76733f4a8593aa7f", api_secret="913f8a2084e9a985")
     flickr_api.set_auth_handler("app/.auth.txt")
