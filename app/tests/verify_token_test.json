@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "$id": "verify_token",
+  "type": "object",
+  "properties": {
+      "token": {"type": "string"},
+      "code": {"type": "string"},
+      "id": {"type": "string"},
+      "user": { 
+          "$ref": "user_test.json"
+      }
+  },
+  "required": [
+      "id",
+      "token",
+      "code"
+  ],
+  "additionalProperties": false
+}
