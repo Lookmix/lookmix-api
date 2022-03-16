@@ -3,8 +3,8 @@
 export FLASK_APP=app
 export FLASK_ENV=production
 export FLASK_DEBUG=False
-export FLASK_HOST=api.lookmix.app
-export FLASK_PORT=5000
-export ENVVAR_FILE=./../../.env
+export FLASK_RUN_HOST=api.lookmix.app
+export FLASK_RUN_PORT=80
+export ENVVAR_FILE=./../../.env.prod.cfg
 
 flask run
