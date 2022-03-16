@@ -1,15 +1,17 @@
-# from 'módulo' import 'variável'
 import json
-from app import app, app_blueprint
-from flask import request
-from flask import jsonify
-from app.services import user_service, auth_service
-from jsonschema import ValidationError
+from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required
-from app.exceptions.error import DuplicatedPhoneException, DuplicatedUsernameException, PhoneNotFoundException
+from jsonschema import ValidationError
+from app.services import user_service, auth_service
+from app.exceptions.error import (
+    DuplicatedPhoneException, 
+    DuplicatedUsernameException, 
+    PhoneNotFoundException
+)
 
+bp = Blueprint('users', __name__, url_prefix='/users')
 
-@app_blueprint.route('/protected', methods=['POST'])
+@bp.route('/protected', methods=['POST'])
 @jwt_required()
 def protected():
     # response = '%s' % current_identity
@@ -17,7 +19,7 @@ def protected():
     return jsonify([True]), 200
 
 
-@app_blueprint.route("/save", methods=['POST'])
+@bp.route("/save", methods=['POST'])
 @jwt_required()
 def add_user():
     try:
@@ -52,7 +54,7 @@ def add_user():
         }), 400
 
 
-@app_blueprint.route("/get_all", methods=['GET'])
+@bp.route("/get_all", methods=['GET'])
 @jwt_required()
 def get_all():
     try:
@@ -63,7 +65,7 @@ def get_all():
         return jsonify({'error': e}), 400
 
 
-@app_blueprint.route("/get_user", methods=['GET'])
+@bp.route("/get_user", methods=['GET'])
 @jwt_required()
 def get_user_flickr():
     user = user_service.get_user_flickr()
@@ -71,7 +73,7 @@ def get_user_flickr():
     return json.dumps(user.__dict__), 200
 
 
-@app_blueprint.route("/update_password", methods=['PUT'])
+@bp.route("/update_password", methods=['PUT'])
 @jwt_required()
 def update_password():
     try:
@@ -92,7 +94,7 @@ def update_password():
         return jsonify(response), 400
 
 
-@app_blueprint.route("/get_photos", methods=['GET'])
+@bp.route("/get_photos", methods=['GET'])
 @jwt_required()
 def get_photos():
     photos = user_service.get_photos()
@@ -100,7 +102,7 @@ def get_photos():
     return json.dumps(photos), 200
 
 
-@app_blueprint.route("/is_phone_unique", methods=['GET'])
+@bp.route("/is_phone_unique", methods=['GET'])
 def is_phone_unique():
     phone = request.args.get("phone")
 
@@ -109,10 +111,8 @@ def is_phone_unique():
     return {"is_unique": result}, 200
 
 
-@app_blueprint.route("/is_username_unique/<phone>", methods=['GET'])
+@bp.route("/is_username_unique/<phone>", methods=['GET'])
 def is_username_unique(phone):
     return user_service.is_username_unique(phone), 200
 
-
-app.register_blueprint(app_blueprint, url_prefix="/users")
 
