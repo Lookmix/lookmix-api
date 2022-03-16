@@ -1,9 +1,7 @@
-from flask_jwt_extended import (
-    jwt_required,
-    get_jwt_identity
-)
-from app import app, app_blueprint
-from flask import request, jsonify
+from flask import Blueprint, request, jsonify
+from flask_jwt_extended import jwt_required, get_jwt_identity
+from jwt import InvalidSignatureError, ExpiredSignatureError
+from jsonschema import ValidationError
 from app.services import auth_service
 from app.exceptions.error import (
     BadCredentialsException,
@@ -11,11 +9,10 @@ from app.exceptions.error import (
     AttemptsExceedException,
     RequiredParamException
 )
-from jsonschema import ValidationError
-from jwt import InvalidSignatureError, ExpiredSignatureError
 
+bp = Blueprint('auth', __name__, url_prefix='/auth')
 
-@app_blueprint.route('/login', methods=['POST'])
+@bp.route('/login', methods=['POST'])
 def login():
     try:
         response = auth_service.attempt_login(request.json)
@@ -25,7 +22,7 @@ def login():
         return jsonify({"erro":"Dados de login inválidos"}), 401
 
 
-@app_blueprint.route('/refresh', methods=['POST'])
+@bp.route('/refresh', methods=['POST'])
 @jwt_required(refresh=True)
 def refresh():
     current_user_id = get_jwt_identity()
@@ -35,7 +32,7 @@ def refresh():
     return response, 201
 
 
-@app_blueprint.route('/token', methods=['PUT'])
+@bp.route('/token', methods=['PUT'])
 @jwt_required()
 def logout(): # token_id):
     # current_user_id = get_jwt_identity()
@@ -47,7 +44,7 @@ def logout(): # token_id):
     return response, 200
 
 
-@app_blueprint.route("/get_otp", methods=['GET'])
+@bp.route("/get_otp", methods=['GET'])
 def get_otp():
     try:
         phone = request.args.get("phone")
@@ -61,7 +58,7 @@ def get_otp():
         return jsonify({"error": str(e)}), 400
 
 
-@app_blueprint.route("/verify_otp", methods=['POST'])
+@bp.route("/verify_otp", methods=['POST'])
 def verify_otp():
     try:
         request_data = request.json
@@ -109,6 +106,3 @@ def verify_otp():
             "error": "expired",
             "message": "Token has been expirated"
         }), 400
-
-
-app.register_blueprint(app_blueprint, url_prefix="/auth")

@@ -1,14 +1,10 @@
-# TODO: Renomear prefixo do endpoint e do
-# arquivo para 'guarda-roupa'
-
-# from 'módulo' import 'variável'
-from app import app, app_blueprint
-from app.services import flickr_service
-from flask import request
 import json
+from flask import Blueprint, request 
+from app.services import flickr_service
 
+bp = Blueprint('file', __name__, url_prefix='/file')
 
-@app_blueprint.route("/upload", methods=['POST'])
+@bp.route("/upload", methods=['POST'])
 def upload_file():
     r = request
     files = r.files
@@ -24,11 +20,8 @@ def upload_file():
         }), 400
 
 
-@app_blueprint.route("/getAllImages", methods=['GET'])
+@bp.route("/getAllImages", methods=['GET'])
 def get_all_images():
     response = flickr_service.get_all()
     return json.dumps(response.__dict__), 200
-
-
-app.register_blueprint(app_blueprint, url_prefix="/api")
 
