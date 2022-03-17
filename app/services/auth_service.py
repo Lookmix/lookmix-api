@@ -189,14 +189,17 @@ def handle_otp(phone):
 
 
 def verify_otp(data):
-    id = None
+    validate_otp_data_model(data)
+
+    token = data.get("token")
+    code = data.get("code")
+    id = data.get("id")
 
     try:
-        validate_otp_data_model(data)
+        attemps = get_otp_attempts(id)
 
-        token = data.get("token")
-        code = data.get("code")
-        id = data.get("id")
+        if attemps > 2:
+            raise AttemptsExceedException()
 
         decode(token, code, algorithms=[JWT_ALG])
 
