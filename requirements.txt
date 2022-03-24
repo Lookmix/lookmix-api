@@ -20,7 +20,6 @@ isort==4.3.21
 jsonschema==3.2.0
 lazy-object-proxy==1.4.3
 mccabe==0.6.1
-oauth2==1.9.0.post1
 Pillow==7.0.0
 PyJWT==2.1.0
 pylint==2.4.4
