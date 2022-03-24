@@ -76,7 +76,7 @@ def create_tokens(user_id):
     decoded_access_token = decode_token(access_token)
     decoded_refresh_token = decode_token(refresh_token)
     
-    response = jsonify({
+    response = {
         "access_metadata": {
             "expires": datetime.fromtimestamp(decoded_access_token["exp"]),
             "jti": decoded_access_token["jti"]
@@ -85,9 +85,7 @@ def create_tokens(user_id):
             "expires": datetime.fromtimestamp(decoded_refresh_token["exp"]),
             "jti": decoded_refresh_token["jti"]
         }
-    })
-    set_access_cookies(response, access_token)
-    set_refresh_cookies(response, refresh_token)
+    }
 
     return {
         "data": response,
