@@ -1,5 +1,10 @@
-from flask import Blueprint, request, jsonify
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask import json, Response, Blueprint, request, jsonify
+from flask_jwt_extended import (
+    jwt_required, 
+    get_jwt_identity,
+    set_access_cookies,
+    set_refresh_cookies, 
+)
 from jwt import InvalidSignatureError, ExpiredSignatureError
 from jsonschema import ValidationError
 from app.services import auth_service
@@ -67,7 +72,7 @@ def verify_otp():
 
         response = auth_service.verify_otp(request_data)
 
-        otp_id = response.get("id")
+        otp_id = request_data.get("id")
 
         tokens = auth_service.create_tokens(otp_id)
 
@@ -85,7 +90,12 @@ def verify_otp():
         auth_service.save_auth_metadata(access, reset_password, not reset_password)
         auth_service.save_auth_metadata(refresh, reset_password, not reset_password)
 
-        return jsonify(response), 200
+        response = jsonify(response)
+
+        set_access_cookies(response, access)
+        set_refresh_cookies(response, refresh)
+
+        return response, 200
     except ValidationError as error:
         return jsonify({
             "error": "validationError",
