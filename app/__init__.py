@@ -27,8 +27,9 @@ mock_jwt_manager = JWTManager(flask_mock_api)
 # CORS config
 @app.after_request
 @flask_mock_api.after_request
-def set_allowed_origin_header(response):
+def set_headers(response):
   origin = app.config.get("ALLOWED_ORIGIN")
   response.headers["Access-Control-Allow-Origin"] = origin
-  response.headers["Access-Control-Allow-Headers"] = 'content-type'
+  response.headers["Access-Control-Allow-Headers"] = "content-type"
+  response.headers["Access-Control-Allow-Credentials"] = "true"
   return response
