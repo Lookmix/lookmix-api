@@ -112,6 +112,7 @@ def refresh_token(user_id):
 # Remove from cookie
 def revoke_token(): # token_id):
     response = {"is_disconnected": True}
+    response = jsonify(response)
 
     unset_jwt_cookies(response)
     
