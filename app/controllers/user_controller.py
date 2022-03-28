@@ -5,7 +5,6 @@ from jsonschema import ValidationError
 from app.services import user_service, auth_service
 from app.exceptions.error import (
     DuplicatedPhoneException, 
-    DuplicatedUsernameException, 
     PhoneNotFoundException
 )
 
@@ -45,7 +44,7 @@ def add_user():
     except DuplicatedPhoneException:
         return jsonify({
             "error": "duplicatedPhone",
-            "message": "Telefone duplicado"
+            "message": "Duplicated phone"
         }), 400
     except Exception as e:
         return jsonify({
@@ -82,16 +81,22 @@ def update_password():
         phone = request_data['phone']
         new_password = request_data['password']
 
-        response = user_service.update_password(new_password, phone)
+        result = user_service.update_password(new_password, phone)
+        if result > 0:
+            response = auth_service.revoke_token()
 
-        auth_service.revoke_token()
-
-        return jsonify({"success": response}), 200
+            return response, 200
+        raise PhoneNotFoundException
     except PhoneNotFoundException:
-        return jsonify({'error': 'Telefone não existe'}), 400
+        return jsonify({
+            "error": "phoneNotFound",
+            "message": "Phone does exist"
+        }), 400
     except Exception as e:
-        response = str(e)
-        return jsonify(response), 400
+        return jsonify({
+            "error": "unknow",
+            "message": str(e)
+        }), 400
 
 
 @bp.route("/get_photos", methods=['GET'])

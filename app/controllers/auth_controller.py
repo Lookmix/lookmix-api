@@ -1,4 +1,4 @@
-from flask import json, Response, Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify
 from flask_jwt_extended import (
     jwt_required, 
     get_jwt_identity,
@@ -24,7 +24,10 @@ def login():
 
         return response, 200
     except BadCredentialsException:
-        return jsonify({"erro":"Dados de login inválidos"}), 401
+        return jsonify({
+            "message": "Bad credentials",
+            "error":"badCredencials"
+        }), 401
 
 
 @bp.route('/refresh', methods=['POST'])
@@ -56,11 +59,17 @@ def get_otp():
 
         if phone is not None:
             return auth_service.handle_otp(phone)
-        raise RequiredParamException("'phone' param is required")
+        raise RequiredParamException("parameter 'phone' is required")
     except FailToGenerateOTPException as e:
-        return jsonify({"error": str(e)}), 400
+        return jsonify({
+            "message": str(e),
+            "error": "failToGenerateOTP"
+        }), 400
     except RequiredParamException as e:
-        return jsonify({"error": str(e)}), 400
+        return jsonify({
+            "error": "requiredParam", 
+            "message": str(e)
+        }), 400
 
 
 @bp.route("/verify_otp", methods=['POST'])
