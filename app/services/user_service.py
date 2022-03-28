@@ -108,7 +108,7 @@ def update_password(password, phone):
 
             result = user_repository.update_password(encrypted_password, phone)
             
-            return dumps(result)
+            return result
         raise PhoneNotFoundException()
     except Exception as e:
         raise e
