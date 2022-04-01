@@ -12,8 +12,6 @@ from flask_jwt_extended import (
     create_access_token,
     create_refresh_token,
     decode_token, 
-    set_access_cookies,
-    set_refresh_cookies, 
     unset_jwt_cookies
 )
 from bson.json_util import loads
@@ -38,34 +36,24 @@ expires_access_token = timedelta(minutes=30)
 expires_refresh_token = timedelta(days=2)
 
 
-def attempt_login(request_data):
-    try:
-        phone = request_data["phone"]
+def validate_credentials(request_data):
+    validate_login_data_model(request_data)
 
-        request_password = request_data["password"]
+    phone = request_data.get("phone")
+    request_password = request_data.get("password")
 
-        user = user_repository.get_by_phone(phone)
+    user = user_repository.get_by_phone(phone)
 
-        user_password = user["password"]
+    if user is not None:
+        db_password = user.get("password")
 
-        user_id = user["_id"]
+        is_password_valid = check_password_hash(db_password, request_password)
 
-        is_password_valid = check_password_hash(user_password, request_password)
+        if is_password_valid:
+            user_id = user.get("_id")
 
-        if user and is_password_valid:
-            tokens = create_tokens(user_id)
-
-            access = tokens.get("access_token")
-            refresh = tokens.get("refresh_token")
-            auth_metadata = tokens.get("data")
-
-            save_auth_metadata(access)
-            save_auth_metadata(refresh)
-
-            return auth_metadata
-        raise BadCredentialsException()
-    except:
-        raise BadCredentialsException()
+            return user_id
+    raise BadCredentialsException()
 
 
 def create_tokens(user_id):
@@ -256,3 +244,5 @@ def validate_otp_data_model(otp_data_model):
     validation.assert_valid_schema(otp_data_model, "otp.json")
 
 
+def validate_login_data_model(login_data_model):
+     validation.assert_valid_schema(login_data_model, "login.json")
