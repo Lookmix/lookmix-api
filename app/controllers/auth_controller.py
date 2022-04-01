@@ -20,7 +20,7 @@ bp = Blueprint('auth', __name__, url_prefix='/auth')
 @bp.route('/login', methods=['POST'])
 def login():
     try:
-        user_id = auth_service.attempt_login(request.json)
+        user_id = auth_service.validate_credentials(request.json)
 
         tokens = auth_service.create_tokens(user_id)
 
