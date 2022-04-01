@@ -20,9 +20,31 @@ bp = Blueprint('auth', __name__, url_prefix='/auth')
 @bp.route('/login', methods=['POST'])
 def login():
     try:
-        response = auth_service.attempt_login(request.json)
+        user_id = auth_service.attempt_login(request.json)
+
+        tokens = auth_service.create_tokens(user_id)
+
+        access = tokens.get("access_token")
+        refresh = tokens.get("refresh_token")
+        auth_metadata = tokens.get("data")
+
+        response = {}
+        response["auth"] = auth_metadata
+
+        auth_service.save_auth_metadata(access)
+        auth_service.save_auth_metadata(refresh)
+
+        response = jsonify(response)
+
+        set_access_cookies(response, access)
+        set_refresh_cookies(response, refresh)
 
         return response, 200
+    except ValidationError as error:
+        return jsonify({
+            "message": error.message,
+            "error": "validationError"
+        }), 400
     except BadCredentialsException:
         return jsonify({
             "message": "Bad credentials",
@@ -125,3 +147,9 @@ def verify_otp():
             "error": "expired",
             "message": "Token has been expirated"
         }), 400
+
+
+@bp.route("/verify_access", methods=['GET'])
+@jwt_required()
+def verify_access():
+    return { "valid": True }, 200
