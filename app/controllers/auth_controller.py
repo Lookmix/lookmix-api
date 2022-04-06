@@ -62,13 +62,9 @@ def refresh():
     return response, 201
 
 
-@bp.route('/token', methods=['PUT'])
+@bp.route('/logout', methods=['DELETE'])
 @jwt_required()
-def logout(): # token_id):
-    # current_user_id = get_jwt_identity()
-
-    # auth_service.revoke_old_refresh_token(current_user_id)
-
+def logout():
     response = auth_service.revoke_token() # token_id)
 
     return response, 200
