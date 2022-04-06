@@ -48,7 +48,7 @@ def login():
     except BadCredentialsException:
         return jsonify({
             "message": "Bad credentials",
-            "error":"badCredencials"
+            "error":"badCredentials"
         }), 401
 
 
