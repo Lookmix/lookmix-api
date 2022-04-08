@@ -22,22 +22,7 @@ def login():
     try:
         user_id = auth_service.validate_credentials(request.json)
 
-        tokens = auth_service.create_tokens(user_id)
-
-        access = tokens.get("access_token")
-        refresh = tokens.get("refresh_token")
-        auth_metadata = tokens.get("data")
-
-        response = {}
-        response["auth"] = auth_metadata
-
-        auth_service.save_auth_metadata(access)
-        auth_service.save_auth_metadata(refresh)
-
-        response = jsonify(response)
-
-        set_access_cookies(response, access)
-        set_refresh_cookies(response, refresh)
+        response = auth_service.handle_tokens(user_id)
 
         return response, 200
     except ValidationError as error:
@@ -55,11 +40,11 @@ def login():
 @bp.route('/refresh', methods=['POST'])
 @jwt_required(refresh=True)
 def refresh():
-    current_user_id = get_jwt_identity()
+    user_id = get_jwt_identity()
 
-    response = auth_service.refresh_token(current_user_id)
+    response = auth_service.handle_tokens(user_id)
 
-    return response, 201
+    return response, 200
 
 
 @bp.route('/logout', methods=['DELETE'])
