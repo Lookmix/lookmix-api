@@ -12,7 +12,9 @@ from flask_jwt_extended import (
     create_access_token,
     create_refresh_token,
     decode_token, 
-    unset_jwt_cookies
+    unset_jwt_cookies,
+    set_access_cookies,
+    set_refresh_cookies, 
 )
 from bson.json_util import loads
 from app import app #, jwt
@@ -82,19 +84,25 @@ def create_tokens(user_id):
     }
 
 
-def refresh_token(user_id):
-    # revoke_old_refresh_token(user_id)
-
+def handle_tokens(user_id):
     tokens = create_tokens(user_id)
 
     access = tokens.get("access_token")
     refresh = tokens.get("refresh_token")
     auth_metadata = tokens.get("data")
 
+    response = {}
+    response["auth"] = auth_metadata
+
     save_auth_metadata(access)
     save_auth_metadata(refresh)
 
-    return auth_metadata
+    response = jsonify(response)
+
+    set_access_cookies(response, access)
+    set_refresh_cookies(response, refresh)
+
+    return response
 
 
 # Remove from cookie
