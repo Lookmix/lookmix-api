@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, request
 from pymongo import MongoClient
 from flask_jwt_extended import JWTManager
 
@@ -28,8 +28,14 @@ mock_jwt_manager = JWTManager(flask_mock_api)
 @app.after_request
 @flask_mock_api.after_request
 def set_headers(response):
-  origin = app.config.get("ALLOWED_ORIGIN")
-  response.headers["Access-Control-Allow-Origin"] = origin
+  allowed_origins = app.config.get("ALLOWED_ORIGINS")
+  allowed_origin = allowed_origins[0]
+  host_url = request.host_url[:-1]
+
+  if host_url in allowed_origins:
+    allowed_origin = host_url
+
+  response.headers["Access-Control-Allow-Origin"] = allowed_origin
   response.headers["Access-Control-Allow-Headers"] = "content-type"
   response.headers["Access-Control-Allow-Credentials"] = "true"
   return response
