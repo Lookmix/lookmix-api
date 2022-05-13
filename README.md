@@ -1,5 +1,5 @@
 CREATE VIRTUAL ENV
-python3 -m venv venv
+virtualenv --python=/usr/bin/python3.6 venv
 
 ACTIVATE VIRTUAL ENV
 . venv/bin/activate
