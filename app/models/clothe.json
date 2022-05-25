@@ -1,0 +1,40 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "$id": "clothe",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string"
+    },
+    "closet": {
+      "type": "string"
+    },
+    "occasions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "seasons": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "image": {
+      "type": "object"
+    }
+  },
+  "required": [
+    "id",
+    "category",
+    "closet",
+    "occasions",
+    "seasons",
+    "image"
+  ],
+  "additionalProperties": false
+}
