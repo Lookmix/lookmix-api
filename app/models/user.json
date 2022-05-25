@@ -19,7 +19,14 @@
         },
         "timestamp": {"type": "string"},
         "name": {"type": "string"},
-        "email": {"type": "string"}
+        "lastName": { "type": "string" },
+        "email": {"type": "string"},
+        "closet": {
+            "type": "array",
+            "items": {
+                "$ref": "clothe.json"
+            }
+        }
     },
     "required": [
         "password",
