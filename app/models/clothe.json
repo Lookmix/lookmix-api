@@ -25,7 +25,7 @@
       }
     },
     "image": {
-      "type": "object"
+      "type": "string"
     }
   },
   "required": [
