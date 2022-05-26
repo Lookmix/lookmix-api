@@ -1,7 +1,7 @@
 import flickr_api
 import json
 from flask import jsonify
-from app.services import flickr_service
+from app.services import image_service
 from app.repositories import user_repository
 from app.utils import validation
 from app.exceptions.error import DuplicatedPhoneException, PhoneNotFoundException
@@ -59,7 +59,7 @@ def get_photos():
 
 
 def get_user_flickr():
-    flickr_service.set_auth_handler()
+    image_service.set_auth_handler()
     
     return flickr_api.test.login()
 
