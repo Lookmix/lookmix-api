@@ -14,13 +14,11 @@ db = client['db']
 
 from app.controllers import auth_controller
 from app.controllers import user_controller
-from app.controllers import file_controller
 from app.controllers import clothe_controller
 from app.mock import mockapi
 
 app.register_blueprint(auth_controller.bp)
 app.register_blueprint(user_controller.bp)
-app.register_blueprint(file_controller.bp)
 app.register_blueprint(clothe_controller.bp)
 
 flask_mock_api = mockapi.app
