@@ -1,7 +1,13 @@
 import json
 from flask import Blueprint, request 
-from flask_jwt_extended import jwt_required
+from flask_jwt_extended import (
+    jwt_required, 
+    get_jwt_identity
+)
 from app.services import image_service
+from app.services import user_service
+from app.services import closet_service
+from app.services import clothe_service
 
 bp = Blueprint("clothe", __name__, url_prefix="/clothe")
 
@@ -18,21 +24,30 @@ def save_clothes():
         files = r.files
         files_dict = files.to_dict()
         responses = []
+
+        user_id = get_jwt_identity()
+        user = user_service.get_by_id(user_id)
+        closet_id = user.get("closet_id", None)
+        if not closet_id:
+            closet = image_service.create_closet()
+            closet_id = closet.get("id")
+            closet_service.create(closet_id, user_id)
+
         for index, key in enumerate(files_dict):
             content_type = files_dict[key].content_type
-
             if IMAGE_TYPE in content_type:
+                IMAGE_KEY = f"{index}{FORMDATA_IMAGE}"
+                image = files_dict[IMAGE_KEY]
+                image_response = image_service.upload(image, closet_id)
+
                 DOCUMENT_KEY = f"{index}{FORMDATA_DOCUMENT}"
                 document = files_dict[DOCUMENT_KEY]
                 document_json = json.loads(document.read())
-                id = document_json.get("id")
-
-                IMAGE_KEY = f"{index}{FORMDATA_IMAGE}"
-                image = files_dict[IMAGE_KEY]
-
-                response = image_service.upload(image, id)
-                responses.append(response)
-        return { "responses": responses }, 201
+                document_json["image"] = image_response
+                clothe_id = clothe_service.create(document_json)
+                closet_service.add_clothe_to_closet(closet_id, clothe_id)
+                responses.append(image_response)
+        return { "images": responses }, 200
     except Exception as e:
         return json.dumps({
             "message": "Erro ao tentar salvar imagem",
