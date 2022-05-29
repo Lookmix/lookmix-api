@@ -6,19 +6,20 @@
     "id": {
       "type": "string"
     },
-    "category": {
+    "category_id": {
       "type": "string"
     },
     "closet": {
-      "type": "string"
+      "type": "string",
+      "enum": ["casual", "social"]
     },
-    "occasions": {
+    "occasion_ids": {
       "type": "array",
       "items": {
         "type": "string"
       }
     },
-    "seasons": {
+    "season_ids": {
       "type": "array",
       "items": {
         "type": "string"
@@ -30,10 +31,10 @@
   },
   "required": [
     "id",
-    "category",
+    "category_id",
     "closet",
-    "occasions",
-    "seasons",
+    "occasion_ids",
+    "season_ids",
     "image"
   ],
   "additionalProperties": false

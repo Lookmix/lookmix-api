@@ -33,11 +33,8 @@
     "email": {
       "type": "string"
     },
-    "closet": {
-      "type": "array",
-      "items": {
-        "$ref": "clothe.json"
-      }
+    "closet_id": {
+      "type": "string"
     }
   },
   "required": [
