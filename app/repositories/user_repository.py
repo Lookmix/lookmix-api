@@ -1,11 +1,21 @@
 from app import db
+from bson.objectid import ObjectId
 
 USERS_DOC = "users"
+ID_KEY = "_id"
 
 def save(user):
     id = db[USERS_DOC].insert_one(user).inserted_id
 
     return id
+
+
+def get_by_id(id):
+    user = db[USERS_DOC].find_one({ID_KEY: ObjectId(id)})
+
+    if user:
+        user[ID_KEY] = str(user[ID_KEY])
+    return user    
 
 
 def get_by_username(username):
