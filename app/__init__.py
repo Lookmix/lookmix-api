@@ -1,5 +1,4 @@
 from flask import Flask, request
-from pymongo import MongoClient
 from flask_jwt_extended import JWTManager
 
 app = Flask(__name__)
@@ -8,9 +7,9 @@ app.config.from_envvar('ENVVAR_FILE')
 # print(f" * HEALTH-CHECK-ENV-VAR: {app.config.get('HEALTH')}")
 jwt_manager = JWTManager(app)
 
-mongodb_url = app.config.get("MONGODB_HOST")
-client = MongoClient(mongodb_url)
-db = client['db']
+from app.services.integrations import mongodb
+
+db = mongodb.db_client
 
 from app.controllers import auth_controller
 from app.controllers import user_controller
