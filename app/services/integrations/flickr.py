@@ -103,6 +103,17 @@ def get_user_id():
 
 
 def set_auth_handler():
-    # TODO: move to .env file
-    flickr_api.set_keys(api_key="9259843e2fab63be76733f4a8593aa7f", api_secret="913f8a2084e9a985")
-    flickr_api.set_auth_handler("app/.auth.txt")
+    api_key = app.config.get("FLICKR_API_KEY")
+    api_secret = app.config.get("FLICKR_API_SECRET")
+    access_token_key = app.config.get("FLICKR_ACCESS_KEY")
+    access_token_secret = app.config.get("FLICK_ACCESS_SECRET")
+
+    flickr_api.set_keys(
+        api_key=api_key, 
+        api_secret=api_secret
+    )
+    auth_handler = flickr_api.auth.AuthHandler(
+        access_token_key=access_token_key,
+        access_token_secret=access_token_secret
+    )
+    flickr_api.set_auth_handler(auth_handler)
