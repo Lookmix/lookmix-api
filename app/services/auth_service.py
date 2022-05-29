@@ -116,14 +116,12 @@ def revoke_token(): # token_id):
 
 
 def save_auth_metadata(encoded_token, is_reset_password_token=False, is_new_user_token=False):
-    identity_claim = app.config["JWT_IDENTITY_CLAIM"]
     decoded_token = decode_token(encoded_token)
 
     metadata = {
         "jti": decoded_token["jti"],
         "timestamp": datetime.now(),
         "token_type": decoded_token["type"],
-        "id": decoded_token[identity_claim],
         "is_reset_password_token": is_reset_password_token,
         "is_new_user_token": is_new_user_token
         # "expires": datetime.datetime.fromtimestamp(decoded_token["exp"]),
