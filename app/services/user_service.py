@@ -28,11 +28,23 @@ def save(user):
         raise e
 
 
+def update_user(user):
+    pass
+
+
+def get_by_id(id):
+    user = user_repository.get_by_id(id)
+
+    if user:
+        return user
+    return None
+
+
 def get_all():
     try:
-        usuarios = user_repository.get_all()
+        users = user_repository.get_all()
 
-        return dumps(usuarios)
+        return dumps(users)
     except Exception as e:
         raise e
 
