@@ -1,7 +1,8 @@
 import json
-import flickr_api
-from app.utils import image_converter
 import uuid
+import flickr_api
+from app import app
+from app.utils import image_converter
 
 
 def upload(file, closet_id):
