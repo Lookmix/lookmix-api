@@ -3,12 +3,13 @@ from app.repositories import clothe_repository
 
 
 def create(data):
-  try:
-    validation.assert_valid_schema(data, "clothe.json")
-    closet_id = clothe_repository.save(data)
-    return closet_id
-  except Exception as e:
-    raise e
+	try:
+		del data["id"]
+		validation.assert_valid_schema(data, "clothe.json")
+		closet_id = clothe_repository.save(data)
+		return closet_id
+	except Exception as e:
+		raise e
 
 
 def get_clothe_by_id(id):
