@@ -30,7 +30,6 @@
     }
   },
   "required": [
-    "id",
     "category_id",
     "closet",
     "occasion_ids",
