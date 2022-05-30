@@ -3,8 +3,6 @@ from app.repositories import clothe_repository
 
 
 def create(data):
-  print("creating clothe")
-  print(data)
   try:
     validation.assert_valid_schema(data, "clothe.json")
     closet_id = clothe_repository.save(data)
