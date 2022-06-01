@@ -24,3 +24,15 @@ class AttemptsExceedException(Exception):
 
 class RequiredParamException(Exception):
    pass
+
+
+class FailToInitCategories(Exception):
+   pass
+
+
+class FailToInitOccasions(Exception):
+   pass
+
+
+class FailToInitSeasons(Exception):
+   pass
