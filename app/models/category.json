@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "$id": "category",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "details": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "name",
+    "details"
+  ],
+  "additionalProperties": false
+}
