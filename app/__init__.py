@@ -2,9 +2,9 @@ from flask import Flask, request
 from flask_jwt_extended import JWTManager
 
 app = Flask(__name__)
-app.config.from_object('app.config')
-app.config.from_envvar('ENVVAR_FILE')
-# print(f" * HEALTH-CHECK-ENV-VAR: {app.config.get('HEALTH')}")
+app.config.from_object("app.config")
+app.config.from_envvar("ENVVAR_FILE")
+
 jwt_manager = JWTManager(app)
 
 from app.services.integrations import mongodb
