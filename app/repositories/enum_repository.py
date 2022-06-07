@@ -1,6 +1,6 @@
 from app import db
-from exceptions.error import FailToInitOccasions
-from exceptions.error import FailToInitSeasons
+from app.exceptions.error import FailToInitOccasions
+from app.exceptions.error import FailToInitSeasons
 
 
 ENUM_DOC = "enum"
@@ -10,6 +10,7 @@ ID_KEY = "_id"
 SET_KEY = "$set"
 PUSH_KEY = "$push"
 EACH_KEY = "$each"
+ID_ENUM = "9b05ef6d-18e8-49d7-9a94-8e1f59fbb2f8"
 
 def save(enum):
     id = db[ENUM_DOC].insert_one(enum).inserted_id
@@ -18,41 +19,57 @@ def save(enum):
 
 def get_occasions():
     occasions = db[ENUM_DOC].find_one(
-        { },
+        { ID_KEY: ID_ENUM },
         { OCCASIONS_KEY: 1 }
     )
-    return occasions
+    if occasions and len(occasions) > 0:
+        return occasions
+    init_occasions()
+    return get_occasions()
 
 
 def get_occasions_count():
-    occasions = db[ENUM_DOC].find_one(
-        { },
+    result = db[ENUM_DOC].find_one(
+        { ID_KEY: ID_ENUM },
         { OCCASIONS_KEY: 1 }
     )
-    count = len(occasions)
-    return count
+    occasions = None
+    if result:
+        occasions = result.get(OCCASIONS_KEY, None)
+    if occasions:
+        count = len(occasions)
+        return count
+    return 0
 
 
 def get_seasons():
-	seasons = db[ENUM_DOC].find_one(
-        { },
+    seasons = db[ENUM_DOC].find_one(
+        { ID_KEY: ID_ENUM },
         { SEASONS_KEY: 1 }
     )
-	return seasons
+    if seasons and len(seasons) > 0:
+        return seasons
+    init_seasons()
+    return get_seasons()
 
 
 def get_seasons_count():
-    seasons = db[ENUM_DOC].find_one(
-        { },
+    result = db[ENUM_DOC].find_one(
+        { ID_KEY: ID_ENUM },
         { SEASONS_KEY: 1 }
     )
-    count = len(seasons)
-    return count
+    seasons = None
+    if result:
+        seasons = result.get(SEASONS_KEY, None)
+    if seasons:
+        count = len(seasons)
+        return count
+    return 0
 
 
 def add_occasion(occasion):
     result = db[ENUM_DOC].update_one(
-        { },
+        { ID_KEY: ID_ENUM },
         { PUSH_KEY: { OCCASIONS_KEY: occasion } }
     )
     return result.modified_count
@@ -60,15 +77,15 @@ def add_occasion(occasion):
 
 def save_many_occasions(occasions):
     result = db[ENUM_DOC].update_one(
-        { },
-        { PUSH_KEY: { OCCASIONS_KEY: { EACH_KEY: occasions } } }
+        { ID_KEY: ID_ENUM },
+        { PUSH_KEY: { OCCASIONS_KEY: { EACH_KEY: occasions } } }, upsert=True
     )
-    return result.modified_count
+    return result.matched_count
 
 
 def add_season(season):
     result = db[ENUM_DOC].update_one(
-        { },
+        { ID_KEY: ID_ENUM },
         { PUSH_KEY: { SEASONS_KEY: season } }
     )
     return result.modified_count
@@ -76,14 +93,14 @@ def add_season(season):
 
 def save_many_seasons(seasons):
     result = db[ENUM_DOC].update_one(
-        { },
-        { PUSH_KEY: { SEASONS_KEY: { EACH_KEY: seasons } } }
+        { ID_KEY: ID_ENUM },
+        { PUSH_KEY: { SEASONS_KEY: { EACH_KEY: seasons } } }, upsert=True
     )
-    return result.modified_count
+    return result.matched_count
 
 
-def __init_occassions():
-    print("Init occasions")
+def init_occasions():
+    print("INIT OCCASIONS")
     occasions = [
 		"Básico/comum",
 		"Dia",
@@ -98,31 +115,23 @@ def __init_occassions():
 		"Atividade física",
 		"Natureza"
 	]
+    save_many_occasions(occasions)
     count = get_occasions_count()
-    result = []
-    if count < 1:
-        result = save_many_occasions(occasions)
-    if len(result) == len(occasions):
-        return result
-    raise FailToInitOccasions()
+    if count != len(occasions):
+        raise FailToInitOccasions()
 
 
-def __init_seasons():
-    print("Init seasons")
+def init_seasons():
+    print("INIT SEASONS")
     seasons = [
-		"primavera",
-		"verão",
-		"outono",
-		"inverno"
+		"Primavera",
+		"Verão",
+		"Outono",
+		"Inverno"
 	]
-    count = get_seasons()
-    result = []
-    if count < 1:
-        result = save_many_seasons(seasons)
-    if len(result) == len(seasons):
-        return result
-    raise FailToInitSeasons()
+    save_many_seasons(seasons)
+    count = get_seasons_count()
+    if count != len(seasons):
+        raise FailToInitSeasons()
 
 
-__init_occassions()
-__init_seasons()
