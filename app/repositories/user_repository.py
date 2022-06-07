@@ -1,7 +1,7 @@
 from app import db
 from bson.objectid import ObjectId
 
-USERS_DOC = "users"
+USERS_DOC = "user"
 ID_KEY = "_id"
 
 def save(user):
