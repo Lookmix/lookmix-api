@@ -1,41 +1,41 @@
 class BadCredentialsException(Exception):
-   pass
+    pass
 
 
 class DuplicatedUsernameException(Exception):
-   pass
+    pass
 
 
 class DuplicatedPhoneException(Exception):
-   pass
+    pass
 
 
 class PhoneNotFoundException(Exception):
-   pass
+    pass
 
 
 class FailToGenerateOTPException(Exception):
-   pass
+    pass
 
 
 class AttemptsExceedException(Exception):
-   pass
+    pass
 
 
 class RequiredParamException(Exception):
-   pass
+    pass
 
 
 class FailToInitCategories(Exception):
-   pass
+    pass
 
 
 class FailToInitOccasions(Exception):
-   pass
+    pass
 
 
 class FailToInitSeasons(Exception):
-   pass
+    pass
 
 
 class DuplicatedCategoryException(Exception):
