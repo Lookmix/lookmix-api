@@ -36,3 +36,11 @@ class FailToInitOccasions(Exception):
 
 class FailToInitSeasons(Exception):
    pass
+
+
+class DuplicatedCategoryException(Exception):
+    pass
+
+
+class DuplicatedOccasionException(Exception):
+    pass
