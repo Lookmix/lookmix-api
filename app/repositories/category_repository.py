@@ -1,10 +1,11 @@
 from app import db
 from bson.objectid import ObjectId
-from exceptions.error import FailToInitCategories
+from app.exceptions.error import FailToInitCategories
 
 
 CATEGORY_DOC = "category"
 ID_KEY = "_id"
+NAME_KEY = "name"
 SET_KEY = "$set"
 PUSH_KEY ="$push"
 
@@ -27,16 +28,26 @@ def get_by_id(id):
     return category
 
 
+def get_by_name(name):
+    category = db[CATEGORY_DOC].find_one(
+		{ NAME_KEY: name }
+	)
+    if category:
+        category[ID_KEY] = str(category[ID_KEY])
+    return category
+
+
 def get_all():
-    categories = db[CATEGORY_DOC].find(
-        { },
-        { CATEGORY_DOC: 1 }
-    )
-    return categories
+	categories = list(db[CATEGORY_DOC].find({}))
+	categories_lenght = len(categories)
+	if categories_lenght > 0:
+		return categories
+	init_categories()
+	return get_all()
 
 
 def get_categories_count():
-	count = db[CATEGORY_DOC].count_documents()
+	count = db[CATEGORY_DOC].count_documents({})
 	return count
 
 
@@ -51,9 +62,9 @@ def delete(id):
     pass
 
 
-def __init_categories():
-    print("Init categories")
-    categories = [
+def init_categories():
+	print("Init categories")
+	categories = [
 		{
 			"name": "Roupas de cima",
 			"description": "Camisas, camisetas, polos, blusas ou regatas",
@@ -87,17 +98,11 @@ def __init_categories():
 			"description": "Bolsas, pulseiras, relógios, anéis ou luvas"
 		},
 		{
-            "name": "Cintura",
-            "description": "Cintos ou laços"
-        }
+			"name": "Cintura",
+			"description": "Cintos ou laços"
+		}
 	]
-    count = get_categories_count()
-    result = []
-    if count < 1:
-        result = save_many(categories)
-    if len(result) == len(categories):
-        return result
-    raise FailToInitCategories()
+	result = save_many(categories)
+	if len(result) != len(categories):
+		raise FailToInitCategories()
 
-
-__init_categories()
