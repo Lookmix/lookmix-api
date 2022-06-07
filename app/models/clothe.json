@@ -13,13 +13,13 @@
       "type": "string",
       "enum": ["casual", "social"]
     },
-    "occasion_ids": {
+    "occasions": {
       "type": "array",
       "items": {
         "type": "string"
       }
     },
-    "season_ids": {
+    "seasons": {
       "type": "array",
       "items": {
         "type": "string"
@@ -32,8 +32,8 @@
   "required": [
     "category_id",
     "closet",
-    "occasion_ids",
-    "season_ids",
+    "occasions",
+    "seasons",
     "image"
   ],
   "additionalProperties": false
