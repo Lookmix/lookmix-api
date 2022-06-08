@@ -7,8 +7,8 @@ def create(data, closet_id):
         del data["id"]
         data["closet_id"] = closet_id
         validation.assert_valid_schema(data, "clothe.json")
-        closet_id = clothe_repository.save(data)
-        return closet_id
+        clothe_id = clothe_repository.save(data)
+        return clothe_id
     except Exception as e:
         raise e
 
