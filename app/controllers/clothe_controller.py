@@ -31,8 +31,7 @@ def save_clothes():
         if closet:
             closet_id = closet.get("_id")
         if not closet_id:
-            closet = image_service.create_closet()
-            closet_id = closet.get("id")
+            closet_id = image_service.create_closet()
             closet_service.create(closet_id, user_id)
 
         for index, key in enumerate(files_dict):
