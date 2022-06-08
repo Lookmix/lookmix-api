@@ -3,7 +3,7 @@
   "$id": "category",
   "type": "object",
   "properties": {
-    "id": {
+    "_id": {
       "type": "string"
     },
     "name": {
