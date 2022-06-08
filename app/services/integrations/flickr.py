@@ -45,7 +45,8 @@ def create_closet():
         del response.__dict__["primary"]
         data = json.loads(json.dumps(response.__dict__))
         print(data)
-        return data
+        id = data.get("id")
+        return id
     except Exception as e:
         raise e
 
