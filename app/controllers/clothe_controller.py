@@ -28,6 +28,8 @@ def save_clothes():
         user_id = get_jwt_identity()
         closet = closet_service.get_closet_by_user_id(user_id)
         closet_id = 0
+        if closet:
+            closet_id = closet.get("_id")
         if not closet_id:
             closet = image_service.create_closet()
             closet_id = closet.get("id")
