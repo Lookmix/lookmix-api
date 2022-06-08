@@ -68,3 +68,27 @@ def get_clothe_by_id():
             "message": "Erro ao tentar recuperar imagem",
             "error": e.args[0]
         }), 400
+
+
+@bp.route("/find_by_closet_id", methods=["GET"])
+@jwt_required()
+def get_clothes_by_closet_id():
+    try:
+        user_id = get_jwt_identity()
+        closet = closet_service.get_closet_by_user_id(user_id)
+        closet_id = 0
+
+        if closet:
+            closet_id = closet.get("_id")
+        if not closet_id:
+            closet_id = image_service.create_closet()
+            closet_service.create(closet_id, user_id)
+
+        response = clothe_service.get_clothes_by_closet_id(closet_id)
+
+        return {"clothes": response}, 200
+    except Exception as e:
+        return json.dumps({
+            "message": "Erro ao tentar recuperar peças",
+            "error": e.args[0]
+        }), 400
