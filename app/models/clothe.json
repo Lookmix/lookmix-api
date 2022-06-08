@@ -3,7 +3,7 @@
   "$id": "clothe",
   "type": "object",
   "properties": {
-    "id": {
+    "_id": {
       "type": "string"
     },
     "category_id": {
