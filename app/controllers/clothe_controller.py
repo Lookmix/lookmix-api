@@ -34,25 +34,27 @@ def save_clothes():
             closet_id = image_service.create_closet()
             closet_service.create(closet_id, user_id)
 
+        count = 0
         for index, key in enumerate(files_dict):
             content_type = files_dict[key].content_type
             if IMAGE_TYPE in content_type:
-                IMAGE_KEY = f"{index}{FORMDATA_IMAGE}"
+                IMAGE_KEY = f"{count}{FORMDATA_IMAGE}"
                 image = files_dict[IMAGE_KEY]
                 image_response = image_service.upload(image, closet_id)
-
-                DOCUMENT_KEY = f"{index}{FORMDATA_DOCUMENT}"
+                DOCUMENT_KEY = f"{count}{FORMDATA_DOCUMENT}"
                 document = files_dict[DOCUMENT_KEY]
                 document_json = json.loads(document.read())
                 document_json["image"] = image_response
                 clothe_service.create(document_json, closet_id)
                 responses.append(image_response)
-        return { "images": responses }, 200
+                count+=1
+        return { "images": responses }, 201
     except Exception as e:
         return json.dumps({
             "message": "Erro ao tentar salvar imagem",
             "error": e.args[0]
         }), 400
+
 
 @bp.route("/find_by_id", methods=["GET"])
 @jwt_required()
