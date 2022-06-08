@@ -5,8 +5,6 @@ CLOSET_DOC = "closet"
 ID_KEY = "_id"
 USER_ID = "user_id"
 SET_KEY = "$set"
-PUSH_KEY ="$push"
-CLOTHE_IDS = "clothe_ids"
 
 def save(closet):
     id = db[CLOSET_DOC].insert_one(closet).inserted_id
@@ -33,11 +31,3 @@ def update(id, data):
         { SET_KEY: data }, upsert=False
     )
 
-
-def add_clothe_id(closet_id, clothe_id):
-    result = db[CLOSET_DOC].update_one(
-        { ID_KEY: closet_id },
-        { PUSH_KEY: { CLOTHE_IDS: clothe_id } }
-    )
-    print(result.modified_count)
-    return result.modified_count
