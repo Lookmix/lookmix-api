@@ -34,7 +34,8 @@
   },
   "required": [
     "category_id",
-    "closet",
+    "closet_id",
+    "type",
     "occasions",
     "seasons",
     "image"
