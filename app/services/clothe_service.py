@@ -2,7 +2,7 @@ from app.utils import validation
 from app.repositories import clothe_repository
 
 
-def create(data):
+def create(data, closet_id):
     try:
         del data["id"]
         validation.assert_valid_schema(data, "clothe.json")
