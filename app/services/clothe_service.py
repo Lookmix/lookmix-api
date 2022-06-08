@@ -29,3 +29,11 @@ def get_clothe_by_user_id(user_id):
         return clothe
     except Exception as e:
         raise e
+
+
+def get_clothes_by_closet_id(id):
+    try:
+        clothes = clothe_repository.get_clothes_by_closet_id(id)
+        return clothes
+    except Exception as e:
+        raise e
