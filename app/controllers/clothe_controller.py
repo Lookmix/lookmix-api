@@ -45,8 +45,7 @@ def save_clothes():
                 document = files_dict[DOCUMENT_KEY]
                 document_json = json.loads(document.read())
                 document_json["image"] = image_response
-                clothe_id = clothe_service.create(document_json)
-                closet_service.add_clothe_to_closet(closet_id, clothe_id)
+                clothe_service.create(document_json, closet_id)
                 responses.append(image_response)
         return { "images": responses }, 200
     except Exception as e:
