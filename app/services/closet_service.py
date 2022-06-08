@@ -6,7 +6,6 @@ def create(closet_id, user_id):
 	closet = {
 		"_id": closet_id,
 		"user_id": user_id,
-		"clothe_ids": []
 	}
 	validation.assert_valid_schema(closet, "closet.json")
 	closet_id = closet_repository.save(closet)
