@@ -12,7 +12,7 @@
     "category_id": {
       "type": "string"
     },
-    "closet": {
+    "type": {
       "type": "string",
       "enum": ["casual", "social"]
     },
