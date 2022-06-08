@@ -8,17 +8,10 @@
     },
     "user_id": {
       "type": "string"
-    },
-    "clothe_ids": {
-      "type": "array",
-      "items": {
-        "type": "string"
-      }
     }
   },
   "required": [
-    "user_id",
-    "clothe_ids"
+    "user_id"
   ],
   "additionalProperties": false
 }
