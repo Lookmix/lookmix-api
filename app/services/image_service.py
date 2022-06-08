@@ -11,8 +11,8 @@ def upload(file, closet_id):
 
 def create_closet():
     try:
-        closet = flickr.create_closet()
-        return closet
+        closet_id = flickr.create_closet()
+        return closet_id
     except Exception as e:
         raise e
 
