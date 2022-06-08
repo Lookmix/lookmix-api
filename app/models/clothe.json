@@ -6,6 +6,9 @@
     "_id": {
       "type": "string"
     },
+    "closet_id": {
+      "type": "string"
+    },
     "category_id": {
       "type": "string"
     },
