@@ -11,11 +11,15 @@
     },
     "details": {
       "type": "string"
+    },
+    "sort": {
+      "type": "number"
     }
   },
   "required": [
     "name",
-    "details"
+    "details",
+    "sort"
   ],
   "additionalProperties": false
 }
