@@ -37,3 +37,19 @@ def get_clothes_by_closet_id(id):
         return clothes
     except Exception as e:
         raise e
+
+
+def get_social_clothes_by_closet_id(id):
+    try:
+        clothes = clothe_repository.get_social_clothes_by_closet_id(id)
+        return clothes
+    except Exception as e:
+        raise e
+
+
+def get_casual_clothes_by_closet_id(id):
+    try:
+        clothes = clothe_repository.get_casual_clothes_by_closet_id(id)
+        return clothes
+    except Exception as e:
+        raise e

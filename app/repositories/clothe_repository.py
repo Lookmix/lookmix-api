@@ -3,10 +3,14 @@ from bson.objectid import ObjectId
 
 CLOTHE_DOC = "clothe"
 ID_KEY = "_id"
-USER_ID = "user_id"
-CLOSET_ID = "closet_id"
+USER_ID_KEY = "user_id"
+CLOSET_ID_KEY = "closet_id"
+TYPE_KEY = "type"
 SET_KEY = "$set"
-PUSH_KEY ="$push"
+PUSH_KEY = "$push"
+SOCIAL_TYPE = "social"
+CASUAL_TYPE = "casual"
+
 
 def save(clothe):
     id = db[CLOTHE_DOC].insert_one(clothe).inserted_id
@@ -21,7 +25,7 @@ def get_by_id(id):
 
 
 def get_by_user_id(id):
-	clothe = db[CLOTHE_DOC].find_one({USER_ID: ObjectId(id)})
+	clothe = db[CLOTHE_DOC].find_one({USER_ID_KEY: ObjectId(id)})
 	if clothe:
 		clothe[ID_KEY] = str(clothe[ID_KEY])
 	return clothe
@@ -35,7 +39,31 @@ def update(id, data):
 
 
 def get_clothes_by_closet_id(id):
-    clothes = db[CLOTHE_DOC].find({CLOSET_ID: id})
+    clothes = db[CLOTHE_DOC].find({CLOSET_ID_KEY: id})
+    clothes = list(clothes)
+    if clothes:
+        for c in clothes:
+            c[ID_KEY] = str(c[ID_KEY])
+    return clothes
+
+
+def get_social_clothes_by_closet_id(id):
+    clothes = db[CLOTHE_DOC].find({
+        CLOSET_ID_KEY: id,
+        TYPE_KEY: SOCIAL_TYPE
+    })
+    clothes = list(clothes)
+    if clothes:
+        for c in clothes:
+            c[ID_KEY] = str(c[ID_KEY])
+    return clothes
+
+
+def get_casual_clothes_by_closet_id(id):
+    clothes = db[CLOTHE_DOC].find({
+        CLOSET_ID_KEY: id,
+        TYPE_KEY: CASUAL_TYPE
+    })
     clothes = list(clothes)
     if clothes:
         for c in clothes:
