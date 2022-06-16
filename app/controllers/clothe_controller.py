@@ -76,6 +76,8 @@ def get_clothe_by_id():
 @jwt_required()
 def get_clothes_by_closet_id():
     try:
+        type = request.args.get("type")
+
         user_id = get_jwt_identity()
         closet = closet_service.get_closet_by_user_id(user_id)
         closet_id = 0
@@ -86,9 +88,14 @@ def get_clothes_by_closet_id():
             closet_id = image_service.create_closet()
             closet_service.create(closet_id, user_id)
 
-        response = clothe_service.get_clothes_by_closet_id(closet_id)
+        clothes_key = "clothes" 
+        response = { clothes_key: [] }
 
-        return {"clothes": response}, 200
+        if type == "casual":
+            response[clothes_key] = clothe_service.get_casual_clothes_by_closet_id(closet_id)
+            return response, 200
+        response[clothes_key] = clothe_service.get_social_clothes_by_closet_id(closet_id)
+        return response, 200
     except Exception as e:
         return json.dumps({
             "message": "Erro ao tentar recuperar peças",
