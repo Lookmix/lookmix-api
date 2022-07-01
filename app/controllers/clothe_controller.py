@@ -101,3 +101,17 @@ def get_clothes_by_closet_id():
             "message": "Erro ao tentar recuperar peças",
             "error": e.args[0]
         }), 400
+
+
+@bp.route("/delete", methods=["DELETE"])
+@jwt_required()
+def delete_clothes():
+    try:
+        request_data = request.json
+
+        return json.dumps(request_data), 200
+    except Exception as e:
+        return json.dumps({
+            "message": "Erro ao tentar remover peças",
+            "error": e.args[0]
+        }), 400
