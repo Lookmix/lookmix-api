@@ -94,8 +94,18 @@ def get_all():
     return []
 
 
-def delete():
-    return
+def delete(closet_id, photo_ids):
+    print("Deleting from flickr - flickr.py")
+    try:
+        if isinstance(photo_ids, list):
+            photo_ids = u",".join(photo_ids)
+
+        set_auth_handler()
+        photoset = flickr_api.Photoset(id=closet_id)
+        photoset.removePhotos(photo_ids=photo_ids)
+        # also delete photo
+    except Exception as e:
+        raise e
 
 
 def get_user_id():
