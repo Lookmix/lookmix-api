@@ -53,3 +53,12 @@ def get_casual_clothes_by_closet_id(id):
         return clothes
     except Exception as e:
         raise e
+
+
+def delete_clothe_by_ids(ids):
+    print("Deleting clothe from atlas - clothe_service")
+    try:
+        result = clothe_repository.delete_by_ids(ids)
+        return result.deleted_count
+    except Exception as e:
+        raise e
