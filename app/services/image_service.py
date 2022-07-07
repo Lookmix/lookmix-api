@@ -22,3 +22,11 @@ def get_image(id):
         return flickr.get_photo_by_id(id)
     except Exception as e:
         raise e
+
+
+def delete_images(closet_id, photo_ids):
+    print("Deleting image_service")
+    try:
+        flickr.delete(closet_id, photo_ids)
+    except Exception as e:
+        raise e
