@@ -108,8 +108,12 @@ def get_clothes_by_closet_id():
 def delete_clothes():
     try:
         request_data = request.json
-
-        return json.dumps(request_data), 200
+        clothe_ids = request_data["clothe_ids"]
+        image_ids = request_data["image_ids"]
+        closet_id = request_data["closet_id"]
+        result = clothe_service.delete_clothe_by_ids(clothe_ids)
+        image_service.delete_images(closet_id, image_ids)
+        return json.dumps({"deleted": result}), 200
     except Exception as e:
         return json.dumps({
             "message": "Erro ao tentar remover peças",
