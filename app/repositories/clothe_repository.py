@@ -8,6 +8,7 @@ CLOSET_ID_KEY = "closet_id"
 TYPE_KEY = "type"
 SET_KEY = "$set"
 PUSH_KEY = "$push"
+IN_KEY = "$in"
 SOCIAL_TYPE = "social"
 CASUAL_TYPE = "casual"
 
@@ -69,3 +70,12 @@ def get_casual_clothes_by_closet_id(id):
         for c in clothes:
             c[ID_KEY] = str(c[ID_KEY])
     return clothes
+
+
+def delete_by_ids (ids):
+    ids = [ObjectId(id) for id in ids]
+
+    result = db[CLOTHE_DOC].delete_many({
+        ID_KEY: { IN_KEY: ids }
+    })
+    return result
