@@ -137,3 +137,49 @@ def set_auth_handler():
         access_token_secret=access_token_secret
     )
     flickr_api.set_auth_handler(auth_handler)
+
+
+"""
+HOW TO GET TOKEN
+
+In the terminal, activate venv:
+
+>>> cd backend
+>>> . venv/bin/activate
+
+In the same terminal execute python shell:
+
+>>> python3
+
+Into the python shell, setup and get token:
+
+>>> import flickr_api
+>>> api_key = "replace_by_api_key"
+>>> api_secret = "replace_by_api_secret"
+>>> flickr_api.set_keys(api_key=api_key, api_secret=api_secret)
+>>> auth_handler = flickr_api.auth.AuthHandler()
+>>> url = auth_handler.get_authorization_url(perms="delete")
+>>> print(url)
+
+Copy the printed url, paste on browser and authorize
+
+- Url example: https://www.flickr.com/services/oauth/authorize?oauth_token=72157720849868113-8adbb68f9614d576&perms=delete
+
+Copy the value of oauth_verifier xml tag
+
+- oauth_verifier example: "e524c8b5b87cf59a"
+
+Back to running python shell and finish the setup:
+
+>>> auth_handler.set_verifier("replace_by_oauth_verifier")
+>>> flickr_api.set_auth_handler(auth_handler)
+>>> auth_handler.save(".auth.txt")
+
+On this step, the python shell can be closed
+
+Open auth.txt file
+
+Copy and paste the first line on FLICKR_ACCESS_KEY env var
+
+Copy and paste the second line on FLICKR_ACCESS_SECRET env var
+"""
