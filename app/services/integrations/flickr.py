@@ -118,7 +118,7 @@ def set_auth_handler():
     api_key = app.config.get("FLICKR_API_KEY")
     api_secret = app.config.get("FLICKR_API_SECRET")
     access_token_key = app.config.get("FLICKR_ACCESS_KEY")
-    access_token_secret = app.config.get("FLICK_ACCESS_SECRET")
+    access_token_secret = app.config.get("FLICKR_ACCESS_SECRET")
 
     flickr_api.set_keys(
         api_key=api_key, 
