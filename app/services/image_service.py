@@ -24,9 +24,9 @@ def get_image(id):
         raise e
 
 
-def delete_images(closet_id, photo_ids):
+def delete_images(photo_ids):
     print("Deleting image_service")
     try:
-        flickr.delete(closet_id, photo_ids)
+        flickr.delete(photo_ids)
     except Exception as e:
         raise e
