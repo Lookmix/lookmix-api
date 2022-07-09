@@ -110,9 +110,8 @@ def delete_clothes():
         request_data = request.json
         clothe_ids = request_data["clothe_ids"]
         image_ids = request_data["image_ids"]
-        closet_id = request_data["closet_id"]
         result = clothe_service.delete_clothe_by_ids(clothe_ids)
-        image_service.delete_images(closet_id, image_ids)
+        image_service.delete_images(image_ids)
         return json.dumps({"deleted": result}), 200
     except Exception as e:
         return json.dumps({
