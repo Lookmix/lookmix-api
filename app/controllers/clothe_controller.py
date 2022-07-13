@@ -51,7 +51,21 @@ def save_clothes():
         return { "images": responses }, 201
     except Exception as e:
         return json.dumps({
-            "message": "Erro ao tentar salvar imagem",
+            "message": "Erro ao tentar salvar peça",
+            "error": e.args[0]
+        }), 400
+
+
+@bp.route("/update", methods=["PUT"])
+@jwt_required()
+def update_clothes():
+    try:
+        responses = []
+
+        return { "clothes": responses }, 200
+    except Exception as e:
+        return json.dumps({
+            "message": "Erro ao tentar atualizar peça",
             "error": e.args[0]
         }), 400
 
