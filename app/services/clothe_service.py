@@ -55,6 +55,18 @@ def get_casual_clothes_by_closet_id(id):
         raise e
 
 
+def update_by_id(clothes):
+    try:
+        modified_count = 0
+        for clothe in clothes:
+            id = clothe["_id"]
+            result = clothe_repository.update_by_id(id, clothe)
+            modified_count += result.modified_count
+        return modified_count
+    except Exception as e:
+        raise e
+
+
 def delete_clothe_by_ids(ids):
     print("Deleting clothe from atlas - clothe_service")
     try:
