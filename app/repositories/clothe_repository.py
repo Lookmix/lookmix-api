@@ -32,11 +32,13 @@ def get_by_user_id(id):
 	return clothe
 
 
-def update(id, data):
-    db[CLOTHE_DOC].update_one(
-        { ID_KEY: id },
-        { SET_KEY: data }, upsert=False
+def update_by_id(id, data):
+    del data["_id"]
+    result = db[CLOTHE_DOC].update_one(
+        { ID_KEY: ObjectId(id) },
+        { SET_KEY: data }
     )
+    return result
 
 
 def get_clothes_by_closet_id(id):
