@@ -5,7 +5,6 @@ from flask_jwt_extended import (
     get_jwt_identity
 )
 from app.services import image_service
-from app.services import user_service
 from app.services import closet_service
 from app.services import clothe_service
 
@@ -60,9 +59,11 @@ def save_clothes():
 @jwt_required()
 def update_clothes():
     try:
-        responses = []
+        request_data = request.json
 
-        return { "clothes": responses }, 200
+        result = clothe_service.update_by_id(request_data)
+
+        return { "updated": result }, 200
     except Exception as e:
         return json.dumps({
             "message": "Erro ao tentar atualizar peça",
