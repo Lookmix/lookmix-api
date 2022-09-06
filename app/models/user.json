@@ -27,7 +27,7 @@
     "name": {
       "type": "string"
     },
-    "lastName": {
+    "last_name": {
       "type": "string"
     },
     "email": {
