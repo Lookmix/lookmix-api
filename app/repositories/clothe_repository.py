@@ -1,7 +1,8 @@
 from app import db
 from bson.objectid import ObjectId
 
-CLOTHE_DOC = "clothe"
+
+CLOTHE_COLLECTION = "clothe"
 ID_KEY = "_id"
 USER_ID_KEY = "user_id"
 CLOSET_ID_KEY = "closet_id"
@@ -12,21 +13,20 @@ IN_KEY = "$in"
 SOCIAL_TYPE = "social"
 CASUAL_TYPE = "casual"
 
-
 def save(clothe):
-    id = db[CLOTHE_DOC].insert_one(clothe).inserted_id
+    id = db[CLOTHE_COLLECTION].insert_one(clothe).inserted_id
     return id
 
 
 def get_by_id(id):
-    clothe = db[CLOTHE_DOC].find_one({ID_KEY: ObjectId(id)})
+    clothe = db[CLOTHE_COLLECTION].find_one({ID_KEY: ObjectId(id)})
     if clothe:
         clothe[ID_KEY] = str(clothe[ID_KEY])
     return clothe
 
 
 def get_by_user_id(id):
-	clothe = db[CLOTHE_DOC].find_one({USER_ID_KEY: ObjectId(id)})
+	clothe = db[CLOTHE_COLLECTION].find_one({USER_ID_KEY: ObjectId(id)})
 	if clothe:
 		clothe[ID_KEY] = str(clothe[ID_KEY])
 	return clothe
@@ -34,7 +34,7 @@ def get_by_user_id(id):
 
 def update_by_id(id, data):
     del data["_id"]
-    result = db[CLOTHE_DOC].update_one(
+    result = db[CLOTHE_COLLECTION].update_one(
         { ID_KEY: ObjectId(id) },
         { SET_KEY: data }
     )
@@ -42,7 +42,7 @@ def update_by_id(id, data):
 
 
 def get_clothes_by_closet_id(id):
-    clothes = db[CLOTHE_DOC].find({CLOSET_ID_KEY: id})
+    clothes = db[CLOTHE_COLLECTION].find({CLOSET_ID_KEY: id})
     clothes = list(clothes)
     if clothes:
         for c in clothes:
@@ -51,7 +51,7 @@ def get_clothes_by_closet_id(id):
 
 
 def get_social_clothes_by_closet_id(id):
-    clothes = db[CLOTHE_DOC].find({
+    clothes = db[CLOTHE_COLLECTION].find({
         CLOSET_ID_KEY: id,
         TYPE_KEY: SOCIAL_TYPE
     })
@@ -63,7 +63,7 @@ def get_social_clothes_by_closet_id(id):
 
 
 def get_casual_clothes_by_closet_id(id):
-    clothes = db[CLOTHE_DOC].find({
+    clothes = db[CLOTHE_COLLECTION].find({
         CLOSET_ID_KEY: id,
         TYPE_KEY: CASUAL_TYPE
     })
@@ -77,7 +77,7 @@ def get_casual_clothes_by_closet_id(id):
 def delete_by_ids (ids):
     ids = [ObjectId(id) for id in ids]
 
-    result = db[CLOTHE_DOC].delete_many({
+    result = db[CLOTHE_COLLECTION].delete_many({
         ID_KEY: { IN_KEY: ids }
     })
     return result
