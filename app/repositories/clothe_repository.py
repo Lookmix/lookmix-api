@@ -81,3 +81,22 @@ def delete_by_ids (ids):
         ID_KEY: { IN_KEY: ids }
     })
     return result
+
+
+def update_clothe_occasions():
+    occasions_result = db["occasion"].find({})
+    occasions = list(occasions_result)
+    occasions = { occasion["name"]: str(occasion["_id"]) for occasion in occasions }
+    clothes_result = db["clotheii"].find({})
+    clothes = list(clothes_result)
+    for clothe in clothes:
+        clothe_occasions = clothe["occasions"]
+        for index, clothe_occasion in enumerate(clothe_occasions):
+            clothe_occasion_lower = clothe_occasion.lower()
+            id = occasions[clothe_occasion_lower]
+            clothe["occasions"][index] = id
+        clothe_id = clothe["_id"]
+        db["clotheii"].update_one(
+            { ID_KEY: clothe_id },
+            { SET_KEY: { "occasions": clothe["occasions"] } }
+        )
