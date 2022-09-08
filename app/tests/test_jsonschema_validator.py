@@ -33,9 +33,33 @@ def validate_verify_token_schema():
 	schema = "verify_token_test.json"
 	assert_valid_schema(data, schema)
 
+def validate_daily_look_setup_schema():
+	data = {
+		"_id": "abc123",
+		"user_id": "f7gfd98gfd",
+		"days_of_week": [
+			{
+				"day_of_week": "domingo",
+				"occasions": [
+					{
+						"occasion_id": "4fd36",
+						"casual": [
+							"dia"
+						],
+						"social": [
+							"noite"
+						]
+					}
+				]
+			}
+		]
+	}
+	schema = "daily_look_setup_test.json"
+	assert_valid_schema(data, schema)
 
 try:
 	validate_verify_token_schema()
+	validate_daily_look_setup_schema()
 except ValidationError as e:
 	validator = e.validator
 	customErrorMessage = e.schema.get("errorMessage", {}).get(validator)

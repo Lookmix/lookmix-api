@@ -1,0 +1,71 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "$id": "daily_look_setup",
+  "type": "object",
+  "properties": {
+    "_id": {
+      "type": "string"
+    },
+    "user_id": {
+      "type": "string"
+    },
+    "days_of_week": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "day_of_week": {
+            "type": "string",
+            "enum": [
+              "domingo", 
+              "segunda", 
+              "terça", 
+              "quarta", 
+              "quinta", 
+              "sexta", 
+              "sábado"
+            ]
+          },
+          "occasions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "occasion_id": { 
+                  "type": "string" 
+                },
+                "casual": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "enum": ["dia", "noite"]
+                  },
+                  "maxItems": 2
+                },
+                "social": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "enum": ["dia", "noite"]
+                  },
+                  "maxItems": 2
+                }
+              }
+            }
+          }
+        },
+        "required": [
+          "day_of_week",
+          "occasions"
+        ],
+        "additionalProperties": false
+      },
+      "maxItems": 7
+    }
+  },
+  "required": [
+    "user_id",
+    "days_of_week"
+  ],
+  "additionalProperties": false
+}
