@@ -50,7 +50,13 @@
                   },
                   "maxItems": 2
                 }
-              }
+              },
+              "required": [
+                "occasion_id",
+                "casual",
+                "social"
+              ],
+              "additionalProperties": false
             }
           }
         },
