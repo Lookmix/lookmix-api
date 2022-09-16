@@ -42,18 +42,31 @@ def validate_daily_look_setup_schema():
 				"day_of_week": "domingo",
 				"occasions": [
 					{
-						"occasion_id": "4fd36",
-						"casual": [
-							"dia"
-						],
-						"social": [
-							"noite"
-						]
+						"casual": [ "dia" ],
+						"social": [],
+						"occasion_id": "6315604bdaf4e3d09503521c"
+					},
+					{
+						"casual": [ "dia" ],
+						"social": [ "noite" ],
+						"occasion_id": "6315604bdaf4e3d095035220"
+					}
+				]
+			},
+			{
+				"day_of_week": "quinta",
+				"occasions": [
+					{
+						"casual": [ "dia" ],
+						"social": [],
+						"occasion_id": "6315604bdaf4e3d09503521c"
 					}
 				]
 			}
 		]
 	}
+	# days_of_week_occasions = [ day["occasions"] for day in data["days_of_week"] ]
+	# print(days_of_week_occasions)
 	schema = "daily_look_setup_test.json"
 	assert_valid_schema(data, schema)
 
