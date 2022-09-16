@@ -44,3 +44,15 @@ class DuplicatedCategoryException(Exception):
 
 class DuplicatedOccasionException(Exception):
     pass
+
+class DuplicatedDayOfWeekException(Exception):
+    pass
+
+class DuplicatedPeriodException(Exception):
+    pass
+
+class PeriodEmptyException(Exception):
+    pass
+
+class PeriodTooLongException(Exception):
+    pass
