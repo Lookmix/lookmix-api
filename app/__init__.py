@@ -17,6 +17,7 @@ from app.controllers import clothe_controller
 from app.controllers import category_controller
 from app.controllers import util_controller
 from app.controllers import occasion_controller
+from app.controllers import look_controller
 from app.mock import mockapi
 
 app.register_blueprint(auth_controller.bp)
@@ -25,6 +26,7 @@ app.register_blueprint(clothe_controller.bp)
 app.register_blueprint(category_controller.bp)
 app.register_blueprint(util_controller.bp)
 app.register_blueprint(occasion_controller.bp)
+app.register_blueprint(look_controller.bp)
 
 flask_mock_api = mockapi.app
 mock_jwt_manager = JWTManager(flask_mock_api)
