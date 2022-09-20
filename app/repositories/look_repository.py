@@ -14,7 +14,7 @@ def update_daily_look_setup(user_id, data):
 		{ USER_ID_KEY: user_id },
 		{ SET_KEY: data },
 		upsert=True
-	)
+	).modified_count
 	return result
 
 def get_daily_look_setup_by_id(id):
