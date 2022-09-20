@@ -23,8 +23,9 @@ def update_daily_look_setup():
 			"user_id": user_id
 		} 
 		result = look_service.update_daily_look_setup(user_id, data)
-		if result > 0:
+		if result == 0 or result is None or result > 0:
 			return {}, 204
+		raise Exception(result)
 	except DuplicatedDayOfWeekException as e:
 		return json.dumps({
             "message": "Dia da semana duplicado, devem ser únicos",
@@ -48,7 +49,7 @@ def update_daily_look_setup():
 	except Exception as e:
 		return json.dumps({
             "message": "Erro ao tentar salvar rotina semanal",
-            "error": e.args[0]
+            "error": e.args
         }), 400
 
 @bp.route("/find_daily_look_setup_by_user_id", methods=["GET"])
