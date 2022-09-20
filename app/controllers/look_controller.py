@@ -22,8 +22,9 @@ def save_daily_look_setup():
 			"days_of_week": request_data,
 			"user_id": user_id
 		} 
-		response = look_service.save_daily_look_setup(data)
-		return { "daily_look_setup_id": response }, 201
+		result = look_service.save_daily_look_setup(user_id, data)
+		if result > 0:
+			return {}, 204
 	except DuplicatedDayOfWeekException as e:
 		return json.dumps({
             "message": "Dia da semana duplicado, devem ser únicos",
