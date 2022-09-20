@@ -9,6 +9,7 @@ from app.exceptions.error import DuplicatedDayOfWeekException
 from app.exceptions.error import DuplicatedPeriodException
 from app.exceptions.error import PeriodEmptyException
 from app.exceptions.error import PeriodTooLongException
+from app.exceptions.error import DuplicatedOccasionException
 
 bp = Blueprint("look", __name__, url_prefix="/look")
 
@@ -34,6 +35,11 @@ def update_daily_look_setup():
 	except DuplicatedPeriodException as e:
 		return json.dumps({
             "message": "Período duplicado, devem ser únicos dentro de cada array da ocasião",
+            "error": e.args[0]
+        }), 400
+	except DuplicatedOccasionException as e:
+		return json.dumps({
+            "message": "Ocasião duplicada, devem ser únicas dentro de cada array da ocasião",
             "error": e.args[0]
         }), 400
 	except PeriodEmptyException as e:

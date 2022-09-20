@@ -56,3 +56,6 @@ class PeriodEmptyException(Exception):
 
 class PeriodTooLongException(Exception):
     pass
+
+class DuplicatedOccasionException(Exception):
+    pass
