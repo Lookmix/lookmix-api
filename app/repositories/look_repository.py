@@ -8,9 +8,6 @@ SET_KEY = "$set"
 PUSH_KEY = "$push"
 IN_KEY = "$in"
 
-def save_daily_look_setup(data):
-	id = db[DAILY_LOOK_SETUP_COLLECTION].insert_one(data).inserted_id
-	return str(id)
 
 def update_daily_look_setup(user_id, data):
 	result = db[DAILY_LOOK_SETUP_COLLECTION].update_one(

@@ -5,7 +5,7 @@ from app.exceptions.error import DuplicatedPeriodException
 from app.exceptions.error import PeriodEmptyException
 from app.exceptions.error import PeriodTooLongException
 
-def save_daily_look_setup(user_id, data):
+def update_daily_look_setup(user_id, data):
 	__validate_before_save(data)
 	result = look_repository.update_daily_look_setup(user_id, data)
 	return result

@@ -12,9 +12,9 @@ from app.exceptions.error import PeriodTooLongException
 
 bp = Blueprint("look", __name__, url_prefix="/look")
 
-@bp.route("/save_daily_look_setup", methods=["POST"])
+@bp.route("/update_daily_look_setup", methods=["PUT"])
 @jwt_required()
-def save_daily_look_setup():
+def update_daily_look_setup():
 	try:
 		request_data = request.json
 		user_id = get_jwt_identity()
@@ -22,7 +22,7 @@ def save_daily_look_setup():
 			"days_of_week": request_data,
 			"user_id": user_id
 		} 
-		result = look_service.save_daily_look_setup(user_id, data)
+		result = look_service.update_daily_look_setup(user_id, data)
 		if result > 0:
 			return {}, 204
 	except DuplicatedDayOfWeekException as e:
