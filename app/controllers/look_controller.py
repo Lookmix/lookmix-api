@@ -5,6 +5,7 @@ from flask_jwt_extended import (
     get_jwt_identity
 )
 from app.services import look_service
+from jsonschema import ValidationError
 from app.exceptions.error import DuplicatedDayOfWeekException
 from app.exceptions.error import DuplicatedPeriodException
 from app.exceptions.error import PeriodEmptyException
@@ -27,6 +28,16 @@ def update_daily_look_setup():
 		if result == 0 or result is None or result > 0:
 			return {}, 204
 		raise Exception(result)
+	except ValidationError as error:
+		validator = error.validator
+		customErrorMessage = error.schema.get("errorMessage", {}).get(validator)
+		message = error.message
+		if customErrorMessage is not None:
+			message = customErrorMessage
+		return json.dumps({
+            "error": "validationError",
+            "message": message
+        }), 400
 	except DuplicatedDayOfWeekException as e:
 		return json.dumps({
             "message": "Dia da semana duplicado, devem ser únicos",
@@ -55,7 +66,7 @@ def update_daily_look_setup():
 	except Exception as e:
 		return json.dumps({
             "message": "Erro ao tentar salvar rotina semanal",
-            "error": e.args
+            "error": "unknow"
         }), 400
 
 @bp.route("/find_daily_look_setup_by_user_id", methods=["GET"])
