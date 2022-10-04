@@ -59,3 +59,6 @@ class PeriodTooLongException(Exception):
 
 class DuplicatedOccasionException(Exception):
     pass
+
+class DuplicatedSortException(Exception):
+    pass
