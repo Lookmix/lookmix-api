@@ -51,7 +51,8 @@ def validate_daily_look_setup_schema():
 						"social": [ "noite" ],
 						"occasion_id": "6315604bdaf4e3d095035220"
 					}
-				]
+				],
+				"sort": 0
 			},
 			{
 				"day_of_week": "quinta",
@@ -61,7 +62,8 @@ def validate_daily_look_setup_schema():
 						"social": [],
 						"occasion_id": "6315604bdaf4e3d09503521c"
 					}
-				]
+				],
+				"sort": 1
 			}
 		]
 	}
