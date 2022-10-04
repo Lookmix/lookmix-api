@@ -13,7 +13,7 @@
       "type": "string"
     },
     "sort": {
-      "type": "number"
+      "type": "integer"
     }
   },
   "required": [
