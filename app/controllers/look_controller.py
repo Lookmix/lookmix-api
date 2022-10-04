@@ -11,6 +11,7 @@ from app.exceptions.error import DuplicatedPeriodException
 from app.exceptions.error import PeriodEmptyException
 from app.exceptions.error import PeriodTooLongException
 from app.exceptions.error import DuplicatedOccasionException
+from app.exceptions.error import DuplicatedSortException
 
 bp = Blueprint("look", __name__, url_prefix="/look")
 
@@ -61,6 +62,11 @@ def update_daily_look_setup():
 	except PeriodTooLongException as e:
 		return json.dumps({
             "message": "Não podem haver mais de dois períodos por ocasião",
+            "error": e.args[0]
+        }), 400
+	except DuplicatedSortException as e:
+		return json.dumps({
+            "message": "Ordenação do dia da semana duplicada",
             "error": e.args[0]
         }), 400
 	except Exception as e:

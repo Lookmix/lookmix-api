@@ -5,6 +5,7 @@ from app.exceptions.error import DuplicatedPeriodException
 from app.exceptions.error import PeriodEmptyException
 from app.exceptions.error import PeriodTooLongException
 from app.exceptions.error import DuplicatedOccasionException
+from app.exceptions.error import DuplicatedSortException
 
 def update_daily_look_setup(user_id, data):
 	__validate_before_save(data)
@@ -20,6 +21,7 @@ def __validate_before_save(data):
 	days_of_week = data["days_of_week"]
 	__is_day_of_week_duplicated(days_of_week)
 	__is_occasion_duplicated(days_of_week)
+	__is_sort_duplicated(days_of_week)
 	# occasions_of_the_days = [ day["occasions"] for day in days_of_week ]
 	for day_of_week in days_of_week: # iterate days
 		occasions_of_the_day = day_of_week["occasions"]
@@ -63,3 +65,11 @@ def __is_occasion_duplicated(days_of_week):
 			if id in set_of_ids:
 				raise DuplicatedOccasionException()
 			set_of_ids.add(id)
+
+def __is_sort_duplicated(days_of_week):
+	order_list = [ day["sort"] for day in days_of_week ]
+	set_of_order = set()
+	for order in order_list:
+		if order in set_of_order:
+			raise DuplicatedSortException()
+		set_of_order.add(order)
