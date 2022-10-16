@@ -1,8 +1,11 @@
-CREATE VIRTUAL ENV
-virtualenv --python=/usr/bin/python3.6 venv
+### INSTALL virtualenv
+`sudo apt install python3-virtualenv`
 
-ACTIVATE VIRTUAL ENV
-. venv/bin/activate
+### CREATE VIRTUAL ENV
+`virtualenv --python=/usr/bin/python3.10 apivenv`
 
-INSTALL DEPENDENCIES
-pip3 install -r requirements.txt
+### ACTIVATE VIRTUAL ENV
+`. apivenv/bin/activate`
+
+### INSTALL DEPENDENCIES
+`pip3 install -r requirements.txt`
