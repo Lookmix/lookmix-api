@@ -59,10 +59,10 @@ def save_many_seasons(seasons):
 def init_seasons():
     print("INIT SEASONS")
     seasons = [
-		"Primavera",
-		"Verão",
-		"Outono",
-		"Inverno"
+		"primavera",
+		"verão",
+		"outono",
+		"inverno"
 	]
     save_many_seasons(seasons)
     count = get_seasons_count()
