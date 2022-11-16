@@ -4,14 +4,15 @@ from flask_jwt_extended import (
     jwt_required, 
     get_jwt_identity
 )
-from app.services import look_service
 from jsonschema import ValidationError
+from app.services import look_service
 from app.exceptions.error import DuplicatedDayOfWeekException
 from app.exceptions.error import DuplicatedPeriodException
 from app.exceptions.error import PeriodEmptyException
 from app.exceptions.error import PeriodTooLongException
 from app.exceptions.error import DuplicatedOccasionException
 from app.exceptions.error import DuplicatedSortException
+from app.exceptions.error import QueueFullException
 
 bp = Blueprint("look", __name__, url_prefix="/look")
 
@@ -27,8 +28,14 @@ def update_daily_look_setup():
 		} 
 		result = look_service.update_daily_look_setup(user_id, data)
 		if result == 0 or result is None or result > 0:
+			look_service.dispatch(user_id)
 			return {}, 204
 		raise Exception(result)
+	except QueueFullException as error:
+		return json.dumps({
+			"message": "Servidor sobrecarregado, tente novamente em instantes",
+            "error": error.args[0]
+		}), 400
 	except ValidationError as error:
 		validator = error.validator
 		customErrorMessage = error.schema.get("errorMessage", {}).get(validator)
@@ -89,3 +96,18 @@ def get_daily_look_setup_by_user_id():
             "message": "Erro ao tentar recuperar rotina de looks",
             "error": e.args[0]
         }), 400
+
+@bp.route("/<type>", methods=["GET"])
+@jwt_required()
+def get_looks(type):
+	try:
+		user_id = get_jwt_identity()
+		response = look_service.get_looks(user_id, type)
+		return json.dumps(response), 200
+	except Exception as e:
+		print(e)
+		return json.dumps({
+            "message": "Erro ao tentar recuperar looks",
+            "error": "unknow"
+        }), 400
+
