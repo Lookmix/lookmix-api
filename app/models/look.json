@@ -1,0 +1,47 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "properties": {
+      "data": {
+        "type": "object"
+      },
+      "timestamp": {
+        "type": "integer"
+      },
+      "period": {
+        "type": "string",
+        "enum": [
+          "dia",
+          "noite"
+        ]
+      },
+      "occasion": {
+        "type": "string"
+      },
+      "season": {
+        "type": "string",
+        "enum": [
+          "primavera",
+          "verão",
+          "outono",
+          "inverno"
+        ]
+      },
+      "type": {
+        "type": "string",
+        "enum": [
+          "casual",
+          "social"
+        ]
+      }
+    },
+    "required": [
+      "data",
+      "timestamp",
+      "period",
+      "occasion",
+      "season",
+      "type"
+    ],
+    "additionalProperties": false
+}
