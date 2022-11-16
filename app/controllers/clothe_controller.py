@@ -7,6 +7,7 @@ from flask_jwt_extended import (
 from app.services import image_service
 from app.services import closet_service
 from app.services import clothe_service
+from app.services import look_service
 
 bp = Blueprint("clothe", __name__, url_prefix="/clothe")
 
@@ -17,13 +18,10 @@ def save_clothes():
     IMAGE_TYPE = "image/"
     FORMDATA_IMAGE = "file"
     FORMDATA_DOCUMENT = "document"
-
     try:
-        r = request
-        files = r.files
+        files = request.files
         files_dict = files.to_dict()
         responses = []
-
         user_id = get_jwt_identity()
         closet = closet_service.get_closet_by_user_id(user_id)
         closet_id = 0
@@ -32,7 +30,6 @@ def save_clothes():
         if not closet_id:
             closet_id = image_service.create_closet()
             closet_service.create(closet_id, user_id)
-
         count = 0
         for index, key in enumerate(files_dict):
             content_type = files_dict[key].content_type
@@ -47,6 +44,7 @@ def save_clothes():
                 clothe_service.create(document_json, closet_id)
                 responses.append(image_response)
                 count+=1
+        look_service.dispatch_look_generation(user_id)
         return { "images": responses }, 201
     except Exception as e:
         return json.dumps({
@@ -60,9 +58,9 @@ def save_clothes():
 def update_clothes():
     try:
         request_data = request.json
-
         result = clothe_service.update_by_id(request_data)
-
+        user_id = get_jwt_identity()
+        look_service.dispatch_look_generation(user_id)
         return { "updated": result }, 200
     except Exception as e:
         return json.dumps({
