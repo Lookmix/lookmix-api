@@ -111,3 +111,26 @@ def get_looks(type):
             "error": "unknow"
         }), 400
 
+@bp.route("/recursive", methods=["GET"])
+def get_looksetrecursive():
+	try:
+		response = look_service.getlooksetrecursive()
+		return json.dumps(response), 200
+	except Exception as e:
+		print(e)
+		return json.dumps({
+            "message": "Erro ao tentar recuperar lookset recursivo",
+            "error": "unknow"
+        }), 400
+
+@bp.route("/procedural", methods=["GET"])
+def get_looksetprocedural():
+	try:
+		response = look_service.getlooksetprocedure()
+		return json.dumps(response), 200
+	except Exception as e:
+		print(e)
+		return json.dumps({
+            "message": "Erro ao tentar recuperar lookset procedural",
+            "error": "unknow"
+        }), 400
