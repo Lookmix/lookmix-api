@@ -90,8 +90,15 @@ def __is_sort_duplicated(days_of_week):
         set_of_order.add(order)
 
 
-def get_looks(user_id, type):
-    result = look_repository.get_look_set(user_id, type=type)
+def get_looks(
+    user_id, 
+    type, 
+    timestamp=None,
+	occasion=None,
+	season=None,
+	period=None
+):
+    result = look_repository.get_lookset(user_id, type=type)
     return result
 
 
@@ -132,20 +139,40 @@ def dispatch_look_generation(user_id):
 
 def __generate_casual_looks(user_id, categories, daily_look_setup):
     casual_clothes = __get_casual_clothes(user_id)
-    casual_looks = __generate_looks(
+    casual_looks = __generate_lookset_look_and_add_into_lookset(
         categories, casual_clothes, daily_look_setup, "casual")
     return casual_looks
 
 
 def __generate_social_looks(user_id, categories, daily_look_setup):
     social_clothes = __get_social_clothes(user_id)
-    social_looks = __generate_looks(
+    social_looks = __generate_lookset_look_and_add_into_lookset(
         categories, social_clothes, daily_look_setup, "social")
     return social_looks
 
 
-def __generate_looks(categories, fetch_clothes, daily_look_setup, type):
-    looks = []
+def __generate_lookset_look(lookset, look, type, occasion_id):
+    looklist_stringfy = json.dumps(lookset)
+    look_stringfy = json.dumps(look)
+    if look_stringfy in looklist_stringfy:
+        return
+    keys = look.keys()
+    keys = filter(lambda key: look[key] != None, keys)
+    if len(list(keys)) > 0:
+        result = {
+            "data": look,
+            "occasion": occasion_id,
+            "period": None,
+            "timestamp": None,
+            "season": None,
+            "type": type
+        }
+        return result
+
+
+# procedure
+def __generate_lookset_look_and_add_into_lookset(categories, fetch_clothes, daily_look_setup, type):
+    lookset = []
     if len(categories) < 1 or len(fetch_clothes) < 1:
         return
     days_of_week = daily_look_setup.get("days_of_week")
@@ -180,21 +207,9 @@ def __generate_looks(categories, fetch_clothes, daily_look_setup, type):
                 look = json.loads(json.dumps(look_template))
                 if occasion_id in a["occasions"]:
                     look[result[0]["category_id"]] = a
-                looks_string = json.dumps(looks)
-                look_string = json.dumps(look)
-                if look_string not in looks_string:
-                    key_values = look.keys()
-                    key_values = filter(lambda x: x[1] != None, key_values)
-                    if len(list(key_values)) > 0:
-                        look = {
-                            "data": look,
-                            "occasion": occasion_id,
-                            "period": None,
-                            "timestamp": None,
-                            "season": None,
-                            "type": type
-                        }
-                        looks.append(look)
+                data = __generate_lookset_look(lookset, look, type, occasion_id)
+                if data is not None:
+                    lookset.append(data)
             continue
         for b in result[1].get("clothes"):
             if result[2].get("total_clothes") == 0:
@@ -204,21 +219,9 @@ def __generate_looks(categories, fetch_clothes, daily_look_setup, type):
                         look[result[0]["category_id"]] = a
                     if occasion_id in b["occasions"]:
                         look[result[1]["category_id"]] = b
-                    looks_string = json.dumps(looks)
-                    look_string = json.dumps(look)
-                    if look_string not in looks_string:
-                        key_values = look.keys()
-                        key_values = filter(lambda x: x[1] != None, key_values)
-                        if (len(list(key_values)) > 0):
-                            look = {
-                                "data": look,
-                                "occasion": occasion_id,
-                                "period": None,
-                                "timestamp": None,
-                                "season": None,
-                                "type": type
-                            }
-                            looks.append(look)
+                    data = __generate_lookset_look(lookset, look, type, occasion_id)
+                    if data is not None:
+                        lookset.append(data)
                 continue
             for c in result[2].get("clothes"):
                 if result[3].get("total_clothes") == 0:
@@ -230,22 +233,9 @@ def __generate_looks(categories, fetch_clothes, daily_look_setup, type):
                             look[result[1]["category_id"]] = b
                         if occasion_id in c["occasions"]:
                             look[result[2]["category_id"]] = c
-                        looks_string = json.dumps(looks)
-                        look_string = json.dumps(look)
-                        if look_string not in looks_string:
-                            key_values = look.keys()
-                            key_values = filter(
-                                lambda x: x[1] != None, key_values)
-                            if len(key_values) > 0:
-                                look = {
-                                    "data": look,
-                                    "occasion": occasion_id,
-                                    "period": None,
-                                    "timestamp": None,
-                                    "season": None,
-                                    "type": type
-                                }
-                                looks.append(look)
+                        data = __generate_lookset_look(lookset, look, type, occasion_id)
+                        if data is not None:
+                            lookset.append(data)
                     continue
                 for d in result[3].get("clothes"):
                     if result[4].get("total_clothes") == 0:
@@ -259,22 +249,9 @@ def __generate_looks(categories, fetch_clothes, daily_look_setup, type):
                                 look[result[2]["category_id"]] = c
                             if occasion_id in d["occasions"]:
                                 look[result[3]["category_id"]] = d
-                            looks_string = json.dumps(looks)
-                            look_string = json.dumps(look)
-                            if (look_string not in looks_string):
-                                key_values = look.keys()
-                                key_values = filter(
-                                    lambda x: x[1] != None, key_values)
-                                if (len(list(key_values)) > 0):
-                                    look = {
-                                        "data": look,
-                                        "occasion": occasion_id,
-                                        "period": None,
-                                        "timestamp": None,
-                                        "season": None,
-                                        "type": type
-                                    }
-                                    looks.append(look)
+                            data = __generate_lookset_look(lookset, look, type, occasion_id)
+                            if data is not None:
+                                lookset.append(data)
                         continue
                     for e in result[4].get("clothes"):
                         if result[5].get("total_clothes") == 0:
@@ -290,28 +267,14 @@ def __generate_looks(categories, fetch_clothes, daily_look_setup, type):
                                     look[result[3]["category_id"]] = d
                                 if occasion_id in e["occasions"]:
                                     look[result[4]["category_id"]] = e
-                                looks_string = json.dumps(looks)
-                                look_string = json.dumps(look)
-                                if (look_string not in looks_string):
-                                    key_values = look.keys()
-                                    key_values = filter(
-                                        lambda x: x[1] != None, key_values)
-                                    if (len(list(key_values)) > 0):
-                                        look = {
-                                            "data": look,
-                                            "occasion": occasion_id,
-                                            "period": None,
-                                            "timestamp": None,
-                                            "season": None,
-                                            "type": type
-                                        }
-                                        looks.append(look)
+                                data = __generate_lookset_look(lookset, look, type, occasion_id)
+                                if data is not None:
+                                    lookset.append(data)
                             continue
                         for f in result[5].get("clothes"):
                             if result[6].get("total_clothes") == 0:
                                 for occasion_id in occasion_ids:
-                                    look = json.loads(
-                                        json.dumps(look_template))
+                                    look = json.loads(json.dumps(look_template))
                                     if occasion_id in a["occasions"]:
                                         look[result[0]["category_id"]] = a
                                     if occasion_id in b["occasions"]:
@@ -324,28 +287,14 @@ def __generate_looks(categories, fetch_clothes, daily_look_setup, type):
                                         look[result[4]["category_id"]] = e
                                     if occasion_id in f["occasions"]:
                                         look[result[5]["category_id"]] = f
-                                    looks_string = json.dumps(looks)
-                                    look_string = json.dumps(look)
-                                    if (look_string not in looks_string):
-                                        key_values = look.keys()
-                                        key_values = filter(
-                                            lambda x: x[1] != None, key_values)
-                                        if (len(list(key_values)) > 0):
-                                            look = {
-                                                "data": look,
-                                                "occasion": occasion_id,
-                                                "period": None,
-                                                "timestamp": None,
-                                                "season": None,
-                                                "type": type
-                                            }
-                                            looks.append(look)
+                                    data = __generate_lookset_look(lookset, look, type, occasion_id)
+                                    if data is not None:
+                                        lookset.append(data)
                                 continue
                             for g in result[6].get("clothes"):
                                 if result[7].get("total_clothes") == 0:
                                     for occasion_id in occasion_ids:
-                                        look = json.loads(
-                                            json.dumps(look_template))
+                                        look = json.loads(json.dumps(look_template))
                                         if occasion_id in a["occasions"]:
                                             look[result[0]["category_id"]] = a
                                         if occasion_id in b["occasions"]:
@@ -360,117 +309,143 @@ def __generate_looks(categories, fetch_clothes, daily_look_setup, type):
                                             look[result[5]["category_id"]] = f
                                         if occasion_id in g["occasions"]:
                                             look[result[6]["category_id"]] = g
-                                        looks_string = json.dumps(looks)
-                                        look_string = json.dumps(look)
-                                        if (look_string not in looks_string):
-                                            key_values = look.keys()
-                                            key_values = filter(
-                                                lambda x: x[1] != None, key_values)
-                                            if (len(list(key_values)) > 0):
-                                                look = {
-                                                    "data": look,
-                                                    "occasion": occasion_id,
-                                                    "period": None,
-                                                    "timestamp": None,
-                                                    "season": None,
-                                                    "type": type
-                                                }
-                                                looks.append(look)
+                                        data = __generate_lookset_look(lookset, look, type, occasion_id)
+                                        if data is not None:
+                                            lookset.append(data)
                                     continue
                                 for h in result[7].get("clothes"):
                                     if result[8].get("total_clothes") == 0:
                                         for occasion_id in occasion_ids:
-                                            look = json.loads(
-                                                json.dumps(look_template))
+                                            look = json.loads(json.dumps(look_template))
                                             if occasion_id in a["occasions"]:
-                                                look[result[0]
-                                                     ["category_id"]] = a
+                                                look[result[0]["category_id"]] = a
                                             if occasion_id in b["occasions"]:
-                                                look[result[1]
-                                                     ["category_id"]] = b
+                                                look[result[1]["category_id"]] = b
                                             if occasion_id in c["occasions"]:
-                                                look[result[2]
-                                                     ["category_id"]] = c
+                                                look[result[2]["category_id"]] = c
                                             if occasion_id in d["occasions"]:
-                                                look[result[3]
-                                                     ["category_id"]] = d
+                                                look[result[3]["category_id"]] = d
                                             if occasion_id in e["occasions"]:
-                                                look[result[4]
-                                                     ["category_id"]] = e
+                                                look[result[4]["category_id"]] = e
                                             if occasion_id in f["occasions"]:
-                                                look[result[5]
-                                                     ["category_id"]] = f
+                                                look[result[5]["category_id"]] = f
                                             if occasion_id in g["occasions"]:
-                                                look[result[6]
-                                                     ["category_id"]] = g
+                                                look[result[6]["category_id"]] = g
                                             if occasion_id in h["occasions"]:
-                                                look[result[7]
-                                                     ["category_id"]] = h
-                                            looks_string = json.dumps(looks)
-                                            look_string = json.dumps(look)
-                                            if (look_string not in looks_string):
-                                                key_values = look.keys()
-                                                key_values = filter(
-                                                    lambda x: x[1] != None, key_values)
-                                                if (len(list(key_values)) > 0):
-                                                    look = {
-                                                        "data": look,
-                                                        "occasion": occasion_id,
-                                                        "period": None,
-                                                        "timestamp": None,
-                                                        "season": None,
-                                                        "type": type
-                                                    }
-                                                    looks.append(look)
+                                                look[result[7]["category_id"]] = h
+                                            data = __generate_lookset_look(lookset, look, type, occasion_id)
+                                            if data is not None:
+                                                lookset.append(data)
                                         continue
                                     for i in result[8].get("clothes"):
                                         for occasion_id in occasion_ids:
-                                            look = json.loads(
-                                                json.dumps(look_template))
+                                            look = json.loads(json.dumps(look_template))
                                             if occasion_id in a["occasions"]:
-                                                look[result[0]
-                                                     ["category_id"]] = a
+                                                look[result[0]["category_id"]] = a
                                             if occasion_id in b["occasions"]:
-                                                look[result[1]
-                                                     ["category_id"]] = b
+                                                look[result[1]["category_id"]] = b
                                             if occasion_id in c["occasions"]:
-                                                look[result[2]
-                                                     ["category_id"]] = c
+                                                look[result[2]["category_id"]] = c
                                             if occasion_id in d["occasions"]:
-                                                look[result[3]
-                                                     ["category_id"]] = d
+                                                look[result[3]["category_id"]] = d
                                             if occasion_id in e["occasions"]:
-                                                look[result[4]
-                                                     ["category_id"]] = e
+                                                look[result[4]["category_id"]] = e
                                             if occasion_id in f["occasions"]:
-                                                look[result[5]
-                                                     ["category_id"]] = f
+                                                look[result[5]["category_id"]] = f
                                             if occasion_id in g["occasions"]:
-                                                look[result[6]
-                                                     ["category_id"]] = g
+                                                look[result[6]["category_id"]] = g
                                             if occasion_id in h["occasions"]:
-                                                look[result[7]
-                                                     ["category_id"]] = h
+                                                look[result[7]["category_id"]] = h
                                             if occasion_id in i["occasions"]:
-                                                look[result[8]
-                                                     ["category_id"]] = i
-                                            looks_string = json.dumps(looks)
-                                            look_string = json.dumps(look)
-                                            if (look_string not in looks_string):
-                                                key_values = look.keys()
-                                                key_values = filter(
-                                                    lambda x: x[1] != None, key_values)
-                                                if (len(list(key_values)) > 0):
-                                                    look = {
-                                                        "data": look,
-                                                        "occasion": occasion_id,
-                                                        "period": None,
-                                                        "timestamp": None,
-                                                        "season": None,
-                                                        "type": type
-                                                    }
-                                                    looks.append(look)
-    return looks
+                                                look[result[8]["category_id"]] = i
+                                            data = __generate_lookset_look(lookset, look, type, occasion_id)
+                                            if data is not None:
+                                                lookset.append(data)
+    return lookset
+
+
+# recursive
+def __generate_lookset_look_and_add_into_lookset2(
+    clothes_by_category,
+    occasion_ids,
+    lookset,
+    look_template,
+    type,
+    clothes=[],
+    count=0 # zero-based index/counter
+):
+    clothes_by_category_len = len(clothes_by_category)
+    if clothes_by_category_len == count+1:
+        return lookset
+    clothe = clothes_by_category[count].get("clothes")[count]
+    clothes.append(clothe)
+    # se existir peças na próxima clothes_by_category
+    if clothes_by_category[count+1].get("total_clothes") > 0: 
+        count+=1
+        lookset = __generate_lookset_look_and_add_into_lookset2(
+            clothes_by_category,
+            occasion_ids,
+            lookset,
+            look_template,
+            type,
+            clothes,
+            count
+        )
+    for occasion_id in occasion_ids:  # para cada ocasião cadastrada na rotina semanal
+        look = json.loads(json.dumps(look_template)) # copy
+        for index, clothe in enumerate(clothes):
+            if occasion_id not in clothe["occasions"]:
+                continue
+            # gerando look
+            look[clothes_by_category[index]["category_id"]] = clothe
+        data = __generate_lookset_look(lookset, look, type, occasion_id)
+        if data == None:
+            continue
+        lookset.append(data)
+    return lookset
+
+
+# recursive
+def __generate_lookset2(categories, fetch_clothes, daily_look_setup, type):
+    lookset = []
+    if len(categories) < 1 or len(fetch_clothes) < 1:
+        return
+    days_of_week = daily_look_setup.get("days_of_week")
+    day_of_week_occasions = map(lambda day: day.get("occasions"), days_of_week)
+    occasion_ids_map = map(lambda occasions: (
+        map(lambda occasion: occasion.get("occasion_id"), occasions)), day_of_week_occasions)
+    occasion_ids = reduce(lambda prev, curr: list(prev) + list(curr), occasion_ids_map, [])
+    occasion_ids = set(occasion_ids)
+    clothes_by_category = []
+    for category in categories:
+        category_id = category.get("_id")
+        clothes = filter(lambda clothe: clothe.get("category_id") ==
+                         category_id, fetch_clothes)
+        clothes = list(clothes)
+        total_clothes = len(clothes)
+        clothes_by_category.append({
+            "category_id": category_id,
+            "category": category.get("name"),
+            "total_clothes": total_clothes,
+            "clothes": clothes
+        })
+    clothes_by_category.sort(key=(lambda clothe: clothe["total_clothes"]), reverse=True)
+    # se o primeiro estiver vazio os outros também estarão já que 
+    # está ordenado do maior para o menor
+    if clothes_by_category[0].get("total_clothes") == 0: 
+        return
+    category_ids = map(lambda category: category.get("_id"), categories)
+    look_template = {}
+    for category_id in category_ids:
+        look_template[category_id] = None
+    lookset = __generate_lookset_look_and_add_into_lookset2(
+        clothes_by_category,
+        occasion_ids,
+        lookset,
+        look_template,
+        type
+    )
+    return lookset
 
 
 def __get_casual_clothes(user_id):
@@ -491,3 +466,10 @@ def __get_closet_id(user_id):
     if closet:
         closet_id = closet.get("_id")
     return closet_id
+
+
+def getlooksetrecursive():
+    return look_repository.get_lookset_recursive()
+
+def getlooksetprocedure():
+    return look_repository.get_lookset_procedure()
