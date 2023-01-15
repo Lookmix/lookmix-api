@@ -531,6 +531,7 @@ def generate_lookset_look_and_add_into_lookset2(
         category = clothes_by_category[category_count]["category"].replace(' ', '')
         category = f"{category:012s}_clothe_index: {clothe_index}"
         print(f"{category}, category_count: {category_count}")
+        clothes[category_count] = clothe
         next_clothes_by_category = get_by_index(clothes_by_category, category_count+1)
         if next_clothes_by_category and next_clothes_by_category.get("total_clothes") > 0: # se a próxima categoria tiver peças
             lookset = generate_lookset_look_and_add_into_lookset2(
@@ -542,7 +543,6 @@ def generate_lookset_look_and_add_into_lookset2(
                 clothes,
                 category_count+1
             )
-        clothes[category_count] = clothe
         look = json.loads(json.dumps(look_template))
         for previous_clothe_index, previous_clothe in enumerate(clothes):
             look[clothes_by_category[previous_clothe_index]["category_id"]] = previous_clothe
@@ -552,7 +552,7 @@ def generate_lookset_look_and_add_into_lookset2(
         continue
     return lookset
 
-# procedural2
+# procedural
 def generate_lookset_look_and_add_into_lookset3(
     clothes_by_category,
     occasion_ids,
@@ -798,7 +798,8 @@ def generate_lookset(categories, fetch_clothes, daily_look_setup, type):
         look_template[category_id] = None
         clothes.append(None)  # recursive mode only
     print(f"clothes_by_category length: {len(clothes_by_category)}")
-    lookset = generate_lookset_look_and_add_into_lookset2(
+    # lookset = generate_lookset_look_and_add_into_lookset3(
+    lookset = generate_lookset_look_and_add_into_lookset2( # recursive mode only
         clothes_by_category,
         occasion_ids,
         lookset,
@@ -818,6 +819,7 @@ response = generate_lookset(
 # Serializing json
 json_object = json.dumps(response, indent=4)
 # Writing to sample.json
-with open("recursive.json", "w") as outfile:
+with open("recursive2.json", "w") as outfile:
+# with open("procedure2.json", "w") as outfile:
     outfile.write(json_object)
 print(len(response))
