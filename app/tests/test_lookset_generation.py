@@ -552,148 +552,6 @@ def generate_lookset_look_and_add_into_lookset2(
         continue
     return lookset
 
-# procedural
-def generate_lookset_look_and_add_into_lookset(
-    clothes_by_category,
-    occasion_ids,
-    lookset,
-    look_template,
-    type
-):
-    for clothe_indexa, a in enumerate(clothes_by_category[0].get("clothes")):  # para cada peça na categoria 0 faça
-        next_clothes_by_category = get_by_index(clothes_by_category, 1)
-        category = clothes_by_category[0]["category"].replace(' ', '')
-        category = f"{category:012s}_clothe_index: {clothe_indexa}"
-        print(f"{category}, category_count: {0}")
-        if next_clothes_by_category and next_clothes_by_category.get("total_clothes") > 0:
-            for clothe_indexb, b in enumerate(clothes_by_category[1].get("clothes")):
-                next_clothes_by_category = get_by_index(clothes_by_category, 2)
-                category = clothes_by_category[1]["category"].replace(' ', '')
-                category = f"{category:012s}_clothe_index: {clothe_indexb}"
-                print(f"{category}, category_count: {1}")
-                if next_clothes_by_category and next_clothes_by_category.get("total_clothes") > 0:
-                    for clothe_indexc, c in enumerate(clothes_by_category[2].get("clothes")):
-                        next_clothes_by_category = get_by_index(clothes_by_category, 3)
-                        category = clothes_by_category[2]["category"].replace(' ', '')
-                        category = f"{category:012s}_clothe_index: {clothe_indexc}"
-                        print(f"{category}, category_count: {2}")
-                        if next_clothes_by_category and next_clothes_by_category.get("total_clothes") > 0:
-                            for clothe_indexd, d in enumerate(clothes_by_category[3].get("clothes")):
-                                next_clothes_by_category = get_by_index(clothes_by_category, 4)
-                                category = clothes_by_category[3]["category"].replace(' ', '')
-                                category = f"{category:012s}_clothe_index: {clothe_indexd}"
-                                print(f"{category}, category_count: {3}")
-                                if next_clothes_by_category and next_clothes_by_category.get("total_clothes") > 0:
-                                    for clothe_indexe, e in enumerate(clothes_by_category[4].get("clothes")):
-                                        next_clothes_by_category = get_by_index(clothes_by_category, 5)
-                                        print(f"e clothe_index: {clothe_indexe}, category_count: {4}")
-                                        if next_clothes_by_category and next_clothes_by_category.get("total_clothes") > 0:
-                                            for clothe_indexf, f in enumerate(clothes_by_category[5].get("clothes")):
-                                                next_clothes_by_category = get_by_index(clothes_by_category, 6)
-                                                print(f"f clothe_index: {clothe_indexf}, category_count: {5}")
-                                                if next_clothes_by_category and next_clothes_by_category.get("total_clothes") > 0:
-                                                    for g in clothes_by_category[6].get("clothes"):
-                                                        next_clothes_by_category = get_by_index(clothes_by_category, 7)
-                                                        if next_clothes_by_category and next_clothes_by_category.get("total_clothes") > 0:
-                                                            for h in clothes_by_category[7].get("clothes"):
-                                                                next_clothes_by_category = get_by_index(clothes_by_category, 8)
-                                                                if next_clothes_by_category and next_clothes_by_category.get("total_clothes") > 0:
-                                                                    for i in clothes_by_category[8].get("clothes"):
-                                                                        next_clothes_by_category = get_by_index(clothes_by_category, 9)
-                                                                        if next_clothes_by_category and next_clothes_by_category.get("total_clothes") > 0:
-                                                                            pass
-                                                                        look = json.loads(json.dumps(look_template))
-                                                                        look[clothes_by_category[0]["category_id"]] = a
-                                                                        look[clothes_by_category[1]["category_id"]] = b
-                                                                        look[clothes_by_category[2]["category_id"]] = c
-                                                                        look[clothes_by_category[3]["category_id"]] = d
-                                                                        look[clothes_by_category[4]["category_id"]] = e
-                                                                        look[clothes_by_category[5]["category_id"]] = f
-                                                                        look[clothes_by_category[6]["category_id"]] = g
-                                                                        look[clothes_by_category[7]["category_id"]] = h
-                                                                        look[clothes_by_category[8]["category_id"]] = i
-                                                                        data = generate_lookset_look(lookset, look, type, "occasion_id")
-                                                                        if data is not None:
-                                                                            lookset.append(data)
-                                                                        continue
-                                                                look = json.loads(json.dumps(look_template))
-                                                                look[clothes_by_category[0]["category_id"]] = a
-                                                                look[clothes_by_category[1]["category_id"]] = b
-                                                                look[clothes_by_category[2]["category_id"]] = c
-                                                                look[clothes_by_category[3]["category_id"]] = d
-                                                                look[clothes_by_category[4]["category_id"]] = e
-                                                                look[clothes_by_category[5]["category_id"]] = f
-                                                                look[clothes_by_category[6]["category_id"]] = g
-                                                                look[clothes_by_category[7]["category_id"]] = h
-                                                                data = generate_lookset_look(lookset, look, type, "occasion_id")
-                                                                if data is not None:
-                                                                    lookset.append(data)
-                                                                continue
-                                                        look = json.loads(json.dumps(look_template))
-                                                        look[clothes_by_category[0]["category_id"]] = a
-                                                        look[clothes_by_category[1]["category_id"]] = b
-                                                        look[clothes_by_category[2]["category_id"]] = c
-                                                        look[clothes_by_category[3]["category_id"]] = d
-                                                        look[clothes_by_category[4]["category_id"]] = e
-                                                        look[clothes_by_category[5]["category_id"]] = f
-                                                        look[clothes_by_category[6]["category_id"]] = g
-                                                        data = generate_lookset_look(lookset, look, type, "occasion_id")
-                                                        if data is not None:
-                                                            lookset.append(data)
-                                                        continue
-                                                look = json.loads(json.dumps(look_template))
-                                                look[clothes_by_category[0]["category_id"]] = a
-                                                look[clothes_by_category[1]["category_id"]] = b
-                                                look[clothes_by_category[2]["category_id"]] = c
-                                                look[clothes_by_category[3]["category_id"]] = d
-                                                look[clothes_by_category[4]["category_id"]] = e
-                                                look[clothes_by_category[5]["category_id"]] = f
-                                                data = generate_lookset_look(lookset, look, type, "occasion_id")
-                                                if data is not None:
-                                                    lookset.append(data)
-                                                continue
-                                        look = json.loads(json.dumps(look_template))
-                                        look[clothes_by_category[0]["category_id"]] = a
-                                        look[clothes_by_category[1]["category_id"]] = b
-                                        look[clothes_by_category[2]["category_id"]] = c
-                                        look[clothes_by_category[3]["category_id"]] = d
-                                        look[clothes_by_category[4]["category_id"]] = e
-                                        data = generate_lookset_look(lookset, look, type, "occasion_id")
-                                        if data is not None:
-                                            lookset.append(data)
-                                        continue
-                                look = json.loads(json.dumps(look_template))
-                                look[clothes_by_category[0]["category_id"]] = a
-                                look[clothes_by_category[1]["category_id"]] = b
-                                look[clothes_by_category[2]["category_id"]] = c
-                                look[clothes_by_category[3]["category_id"]] = d
-                                data = generate_lookset_look(lookset, look, type, "occasion_id")
-                                if data is not None:
-                                    lookset.append(data)
-                                continue
-                        look = json.loads(json.dumps(look_template))
-                        look[clothes_by_category[0]["category_id"]] = a
-                        look[clothes_by_category[1]["category_id"]] = b
-                        look[clothes_by_category[2]["category_id"]] = c
-                        data = generate_lookset_look(lookset, look, type, "occasion_id")
-                        if data is not None:
-                            lookset.append(data)
-                        continue
-                look = json.loads(json.dumps(look_template))
-                look[clothes_by_category[0]["category_id"]] = a
-                look[clothes_by_category[1]["category_id"]] = b
-                data = generate_lookset_look(lookset, look, type, "occasion_id")
-                if data is not None:
-                    lookset.append(data)
-                continue                                
-        look = json.loads(json.dumps(look_template))
-        look[clothes_by_category[0]["category_id"]] = a
-        data = generate_lookset_look(lookset, look, type, "occasion_id")
-        if data is not None:
-            lookset.append(data)
-        continue
-    return lookset
-
 # procedural2
 def generate_lookset_look_and_add_into_lookset3(
     clothes_by_category,
@@ -957,4 +815,9 @@ response = generate_lookset(
     fetch_clothes=clothes,
     type=type
 )
+# Serializing json
+json_object = json.dumps(response, indent=4)
+# Writing to sample.json
+with open("recursive.json", "w") as outfile:
+    outfile.write(json_object)
 print(len(response))
