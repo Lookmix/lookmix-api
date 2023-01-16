@@ -8,18 +8,18 @@ categories = [
         "description": "Calças, shorts, saias ou bermudas", "sort": 2},
     {"_id": "629d286bec74d540eb5fb0e9", "name": "Pés",
         "description": "Calçados ou meias", "sort": 3},
-	# {"_id": "629d286bec74d540eb5fb0ea", "name": "Peças sobrepostas",
-    #     "description": "Casacos, jaquetas, moletons ou sobretudos", "sort": 4},
-    # {"_id": "629d286bec74d540eb5fb0eb", "name": "Peças únicas",
-    #     "description": "Vestidos ou macacões", "sort": 5},
-    # {"_id": "629d286bec74d540eb5fb0ec", "name": "Acessórios de cabeça",
-    #     "description": "Bonés, chapéus, óculos, brincos ou laços", "sort": 6},
-    # {"_id": "629d286bec74d540eb5fb0ed", "name": "Acessórios de pescoço",
-    #     "description": "Colares, correntes, gravatas ou cachecóis", "sort": 7},
-    # {"_id": "629d286bec74d540eb5fb0ee", "name": "Acessórios de braços e mãos",
-    #     "description": "Bolsas, pulseiras, relógios, anéis ou luvas", "sort": 8},
-    # {"_id": "629d286bec74d540eb5fb0ef", "name": "Cintura",
-    #     "description": "Cintos ou laços", "sort": 9}
+	{"_id": "629d286bec74d540eb5fb0ea", "name": "Peças sobrepostas",
+        "description": "Casacos, jaquetas, moletons ou sobretudos", "sort": 4},
+    {"_id": "629d286bec74d540eb5fb0eb", "name": "Peças únicas",
+        "description": "Vestidos ou macacões", "sort": 5},
+    {"_id": "629d286bec74d540eb5fb0ec", "name": "Acessórios de cabeça",
+        "description": "Bonés, chapéus, óculos, brincos ou laços", "sort": 6},
+    {"_id": "629d286bec74d540eb5fb0ed", "name": "Acessórios de pescoço",
+        "description": "Colares, correntes, gravatas ou cachecóis", "sort": 7},
+    {"_id": "629d286bec74d540eb5fb0ee", "name": "Acessórios de braços e mãos",
+        "description": "Bolsas, pulseiras, relógios, anéis ou luvas", "sort": 8},
+    {"_id": "629d286bec74d540eb5fb0ef", "name": "Cintura",
+        "description": "Cintos ou laços", "sort": 9}
 ]
 clothes = [
     {
@@ -248,49 +248,49 @@ clothes = [
         ],
         "type": "casual"
     },
-    # {
-    #     "_id": "62df6ea1183a033991f1ea0d",
-    #     "category_id": "629d286bec74d540eb5fb0ee",
-    #     "closet_id": "72177720299676310",
-    #     "image": "https://live.staticflickr.com/65535/52241887273_30de5e7d9e_n.jpg",
-    #     "occasions": [
-    #         "6315604bdaf4e3d095035212",
-    #         "6315604bdaf4e3d095035213",
-    #         "6315604bdaf4e3d095035214",
-    #         "6315604bdaf4e3d095035216",
-    #         "6315604bdaf4e3d095035217",
-    #         "6315604bdaf4e3d095035219",
-    #         "6315604bdaf4e3d09503521a",
-    #         "6315604bdaf4e3d09503521c",
-    #         "6315604bdaf4e3d09503521e"
-    #     ],
-    #     "seasons": [
-    #         "primavera",
-    #         "verão",
-    #         "inverno",
-    #         "outono"
-    #     ],
-    #     "type": "casual"
-    # },
-    # {
-    #     "_id": "62df6fcb183a033991f1ea0e",
-    #     "category_id": "629d286bec74d540eb5fb0ec",
-    #     "closet_id": "72177720299676310",
-    #     "image": "https://live.staticflickr.com/65535/52242371835_00e15ba8cc_n.jpg",
-    #     "occasions": [
-    #         "6315604bdaf4e3d095035213",
-    #         "6315604bdaf4e3d095035217",
-    #         "6315604bdaf4e3d09503521a",
-    #         "6315604bdaf4e3d09503521b",
-    #         "6315604bdaf4e3d09503521c",
-    #         "6315604bdaf4e3d09503521d"
-    #     ],
-    #     "seasons": [
-    #         "primavera",
-    #         "verão"
-    #     ],
-    #     "type": "casual"
-    # },
+    {
+        "_id": "62df6ea1183a033991f1ea0d",
+        "category_id": "629d286bec74d540eb5fb0ee",
+        "closet_id": "72177720299676310",
+        "image": "https://live.staticflickr.com/65535/52241887273_30de5e7d9e_n.jpg",
+        "occasions": [
+            "6315604bdaf4e3d095035212",
+            "6315604bdaf4e3d095035213",
+            "6315604bdaf4e3d095035214",
+            "6315604bdaf4e3d095035216",
+            "6315604bdaf4e3d095035217",
+            "6315604bdaf4e3d095035219",
+            "6315604bdaf4e3d09503521a",
+            "6315604bdaf4e3d09503521c",
+            "6315604bdaf4e3d09503521e"
+        ],
+        "seasons": [
+            "primavera",
+            "verão",
+            "inverno",
+            "outono"
+        ],
+        "type": "casual"
+    },
+    {
+        "_id": "62df6fcb183a033991f1ea0e",
+        "category_id": "629d286bec74d540eb5fb0ec",
+        "closet_id": "72177720299676310",
+        "image": "https://live.staticflickr.com/65535/52242371835_00e15ba8cc_n.jpg",
+        "occasions": [
+            "6315604bdaf4e3d095035213",
+            "6315604bdaf4e3d095035217",
+            "6315604bdaf4e3d09503521a",
+            "6315604bdaf4e3d09503521b",
+            "6315604bdaf4e3d09503521c",
+            "6315604bdaf4e3d09503521d"
+        ],
+        "seasons": [
+            "primavera",
+            "verão"
+        ],
+        "type": "casual"
+    },
     {
         "_id": "62e881a9d778ffcff674dace",
         "category_id": "629d286bec74d540eb5fb0e7",
@@ -331,48 +331,48 @@ clothes = [
         ],
         "type": "casual"
     },
-    # {
-    #     "_id": "62fc60f398e43430688253f8",
-    #     "category_id": "629d286bec74d540eb5fb0ec",
-    #     "closet_id": "72177720299676310",
-    #     "image": "https://live.staticflickr.com/65535/52291172091_87173b6664_n.jpg",
-    #     "occasions": [
-    #         "6315604bdaf4e3d095035213",
-    #         "6315604bdaf4e3d095035216",
-    #         "6315604bdaf4e3d095035217",
-    #         "6315604bdaf4e3d09503521a",
-    #         "6315604bdaf4e3d09503521b",
-    #         "6315604bdaf4e3d09503521d"
-    #     ],
-    #     "seasons": [
-    #         "primavera",
-    #         "verão"
-    #     ],
-    #     "type": "casual"
-    # },
-    # {
-    #     "_id": "62fc62a098e43430688253fa",
-    #     "category_id": "629d286bec74d540eb5fb0ee",
-    #     "closet_id": "72177720299676310",
-    #     "image": "https://live.staticflickr.com/65535/52291185188_0dd455be71_n.jpg",
-    #     "occasions": [
-    #         "6315604bdaf4e3d095035213",
-    #         "6315604bdaf4e3d095035214",
-    #         "6315604bdaf4e3d095035215",
-    #         "6315604bdaf4e3d095035216",
-    #         "6315604bdaf4e3d095035217",
-    #         "6315604bdaf4e3d095035218",
-    #         "6315604bdaf4e3d095035219",
-    #         "6315604bdaf4e3d09503521a"
-    #     ],
-    #     "seasons": [
-    #         "primavera",
-    #         "verão",
-    #         "outono",
-    #         "inverno"
-    #     ],
-    #     "type": "casual"
-    # },
+    {
+        "_id": "62fc60f398e43430688253f8",
+        "category_id": "629d286bec74d540eb5fb0ec",
+        "closet_id": "72177720299676310",
+        "image": "https://live.staticflickr.com/65535/52291172091_87173b6664_n.jpg",
+        "occasions": [
+            "6315604bdaf4e3d095035213",
+            "6315604bdaf4e3d095035216",
+            "6315604bdaf4e3d095035217",
+            "6315604bdaf4e3d09503521a",
+            "6315604bdaf4e3d09503521b",
+            "6315604bdaf4e3d09503521d"
+        ],
+        "seasons": [
+            "primavera",
+            "verão"
+        ],
+        "type": "casual"
+    },
+    {
+        "_id": "62fc62a098e43430688253fa",
+        "category_id": "629d286bec74d540eb5fb0ee",
+        "closet_id": "72177720299676310",
+        "image": "https://live.staticflickr.com/65535/52291185188_0dd455be71_n.jpg",
+        "occasions": [
+            "6315604bdaf4e3d095035213",
+            "6315604bdaf4e3d095035214",
+            "6315604bdaf4e3d095035215",
+            "6315604bdaf4e3d095035216",
+            "6315604bdaf4e3d095035217",
+            "6315604bdaf4e3d095035218",
+            "6315604bdaf4e3d095035219",
+            "6315604bdaf4e3d09503521a"
+        ],
+        "seasons": [
+            "primavera",
+            "verão",
+            "outono",
+            "inverno"
+        ],
+        "type": "casual"
+    },
     {
         "_id": "6316c43f9ae66942d36d846e",
         "category_id": "629d286bec74d540eb5fb0e7",
@@ -798,14 +798,14 @@ def generate_lookset(categories, fetch_clothes, daily_look_setup, type):
         look_template[category_id] = None
         clothes.append(None)  # recursive mode only
     print(f"clothes_by_category length: {len(clothes_by_category)}")
-    # lookset = generate_lookset_look_and_add_into_lookset3(
-    lookset = generate_lookset_look_and_add_into_lookset2( # recursive mode only
+    lookset = generate_lookset_look_and_add_into_lookset3(
+    # lookset = generate_lookset_look_and_add_into_lookset2( # recursive mode only
         clothes_by_category,
         occasion_ids,
         lookset,
         look_template,
         type
-        , clothes # recursive mode only
+        # , clothes # recursive mode only
     )
     return lookset
 
@@ -819,7 +819,7 @@ response = generate_lookset(
 # Serializing json
 json_object = json.dumps(response, indent=4)
 # Writing to sample.json
-with open("recursive2.json", "w") as outfile:
-# with open("procedure2.json", "w") as outfile:
+# with open("recursive3.json", "w") as outfile:
+with open("procedure3.json", "w") as outfile:
     outfile.write(json_object)
 print(len(response))
