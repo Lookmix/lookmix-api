@@ -1,6 +1,205 @@
 import json
 from functools import reduce
 
+seasons = [
+  "Primavera",
+  "Verão",
+  "Outono",
+  "Inverno"
+]
+occasions = [
+    {
+        "_id": "6315604bdaf4e3d095035212",
+        "name": "básico/comum",
+        "card_look_title": "Look básico/comum",
+        "type": "rotina",
+        "tags": [
+            "básico",
+            "básica",
+            "comum",
+            "basic",
+            "limpa",
+            "lisa",
+            "limpo",
+            "liso",
+            "neutro",
+            "neutra"
+        ]
+    },
+    {
+        "_id": "6315604bdaf4e3d095035213",
+        "name": "dia"
+    },
+    {
+        "_id": "6315604bdaf4e3d095035214",
+        "name": "noite"
+    },
+    {
+        "_id": "6315604bdaf4e3d095035215",
+        "name": "trabalho",
+        "card_look_title": "Look para o trabalho",
+        "type": "rotina",
+        "tags": [
+            "trabalho",
+            "formal",
+            "dress code",
+            "uniforme"
+        ]
+    },
+    {
+        "_id": "6315604bdaf4e3d095035216",
+        "name": "curso/faculdade",
+        "card_look_title": "Look para curso/faculdade",
+        "type": "rotina",
+        "tags": [
+            "curso",
+            "faculdade",
+            "escola",
+            "universidade",
+            "universitário",
+            "universitária",
+            "estudante",
+            "colegial",
+            "cursinho",
+            "uniforme",
+            "farda"
+        ]
+    },
+    {
+        "_id": "6315604bdaf4e3d095035217",
+        "name": "festa/evento",
+        "card_look_title": "Look para festa/evento",
+        "type": "eventual",
+        "tags": [
+            "show",
+            "música",
+            "comemoração",
+            "festa",
+            "balada",
+            "evento",
+            "aniversário",
+            "festival",
+            "atração",
+            "diversão"
+        ]
+    },
+    {
+        "_id": "6315604bdaf4e3d095035218",
+        "name": "restaurante",
+        "card_look_title": "Look para restaurante/bar",
+        "type": "eventual",
+        "tags": [
+            "restaurante",
+            "bar",
+            "barzinho",
+            "buteco",
+            "gastronomia"
+        ]
+    },
+    {
+        "_id": "6315604bdaf4e3d095035219",
+        "name": "shopping",
+        "card_look_title": "Look para shopping/compras",
+        "type": "eventual",
+        "tags": [
+            "shopping",
+            "compras"
+        ]
+    },
+    {
+        "_id": "6315604bdaf4e3d09503521a",
+        "name": "viagem",
+        "card_look_title": "Look para viagem",
+        "type": "eventual",
+        "tags": [
+            "viagem",
+            "férias"
+        ]
+    },
+    {
+        "_id": "6315604bdaf4e3d09503521b",
+        "name": "praia",
+        "card_look_title": "Look para praia/piscina",
+        "type": "eventual",
+        "tags": [
+            "praia",
+            "piscina",
+            "verão",
+            "sol",
+            "roupa de banho"
+        ]
+    },
+    {
+        "_id": "6315604bdaf4e3d09503521c",
+        "name": "atividade física",
+        "card_look_title": "Look para atividade física",
+        "type": "rotina",
+        "tags": [
+            "exercício",
+            "academia",
+            "musculação",
+            "esporte",
+            "futebol",
+            "corrida",
+            "caminhada",
+            "bicicleta",
+            "esportivo",
+            "malhar",
+            "treino"
+        ]
+    },
+    {
+        "_id": "6315604bdaf4e3d09503521d",
+        "name": "natureza",
+        "card_look_title": "Look para natureza",
+        "type": "eventual",
+        "tags": [
+            "sítio",
+            "chácara",
+            "natureza",
+            "parque",
+            "trilha",
+            "jardim",
+            "praça",
+            "acampamento"
+        ]
+    },
+    {
+        "_id": "6315604bdaf4e3d09503521e",
+        "name": "entretenimento urbano",
+        "card_look_title": "Look para entretenimento urbano",
+        "type": "eventual",
+        "tags": [
+            "cinema",
+            "teatro",
+            "estádio de futebol",
+            "museu",
+            "cultura",
+            "arte"
+        ]
+    },
+    {
+        "_id": "6315604bdaf4e3d09503521f",
+        "name": "encontro/date",
+        "card_look_title": "Look para encontro/date",
+        "type": "eventual",
+        "tags": [
+            "encontro",
+            "date"
+        ]
+    },
+    {
+        "_id": "6315604bdaf4e3d095035220",
+        "name": "prática religiosa",
+        "card_look_title": "Look para prática religiosa",
+        "type": "rotina",
+        "tags": [
+            "templo religioso",
+            "religiso",
+            "religisa"
+        ]
+    }
+]
 categories = [
     {"_id": "629d286bec74d540eb5fb0e7", "name": "Roupas de cima",
         "description": "Camisas, camisetas, polos, blusas ou regatas", "sort": 1},
@@ -249,49 +448,6 @@ clothes = [
         "type": "casual"
     },
     {
-        "_id": "62df6ea1183a033991f1ea0d",
-        "category_id": "629d286bec74d540eb5fb0ee",
-        "closet_id": "72177720299676310",
-        "image": "https://live.staticflickr.com/65535/52241887273_30de5e7d9e_n.jpg",
-        "occasions": [
-            "6315604bdaf4e3d095035212",
-            "6315604bdaf4e3d095035213",
-            "6315604bdaf4e3d095035214",
-            "6315604bdaf4e3d095035216",
-            "6315604bdaf4e3d095035217",
-            "6315604bdaf4e3d095035219",
-            "6315604bdaf4e3d09503521a",
-            "6315604bdaf4e3d09503521c",
-            "6315604bdaf4e3d09503521e"
-        ],
-        "seasons": [
-            "primavera",
-            "verão",
-            "inverno",
-            "outono"
-        ],
-        "type": "casual"
-    },
-    {
-        "_id": "62df6fcb183a033991f1ea0e",
-        "category_id": "629d286bec74d540eb5fb0ec",
-        "closet_id": "72177720299676310",
-        "image": "https://live.staticflickr.com/65535/52242371835_00e15ba8cc_n.jpg",
-        "occasions": [
-            "6315604bdaf4e3d095035213",
-            "6315604bdaf4e3d095035217",
-            "6315604bdaf4e3d09503521a",
-            "6315604bdaf4e3d09503521b",
-            "6315604bdaf4e3d09503521c",
-            "6315604bdaf4e3d09503521d"
-        ],
-        "seasons": [
-            "primavera",
-            "verão"
-        ],
-        "type": "casual"
-    },
-    {
         "_id": "62e881a9d778ffcff674dace",
         "category_id": "629d286bec74d540eb5fb0e7",
         "closet_id": "72177720299676310",
@@ -332,48 +488,6 @@ clothes = [
         "type": "casual"
     },
     {
-        "_id": "62fc60f398e43430688253f8",
-        "category_id": "629d286bec74d540eb5fb0ec",
-        "closet_id": "72177720299676310",
-        "image": "https://live.staticflickr.com/65535/52291172091_87173b6664_n.jpg",
-        "occasions": [
-            "6315604bdaf4e3d095035213",
-            "6315604bdaf4e3d095035216",
-            "6315604bdaf4e3d095035217",
-            "6315604bdaf4e3d09503521a",
-            "6315604bdaf4e3d09503521b",
-            "6315604bdaf4e3d09503521d"
-        ],
-        "seasons": [
-            "primavera",
-            "verão"
-        ],
-        "type": "casual"
-    },
-    {
-        "_id": "62fc62a098e43430688253fa",
-        "category_id": "629d286bec74d540eb5fb0ee",
-        "closet_id": "72177720299676310",
-        "image": "https://live.staticflickr.com/65535/52291185188_0dd455be71_n.jpg",
-        "occasions": [
-            "6315604bdaf4e3d095035213",
-            "6315604bdaf4e3d095035214",
-            "6315604bdaf4e3d095035215",
-            "6315604bdaf4e3d095035216",
-            "6315604bdaf4e3d095035217",
-            "6315604bdaf4e3d095035218",
-            "6315604bdaf4e3d095035219",
-            "6315604bdaf4e3d09503521a"
-        ],
-        "seasons": [
-            "primavera",
-            "verão",
-            "outono",
-            "inverno"
-        ],
-        "type": "casual"
-    },
-    {
         "_id": "6316c43f9ae66942d36d846e",
         "category_id": "629d286bec74d540eb5fb0e7",
         "closet_id": "72177720299676310",
@@ -402,11 +516,11 @@ daily_look_setup = {
             "occasions": [
                 {
                     "casual": [
-                        "dia"
+                        "6315604bdaf4e3d095035213" # "dia"
                     ],
                     "occasion_id": "6315604bdaf4e3d095035220",
                     "social": [
-                        "noite"
+                        "6315604bdaf4e3d095035214" # "noite"
                     ]
                 }
             ],
@@ -417,7 +531,7 @@ daily_look_setup = {
             "occasions": [
                 {
                     "casual": [
-                        "dia"
+                        "6315604bdaf4e3d095035213" # "dia"
                     ],
                     "occasion_id": "6315604bdaf4e3d095035215",
                     "social": []
@@ -430,14 +544,14 @@ daily_look_setup = {
             "occasions": [
                 {
                     "casual": [
-                        "dia"
+                        "6315604bdaf4e3d095035213" # "dia"
                     ],
                     "occasion_id": "6315604bdaf4e3d095035215",
                     "social": []
                 },
                 {
                     "casual": [
-                        "noite"
+                        "6315604bdaf4e3d095035214" # "noite"
                     ],
                     "occasion_id": "6315604bdaf4e3d09503521c",
                     "social": []
@@ -450,14 +564,14 @@ daily_look_setup = {
             "occasions": [
                 {
                     "casual": [
-                        "dia"
+                        "6315604bdaf4e3d095035213" # "dia"
                     ],
                     "occasion_id": "6315604bdaf4e3d095035215",
                     "social": []
                 },
                 {
                     "casual": [
-                        "noite"
+                        "6315604bdaf4e3d095035214" # "noite"
                     ],
                     "occasion_id": "6315604bdaf4e3d095035212",
                     "social": []
@@ -475,7 +589,7 @@ daily_look_setup = {
             "occasions": [
                 {
                     "casual": [
-                        "dia"
+                        "6315604bdaf4e3d095035213" # "dia"
                     ],
                     "occasion_id": "6315604bdaf4e3d095035212",
                     "social": []
@@ -493,26 +607,75 @@ daily_look_setup = {
 }
 type = "casual"
 
+def get_casual_look_count_by_day_of_week():
+    look_count_by_day_of_week = []
+    days_of_week = daily_look_setup["days_of_week"]
+    for day in days_of_week:
+        daily_look_count = 0
+        occasion_ids = []
+        for occasion in day["occasions"]:
+            daily_look_count += len(occasion["casual"])
+            occasion_ids.append(occasion["occasion_id"])
+        occasion_and_look_count_by_day_of_week = {
+            "daily_look_count": daily_look_count,
+            "occasion_ids": occasion_ids
+        }
+        look_count_by_day_of_week.append(occasion_and_look_count_by_day_of_week)
+    return look_count_by_day_of_week
+
+
+def add_looks_into_week():
+    # TODO: ORGANIZAR TODOS OS LOOKS DURANTE OS DIAS DA SEMANA
+
+    # 83 LOOKS CASUAL
+    # DOM 1 OCASIÕES/LOOK
+    # SEG 2 OCASIÕES/LOOK
+    # TER 2 OCASIÕES/LOOK
+    # QUA 3 OCASIÕES/LOOK
+    # QUI 1 OCASIÕES/LOOK
+    # SEX 2 OCASIÕES/LOOK
+    # SAB 2 OCASIÕES/LOOK
+
+    # LOOKSET 
+    # CREATED_AT: 2022-01-22 23:25:10.456
+    # DAYS_COUNT: 1 -> INCREMENTADO DIARIAMENTE (+=1)
+
+    # - HOJE = DOM -> DAYS_COUNT = 1
+    # - CONSULTA LOOKS NO DB COM O RANKING === 1
+    # - RESULTADO RETORNADO DEVE REFLETIR A EXATA
+    # QUANTIDADE DE LOOKS POR OCASIÃO, DEFINIDOS PARA 
+    # O DIA DA SEMANA (DOM)
+    return
+
+
 def get_by_index(array, index):
     try:
         return array[index]
     except IndexError as e:
         return False
 
-def generate_lookset_look(lookset, look, type, occasion_id):
+def look_already_exist(lookset, look):
     lookset_stringfy = json.dumps(lookset)
     look_stringfy = json.dumps(look)
     if look_stringfy in lookset_stringfy:
+        return True
+    return False
+
+def generate_lookset_look(lookset, look, type, occasion_id):
+    if look_already_exist(lookset, look):
         return
-    keys = look.keys()
-    keys = filter(lambda key: look[key] != None, keys)
-    if len(list(keys)) > 0:
+    category_ids = look.keys()
+    category_ids = list(filter(lambda category_id: look[category_id] != None, category_ids))
+    if len(category_ids) > 2:
+        seasons = reduce(lambda prev, curr_category_id: 
+            list(prev) + list(look[curr_category_id].get("seasons")), category_ids, []
+        )
         result = {
             "data": look,
             "occasion": occasion_id,
-            "period": None,
-            "timestamp": None,
-            "season": None,
+            "period": None, # day/night
+            "sort": None,
+            "season": seasons,
             "type": type
         }
         return result
@@ -812,17 +975,27 @@ def generate_lookset(categories, fetch_clothes, daily_look_setup, type):
     )
     return lookset
 
+response = []
+for season in seasons:
+    clothes_by_season = filter(lambda clothe: season.lower() in clothe.get(
+            "seasons"), clothes)
+    clothes_by_season = list(clothes_by_season)
+    print("clothes by season:", len(clothes_by_season))
+    result = generate_lookset(
+        categories=categories,
+        daily_look_setup=daily_look_setup,
+        fetch_clothes=clothes_by_season,
+        type=type
+    )
+    for look in result:
+        if look_already_exist(response, look):
+            continue
+        response.append(look)
 
-response = generate_lookset(
-    categories=categories,
-    daily_look_setup=daily_look_setup,
-    fetch_clothes=clothes,
-    type=type
-)
 # Serializing json
 json_object = json.dumps(response, indent=4)
 # Writing to sample.json
-with open("recursive3.json", "w") as outfile:
-# with open("procedure3.json", "w") as outfile:
+with open("recursive4.json", "w") as outfile:
+# with open("procedure4.json", "w") as outfile:
     outfile.write(json_object)
 print(len(response))
