@@ -680,11 +680,15 @@ def set_looks_ranking(looks):
             lambda look: look.get("occasion") == occasion_id,
         looks))
     while len(result) < len(looks):
+        # print("lookcount_by_day_of_week", lookcount_by_day_of_week)
         for day_of_week in lookcount_by_day_of_week:
+            # print("day_of_week.get('occasion_ids')", day_of_week.get("occasion_ids"))
             for occasion_id in day_of_week.get("occasion_ids"):
                 if occasion_id not in occasions:
+                    print(f"{occasion_id} not in {occasions}")
                     continue
                 if len(looks_by_occasion[occasion_id]) < 1:
+                    print(f"list of {occasion_id} has length {len(looks_by_occasion[occasion_id])} that is < 1")
                     continue
                 # FAZ O POP DESSE ELEMENTO
                 look = looks_by_occasion[occasion_id].pop(0)
@@ -698,7 +702,7 @@ def set_looks_ranking(looks):
 
     # LOOKSET 
     # CREATED_AT: 2022-01-22 23:25:10.456
-    # DAYS_COUNT: 1 -> INCREMENTADO DIARIAMENTE (+=1)
+    # DAYS_COUNT: 1 -> count days between created_at and today (not persistent)
 
     # - HOJE = DOM -> DAYS_COUNT = 1
     # - CONSULTA LOOKS NO DB COM O RANKING === 1
@@ -1015,14 +1019,14 @@ def generate_lookset(categories, fetch_clothes, type, occasion_id):
         look_template[category_id] = None
         clothes.append(None)  # recursive mode only
     print(f"clothes_by_category length: {len(clothes_by_category)}")
-    lookset = generate_lookset_look_and_add_into_lookset3(
-    # lookset = generate_lookset_look_and_add_into_lookset2( # recursive mode only
+    # lookset = generate_lookset_look_and_add_into_lookset3(
+    lookset = generate_lookset_look_and_add_into_lookset2( # recursive mode only
         clothes_by_category,
         occasion_id,
         [], # lookset
         look_template,
         type
-        # , clothes # recursive mode only
+        , clothes # recursive mode only
     )
     return lookset
 
@@ -1058,7 +1062,7 @@ response = set_looks_ranking(response)
 # Serializing json
 json_object = json.dumps(response, indent=4)
 # Writing to sample.json
-# with open("recursive4.json", "w") as outfile:
-with open("procedure4.json", "w") as outfile:
+with open("recursive4.json", "w") as outfile:
+# with open("procedure4.json", "w") as outfile:
     outfile.write(json_object)
 print(len(response))
