@@ -1,24 +1,36 @@
 {
-    "$schema": "http://json-schema.org/draft-04/schema#",
-    "$id": "lookset",
-    "type": "object",
-    "properties": {
-      "_id": {
-        "type": "string"
-      },
-      "user_id": {
-        "type": "string"
-      },
-      "looks": {
-        "type": "array",
-        "items": {
-            "$ref": "look.json"
-        }
-      }
-    },
-    "required": [
-      "user_id",
-      "looks"
-    ],
-    "additionalProperties": false
+	"$schema": "http://json-schema.org/draft-04/schema#",
+	"$id": "lookset",
+	"type": "object",
+	"properties": {
+		"_id": {
+			"type": "string"
+		},
+		"user_id": {
+			"type": "string"
+		},
+		"looks": {
+			"type": "array",
+			"items": {
+				"$ref": "look.json"
+			}
+		},
+		"created_at": {
+			"type": "string"
+		},
+		"days_count": {
+			"type": "integer"
+		},
+		"total_days": {
+			"type": "integer"
+		}
+	},
+	"required": [
+		"user_id",
+		"looks",
+		"created_at",
+		"days_count",
+		"total_days"
+	],
+	"additionalProperties": false
 }
