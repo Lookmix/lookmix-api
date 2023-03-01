@@ -94,17 +94,35 @@ def __is_sort_duplicated(days_of_week):
 
 def get_looks(
     user_id, 
-    type, 
+    type=None, 
     timestamp=None,
 	occasion=None,
 	season=None,
 	period=None
 ):
-    result = look_repository.get_lookset(user_id, type=type)
-    if result: 
+    result = look_repository.get_lookset(user_id)
+    if result:
         return result
     # len(result.get("looks")) < 1: empty closet, no way to generate lookset
-    return 0 # in progress lookset generate
+    return -1 # in progress lookset generate
+
+
+def __save_lookset(user_id, looks):
+    total_days = 0
+    for look in looks:
+        ranking = look.get("sort")
+        if ranking > total_days:
+            total_days = ranking
+    lookset = {
+        "user_id": user_id,
+        "looks": looks,
+        "created_at": str(datetime.now()),
+        "days_count": 0,
+        "total_days": total_days
+    }
+    validation.assert_valid_schema(lookset, "lookset.json")
+    result = look_repository.save_lookset(lookset, user_id)
+    return result
 
 
 # Consumer
@@ -113,23 +131,17 @@ def generate_lookset(queue, user_id):
     while True:
         queue.get()
         queue.task_done()
+        __save_lookset(user_id, []) # reset lookset
         daily_look_setup = get_daily_look_setup_by_user_id(user_id)
         days_of_week = daily_look_setup.get("days_of_week")
+        categories = category_service.get_categories()
+        seasons = util_service.get_seasons()
         casual_clothes = __get_casual_clothes(user_id)
-        casual_looks = __generate_looks_by_type_and_season(days_of_week, casual_clothes, "casual")
+        casual_looks = __generate_looks_by_type_and_season(days_of_week, casual_clothes, "casual", categories, seasons)
         social_clothes = __get_social_clothes(user_id)
-        social_looks = __generate_looks_by_type_and_season(days_of_week, social_clothes, "social")
+        social_looks = __generate_looks_by_type_and_season(days_of_week, social_clothes, "social", categories, seasons)
         looks = casual_looks + social_looks
-        total_days = looks[len(looks)-1].get("sort")
-        lookset = {
-            "user_id": user_id,
-            "looks": looks,
-            "created_at": datetime.now(),
-            "days_count": 0,
-            "total_days": total_days
-        }
-        validation.assert_valid_schema(lookset, "lookset.json")
-        result = look_repository.save_lookset(lookset, user_id)
+        result = __save_lookset(user_id, looks)
         print(f"updated: {result}")
 
 
@@ -149,9 +161,7 @@ def dispatch_look_generation(user_id):
     queue.join()
 
 
-def __generate_looks_by_type_and_season(days_of_week, clothes, type):
-    categories = category_service.get_categories()
-    seasons = util_service.get_seasons()
+def __generate_looks_by_type_and_season(days_of_week, clothes, type, categories, seasons):
     looks = []
     occasion_ids = __get_occasions_from_daily_look_setup(days_of_week)
     for occasion_id in occasion_ids:
@@ -214,7 +224,8 @@ def __generate_clothe_combinations_metadata(looks, look, type, occasion_id):
             "period": "-", # day/night
             "sort": None,
             "season": seasons,
-            "type": type
+            "type": type,
+            "repeat_count": 0
         }
         return result
 
