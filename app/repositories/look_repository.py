@@ -82,6 +82,9 @@ def get_lookset(
 		{
 			PROJECT_KEY: {
 				"user_id": 1,
+				"created_at": 1,
+				"days_count": 1,
+				"total_days": 1,
 				"looks": {
 					FILTER_KEY: {
 						INPUT_KEY: "$looks",
@@ -96,7 +99,8 @@ def get_lookset(
 	if len(lookset) == 1:
 		lookset = lookset[0]
 		lookset[ID_KEY] = str(lookset[ID_KEY])
-	return lookset
+		return lookset
+	return 0
 
 def update_lookset_casual(user_id, data):
 	result = db[LOOKSET_COLLECTION].update_one(
