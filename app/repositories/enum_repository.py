@@ -8,6 +8,8 @@ ID_KEY = "_id"
 SET_KEY = "$set"
 PUSH_KEY = "$push"
 EACH_KEY = "$each"
+MATCH_KEY = "$match"
+PROJECT_KEY = "$project"
 ID_ENUM = "9b05ef6d-18e8-49d7-9a94-8e1f59fbb2f8"
 
 def save(enum):
@@ -16,12 +18,17 @@ def save(enum):
 
 
 def get_seasons():
-    seasons = db[ENUM_COLLECTION].find_one(
-        { ID_KEY: ID_ENUM },
-        { SEASONS_KEY: 1 }
-    )
-    if seasons and len(seasons) > 0:
-        return seasons
+    seasons = db[ENUM_COLLECTION].aggregate([
+		{ MATCH_KEY: { ID_KEY: ID_ENUM } },
+		{
+			PROJECT_KEY: {
+				"seasons": 1
+			}
+		}
+	])
+    seasons = list(seasons)
+    if len(seasons) > 0:
+        return seasons[0].get("seasons")
     init_seasons()
     return get_seasons()
 
