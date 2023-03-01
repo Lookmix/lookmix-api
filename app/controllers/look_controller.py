@@ -97,12 +97,21 @@ def get_daily_look_setup_by_user_id():
             "error": e.args[0]
         }), 400
 
-@bp.route("/<type>", methods=["GET"])
+@bp.route("/list", methods=["GET"])
 @jwt_required()
-def get_looks(type):
+def get_lookset():
 	try:
 		user_id = get_jwt_identity()
-		response = look_service.get_looks(user_id, type)
+		response = look_service.get_looks(user_id)
+		if response == -1:
+			look_service.dispatch_look_generation(user_id)
+			return json.dumps({
+				"user_id": "",
+				"looks": [],
+				"created_at": "",
+				"days_count": 0,
+				"total_days": 0
+			}), 202
 		return json.dumps(response), 200
 	except Exception as e:
 		print(e)
