@@ -332,6 +332,24 @@ clothes = [
         "type": "casual"
     },
     {
+        "_id": "62c9c91d336080751568ceae",
+        "category_id": "629d286bec74d540eb5fb0e7",
+        "closet_id": "72177720299676310",
+        "image": "https://live.staticflickr.com/65535/52204773396_8dcc9479d5_n.jpg",
+        "occasions": [
+            "6315604bdaf4e3d095035214",
+            "6315604bdaf4e3d095035215",
+            "6315604bdaf4e3d095035218",
+            "6315604bdaf4e3d095035217",
+            "6315604bdaf4e3d09503521a"
+        ],
+        "seasons": [
+            "inverno",
+            "outono"
+        ],
+        "type": "social"
+    },
+    {
         "_id": "62c9d85bd168f9c20acb7950",
         "category_id": "629d286bec74d540eb5fb0e7",
         "closet_id": "72177720299676310",
@@ -488,6 +506,27 @@ clothes = [
         "type": "casual"
     },
     {
+        "_id": "62fc629e98e43430688253f9",
+        "category_id": "629d286bec74d540eb5fb0ee",
+        "closet_id": "72177720299676310",
+        "image": "https://live.staticflickr.com/65535/52291448274_69f0ca273c_n.jpg",
+        "occasions": [
+            "6315604bdaf4e3d095035214",
+            "6315604bdaf4e3d095035213",
+            "6315604bdaf4e3d095035215",
+            "6315604bdaf4e3d095035217",
+            "6315604bdaf4e3d095035218",
+            "6315604bdaf4e3d09503521a"
+        ],
+        "seasons": [
+            "primavera",
+            "verão",
+            "inverno",
+            "outono"
+        ],
+        "type": "social"
+    },
+    {
         "_id": "6316c43f9ae66942d36d846e",
         "category_id": "629d286bec74d540eb5fb0e7",
         "closet_id": "72177720299676310",
@@ -509,102 +548,112 @@ clothes = [
     }
 ]
 daily_look_setup = {
-    "_id": "634e227711217434f4f266a8",
-    "days_of_week": [
+  "_id": "63d708d10eea647190f3cb7f",
+  "days_of_week": [
+    {
+      "day_of_week": "domingo",
+      "occasions": [
         {
-            "day_of_week": "domingo",
-            "occasions": [
-                {
-                    "casual": [
-                        "6315604bdaf4e3d095035213" # "dia"
-                    ],
-                    "occasion_id": "6315604bdaf4e3d095035220",
-                    "social": [
-                        "6315604bdaf4e3d095035214" # "noite"
-                    ]
-                }
-            ],
-            "sort": 0
-        },
-        {
-            "day_of_week": "segunda",
-            "occasions": [
-                {
-                    "casual": [
-                        "6315604bdaf4e3d095035213" # "dia"
-                    ],
-                    "occasion_id": "6315604bdaf4e3d095035215",
-                    "social": []
-                }
-            ],
-            "sort": 1
-        },
-        {
-            "day_of_week": "terça",
-            "occasions": [
-                {
-                    "casual": [
-                        "6315604bdaf4e3d095035213" # "dia"
-                    ],
-                    "occasion_id": "6315604bdaf4e3d095035215",
-                    "social": []
-                },
-                {
-                    "casual": [
-                        "6315604bdaf4e3d095035214" # "noite"
-                    ],
-                    "occasion_id": "6315604bdaf4e3d09503521c",
-                    "social": []
-                }
-            ],
-            "sort": 2
-        },
-        {
-            "day_of_week": "quarta",
-            "occasions": [
-                {
-                    "casual": [
-                        "6315604bdaf4e3d095035213" # "dia"
-                    ],
-                    "occasion_id": "6315604bdaf4e3d095035215",
-                    "social": []
-                },
-                {
-                    "casual": [
-                        "6315604bdaf4e3d095035214" # "noite"
-                    ],
-                    "occasion_id": "6315604bdaf4e3d095035212",
-                    "social": []
-                }
-            ],
-            "sort": 3
-        },
-        {
-            "day_of_week": "quinta",
-            "occasions": [],
-            "sort": 4
-        },
-        {
-            "day_of_week": "sexta",
-            "occasions": [
-                {
-                    "casual": [
-                        "6315604bdaf4e3d095035213" # "dia"
-                    ],
-                    "occasion_id": "6315604bdaf4e3d095035212",
-                    "social": []
-                }
-            ],
-            "sort": 5
-        },
-        {
-            "day_of_week": "sábado",
-            "occasions": [],
-            "sort": 6
+          "casual": [
+            "6315604bdaf4e3d095035213"
+          ],
+          "occasion_id": "6315604bdaf4e3d095035220",
+          "social": [
+            "6315604bdaf4e3d095035214"
+          ]
         }
-    ],
-    "user_id": "6298301fed1909971532ca92"
+      ],
+      "sort": 0
+    },
+    {
+      "day_of_week": "segunda",
+      "occasions": [
+        {
+          "casual": [
+            "6315604bdaf4e3d095035213"
+          ],
+          "occasion_id": "6315604bdaf4e3d095035215",
+          "social": []
+        }
+      ],
+      "sort": 1
+    },
+    {
+      "day_of_week": "terça",
+      "occasions": [
+        {
+          "casual": [
+            "6315604bdaf4e3d095035214"
+          ],
+          "occasion_id": "6315604bdaf4e3d09503521c",
+          "social": []
+        }
+      ],
+      "sort": 2
+    },
+    {
+      "day_of_week": "quarta",
+      "occasions": [
+        {
+          "casual": [
+            "6315604bdaf4e3d095035213"
+          ],
+          "occasion_id": "6315604bdaf4e3d095035212",
+          "social": []
+        },
+        {
+          "casual": [],
+          "occasion_id": "6315604bdaf4e3d095035215",
+          "social": [
+            "6315604bdaf4e3d095035214"
+          ]
+        }
+      ],
+      "sort": 3
+    },
+    {
+      "day_of_week": "quinta",
+      "occasions": [
+        {
+          "casual": [
+            "6315604bdaf4e3d095035213"
+          ],
+          "occasion_id": "6315604bdaf4e3d095035215",
+          "social": []
+        }
+      ],
+      "sort": 4
+    },
+    {
+      "day_of_week": "sexta",
+      "occasions": [
+        {
+          "casual": [
+            "6315604bdaf4e3d095035213"
+          ],
+          "occasion_id": "6315604bdaf4e3d095035215",
+          "social": []
+        }
+      ],
+      "sort": 5
+    },
+    {
+      "day_of_week": "sábado",
+      "occasions": [
+        {
+          "casual": [
+            "6315604bdaf4e3d095035213"
+          ],
+          "occasion_id": "6315604bdaf4e3d09503521c",
+          "social": []
+        }
+      ],
+      "sort": 6
+    }
+  ],
+  "user_id": "6298301fed1909971532ca92"
 }
+
 type = "casual"
 
 def get_look_count_by_day_of_week(casual=True):
@@ -625,36 +674,6 @@ def get_look_count_by_day_of_week(casual=True):
         }
         look_count_by_day_of_week.append(occasion_and_look_count_by_day_of_week)
     return look_count_by_day_of_week
-# [
-#     {
-#         'daily_look_count': 1, 
-#         'occasion_ids': ['6315604bdaf4e3d095035220']
-#     },
-#     {
-#         'daily_look_count': 1, 
-#         'occasion_ids': ['6315604bdaf4e3d095035215']
-#     },
-#     {
-#         'daily_look_count': 2, 
-#         'occasion_ids': ['6315604bdaf4e3d095035215', '6315604bdaf4e3d09503521c']
-#     },
-#     {
-#         'daily_look_count': 2, 
-#         'occasion_ids': ['6315604bdaf4e3d095035215', '6315604bdaf4e3d095035212']
-#     },
-#     {
-#         'daily_look_count': 0, 
-#         'occasion_ids': []
-#     },
-#     {
-#         'daily_look_count': 1, 
-#         'occasion_ids': ['6315604bdaf4e3d095035212']
-#     },
-#     {
-#         'daily_look_count': 0, 
-#         'occasion_ids': []
-#     }
-# ]
 
 
 def get_occasions_from_daily_look_setup():
