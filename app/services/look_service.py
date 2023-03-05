@@ -124,7 +124,6 @@ def __save_lookset(user_id, looks):
         "user_id": user_id,
         "looks": looks,
         "created_at": str(datetime.now()),
-        "days_count": 0,
         "total_days": total_days
     }
     validation.assert_valid_schema(lookset, "lookset.json")
@@ -316,11 +315,13 @@ def __get_look_count_by_day_of_week(days_of_week, type):
         daily_look_count = 0
         occasion_ids = []
         for occasion in day["occasions"]:
-            daily_look_count += len(occasion[type])
-            occasion_ids.append(occasion["occasion_id"])
+            occasions_length = len(occasion[type])
+            daily_look_count += occasions_length
+            if occasions_length > 0:
+                occasion_ids.append(occasion["occasion_id"])
         occasion_and_look_count_by_day_of_week = {
             "daily_look_count": daily_look_count,
-            "occasion_ids": occasion_ids
+            "occasion_ids": occasion_ids 
         }
         look_count_by_day_of_week.append(occasion_and_look_count_by_day_of_week)
     return look_count_by_day_of_week
@@ -351,6 +352,8 @@ def __set_looks_ranking(looks, days_of_week, type):
     # TODO: SORT BY WEATHER OF THE DAY
     return result
 
+# TODO: PERMITIR REPETIÇÃO DE LOOKS QUE COMPARTILHAM MAIS DE UMA OCASIÃO
+# TODO: LEVAR EM CONTA SE O LOOK É PARA O DIA OU PARA A NOITE
 
 def __get_casual_clothes(user_id):
     closet_id = __get_closet_id(user_id)
