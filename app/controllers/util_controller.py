@@ -11,8 +11,7 @@ bp = Blueprint("util", __name__)
 def get_seasons():
     try:
         response = util_service.get_seasons()
-
-        return json.dumps(response.get("seasons")), 200
+        return json.dumps(response), 200
     except Exception as e:
         return json.dumps({
             "message": "Erro ao tentar recuperar estações",
