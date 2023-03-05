@@ -6,23 +6,16 @@
 			"type": "object"
 		},
 		"period": {
-			"type": "string",
-			"enum": [
-				"dia",
-				"noite"
-			]
+			"type": "string"
 		},
 		"occasion": {
 			"type": "string"
 		},
 		"season": {
-			"type": "string",
-			"enum": [
-				"primavera",
-				"verão",
-				"outono",
-				"inverno"
-			]
+			"type": "array",
+			"items": {
+				"type": "string"
+			}
 		},
 		"type": {
 			"type": "string",
@@ -31,22 +24,21 @@
 				"social"
 			]
 		},
-		"repeat_count": {
+		"sort": {
 			"type": "integer"
 		},
-		"sort": {
+		"repeat_count": {
 			"type": "integer"
 		}
 	},
 	"required": [
 		"data",
-		"timestamp",
 		"period",
 		"occasion",
 		"season",
 		"type",
-		"repeat_count",
-		"sort"
+		"sort",
+		"repeat_count"
 	],
 	"additionalProperties": false
 }
