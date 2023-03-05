@@ -18,9 +18,6 @@
 		"created_at": {
 			"type": "string"
 		},
-		"days_count": {
-			"type": "integer"
-		},
 		"total_days": {
 			"type": "integer"
 		}
@@ -29,7 +26,6 @@
 		"user_id",
 		"looks",
 		"created_at",
-		"days_count",
 		"total_days"
 	],
 	"additionalProperties": false

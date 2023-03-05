@@ -83,7 +83,6 @@ def get_lookset(
 			PROJECT_KEY: {
 				"user_id": 1,
 				"created_at": 1,
-				"days_count": 1,
 				"total_days": 1,
 				"looks": {
 					FILTER_KEY: {
