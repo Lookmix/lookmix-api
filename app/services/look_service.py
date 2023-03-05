@@ -15,6 +15,7 @@ from threading import Thread
 from queue import Queue
 import json
 from datetime import datetime
+from datetime import date
 
 
 def update_daily_look_setup(user_id, data):
@@ -102,9 +103,15 @@ def get_looks(
 ):
     result = look_repository.get_lookset(user_id)
     if result:
+        # set days_count from created_at to today
+        created_at = result.get("created_at")
+        year, month, day = created_at.split(" ")[0].split("-")
+        created_at = date(int(year), int(month), int(day))
+        today = date.today()
+        delta = today - created_at
+        result["days_count"] = delta.days
         return result
-    # len(result.get("looks")) < 1: empty closet, no way to generate lookset
-    return -1 # in progress lookset generate
+    return -1
 
 
 def __save_lookset(user_id, looks):
@@ -134,6 +141,9 @@ def generate_lookset(queue, user_id):
         __save_lookset(user_id, []) # reset lookset
         daily_look_setup = get_daily_look_setup_by_user_id(user_id)
         days_of_week = daily_look_setup.get("days_of_week")
+        # sorting to use today as the first day of week
+        today = int(datetime.now().date().strftime("%w")) # https://pynative.com/python-get-the-day-of-week/
+        days_of_week = days_of_week[today:] + days_of_week[0:today]
         categories = category_service.get_categories()
         seasons = util_service.get_seasons()
         casual_clothes = __get_casual_clothes(user_id)
