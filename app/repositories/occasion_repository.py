@@ -5,6 +5,8 @@ from bson.objectid import ObjectId
 
 OCCASION_COLLECTION = "occasion"
 OCCASIONS_KEY = "occasions"
+TAGS_KEY = "tags"
+TYPE_KEY = "type"
 ID_KEY = "_id"
 SET_KEY = "$set"
 PUSH_KEY = "$push"
@@ -76,9 +78,13 @@ def init_occasions():
         },
         {
             "name": "dia",
+            "tags": ["day"],
+            "type": "period",
         },
         {
             "name": "noite",
+            "tags": ["night"],
+            "type": "period"
         },
         {
             "name": "trabalho",
@@ -239,3 +245,28 @@ def init_occasions():
     if count != len(occasions):
         raise FailToInitOccasions()
 
+def get_day():
+    occasion = db[OCCASION_COLLECTION].find_one(
+        { TAGS_KEY: { IN_KEY: [ "day" ] } }
+    )
+    if occasion:
+        occasion[ID_KEY] = str(occasion[ID_KEY])
+    return occasion
+
+def get_night():
+    occasion = db[OCCASION_COLLECTION].find_one(
+        { TAGS_KEY: { IN_KEY: [ "night" ] } }
+    )
+    if occasion:
+        occasion[ID_KEY] = str(occasion[ID_KEY])
+    return occasion
+
+def get_periods():
+    occasions = db[OCCASION_COLLECTION].find(
+        { TYPE_KEY: "period" }
+    )
+    occasions = list(occasions)
+    if len(occasions) > 0:
+        for occasion in occasions:
+            occasion[ID_KEY] = str(occasion[ID_KEY])
+    return occasions

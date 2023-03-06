@@ -1,5 +1,6 @@
 from app.utils import validation
 from app.repositories import look_repository
+from app.repositories import occasion_repository
 from app.exceptions.error import DuplicatedDayOfWeekException
 from app.exceptions.error import DuplicatedPeriodException
 from app.exceptions.error import PeriodEmptyException
@@ -145,13 +146,16 @@ def generate_lookset(queue, user_id):
         days_of_week = days_of_week[today:] + days_of_week[0:today]
         categories = category_service.get_categories()
         seasons = util_service.get_seasons()
+        periods = __get_periods()
         casual_clothes = __get_casual_clothes(user_id)
-        casual_looks = __generate_looks_by_type_and_season(days_of_week, casual_clothes, "casual", categories, seasons)
+        casual_looks = __generate_looks_by_type_and_season(days_of_week, casual_clothes, "casual", categories, seasons, periods)
         social_clothes = __get_social_clothes(user_id)
-        social_looks = __generate_looks_by_type_and_season(days_of_week, social_clothes, "social", categories, seasons)
+        social_looks = __generate_looks_by_type_and_season(days_of_week, social_clothes, "social", categories, seasons, periods)
         looks = casual_looks + social_looks
         result = __save_lookset(user_id, looks)
         print(f"updated: {result}")
+        break
+    print("exit")
 
 
 # Producer
@@ -170,7 +174,7 @@ def dispatch_look_generation(user_id):
     queue.join()
 
 
-def __generate_looks_by_type_and_season(days_of_week, clothes, type, categories, seasons):
+def __generate_looks_by_type_and_season(days_of_week, clothes, type, categories, seasons, periods):
     looks = []
     occasion_ids = __get_occasions_from_daily_look_setup(days_of_week)
     for occasion_id in occasion_ids:
@@ -178,23 +182,28 @@ def __generate_looks_by_type_and_season(days_of_week, clothes, type, categories,
             lambda clothe: occasion_id in clothe.get("occasions"), 
         clothes)
         clothes_by_occasion = list(clothes_by_occasion)
-        if len(clothes_by_occasion) < 1:
-            continue
-        for season in seasons:
-            clothes_by_season = filter(
-                lambda clothe: season.lower() in clothe.get("seasons"), 
+        for period in periods:
+            clothes_by_period = filter(
+                lambda clothe: period.get("_id") in clothe.get("occasions"), 
             clothes_by_occasion)
-            clothes_by_season = list(clothes_by_season)
-            result = __generate_looks(
-                categories=categories,
-                fetch_clothes=clothes_by_season,
-                type=type,
-                occasion_id=occasion_id
-            )
-            for look in result:
-                if __clothe_combination_already_exists(looks, look):
-                    continue
-                looks.append(look)
+            clothes_by_period = list(clothes_by_period)
+            if len(clothes_by_period) < 1:
+                continue
+            for season in seasons:
+                clothes_by_season = filter(
+                    lambda clothe: season.lower() in clothe.get("seasons"), 
+                clothes_by_period)
+                clothes_by_season = list(clothes_by_season)
+                result = __generate_looks(
+                    categories=categories,
+                    fetch_clothes=clothes_by_season,
+                    type=type,
+                    occasion_id=occasion_id
+                )
+                for look in result:
+                    if __clothe_combination_already_exists(looks, look):
+                        continue
+                    looks.append(look)
     looks = __set_looks_ranking(looks, days_of_week, type)
     return looks
 
@@ -375,6 +384,19 @@ def __get_closet_id(user_id):
     return closet_id
 
 
+def __get_periods():
+    result = occasion_repository.get_periods()
+    return result
+
+
+def __get_day_occasion():
+    result = occasion_repository.get_day()
+    return result
+
+
+def __get_night_occasion():
+    result = occasion_repository.get_night()
+    return result
 
 
 def getlooksetrecursive():
