@@ -28,7 +28,7 @@ def update_daily_look_setup():
 		} 
 		result = look_service.update_daily_look_setup(user_id, data)
 		if result == 0 or result is None or result > 0:
-			look_service.dispatch(user_id)
+			look_service.dispatch_look_generation(user_id)
 			return {}, 204
 		raise Exception(result)
 	except QueueFullException as error:
