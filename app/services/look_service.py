@@ -30,7 +30,12 @@ def get_daily_look_setup_by_user_id(id):
     return result
 
 
+CASUAL = "casual"
+SOCIAL = "social"
+
 def __validate_before_save(data):
+    global CASUAL
+    global SOCIAL
     validation.assert_valid_schema(data, "daily_look_setup.json")
     days_of_week = data["days_of_week"]
     __is_day_of_week_duplicated(days_of_week)
@@ -40,9 +45,9 @@ def __validate_before_save(data):
     for day_of_week in days_of_week: # iterate days
         occasions_of_the_day = day_of_week["occasions"]
         for occasion in occasions_of_the_day: # iterate occasions
-            casual_list = occasion["casual"]
+            casual_list = occasion[CASUAL]
             __is_period_duplicated(casual_list)
-            social_list = occasion["social"]
+            social_list = occasion[SOCIAL]
             __is_period_duplicated(social_list)
             casual_list_length = len(casual_list)
             social_list_length = len(social_list)
@@ -119,6 +124,7 @@ def __save_lookset(user_id, looks):
     total_days = 0
     for look in looks:
         ranking = look.get("sort")
+        # if ranking is not None and ranking > total_days:
         if ranking > total_days:
             total_days = ranking
     lookset = {
@@ -135,10 +141,12 @@ def __save_lookset(user_id, looks):
 # Consumer
 def generate_lookset(queue, user_id):
     print('Consumer: Running')
+    global CASUAL
+    global SOCIAL
     while True:
         queue.get()
         queue.task_done()
-        __save_lookset(user_id, []) # reset lookset
+        # __save_lookset(user_id, []) # reset lookset
         daily_look_setup = get_daily_look_setup_by_user_id(user_id)
         days_of_week = daily_look_setup.get("days_of_week")
         # sorting to use today as the first day of week
@@ -148,10 +156,12 @@ def generate_lookset(queue, user_id):
         seasons = util_service.get_seasons()
         periods = __get_periods()
         casual_clothes = __get_casual_clothes(user_id)
-        casual_looks = __generate_looks_by_type_and_season(days_of_week, casual_clothes, "casual", categories, seasons, periods)
+        casual_looks = __generate_looks_by_type_and_season(days_of_week, casual_clothes, CASUAL, categories, seasons, periods)
         social_clothes = __get_social_clothes(user_id)
-        social_looks = __generate_looks_by_type_and_season(days_of_week, social_clothes, "social", categories, seasons, periods)
+        social_looks = __generate_looks_by_type_and_season(days_of_week, social_clothes, SOCIAL, categories, seasons, periods)
         looks = casual_looks + social_looks
+        # https://stackoverflow.com/a/73050
+        looks = sorted(looks, key=lambda look: look["sort"]) 
         result = __save_lookset(user_id, looks)
         print(f"updated: {result}")
         break
@@ -174,7 +184,7 @@ def dispatch_look_generation(user_id):
     queue.join()
 
 
-def __generate_looks_by_type_and_season(days_of_week, clothes, type, categories, seasons, periods):
+def __generate_looks_by_type_and_season(days_of_week, clothes, look_type, categories, seasons, periods):
     looks = []
     occasion_ids = __get_occasions_from_daily_look_setup(days_of_week)
     for occasion_id in occasion_ids:
@@ -197,14 +207,15 @@ def __generate_looks_by_type_and_season(days_of_week, clothes, type, categories,
                 result = __generate_looks(
                     categories=categories,
                     fetch_clothes=clothes_by_season,
-                    type=type,
+                    look_type=look_type,
                     occasion_id=occasion_id
+                    ,period=period.get("_id")
                 )
                 for look in result:
                     if __clothe_combination_already_exists(looks, look):
                         continue
                     looks.append(look)
-    looks = __set_looks_ranking(looks, days_of_week, type)
+    looks = __set_looks_ranking(looks, days_of_week, look_type)
     return looks
 
 
@@ -226,7 +237,7 @@ def __clothe_combination_already_exists(looks, look):
     return False
 
 
-def __generate_clothe_combinations_metadata(looks, look, type, occasion_id):
+def __generate_clothe_combinations_metadata(looks, look, look_type, occasion_id, period):
     if __clothe_combination_already_exists(looks, look):
         return
     category_ids = look.keys()
@@ -239,10 +250,10 @@ def __generate_clothe_combinations_metadata(looks, look, type, occasion_id):
         result = {
             "data": look,
             "occasion": occasion_id,
-            "period": "-", # day/night
+            "period": period, # day/night
             "sort": None,
             "season": seasons,
-            "type": type,
+            "type": look_type,
             "repeat_count": 0
         }
         return result
@@ -254,7 +265,8 @@ def __generate_clothe_combinations(
     occasion_id,
     looks, # array
     look_template,
-    type,
+    look_type,
+    period,
     clothes=[],
     category_count=0 # zero-based index/counter
 ):
@@ -267,21 +279,22 @@ def __generate_clothe_combinations(
                 occasion_id,
                 looks,
                 look_template,
-                type,
+                look_type,
+                period,
                 clothes,
                 category_count+1
             )
         look = json.loads(json.dumps(look_template))
         for previous_clothe_index, previous_clothe in enumerate(clothes):
             look[clothes_by_category[previous_clothe_index]["category_id"]] = previous_clothe
-        data = __generate_clothe_combinations_metadata(looks, look, type, occasion_id)
+        data = __generate_clothe_combinations_metadata(looks, look, look_type, occasion_id, period)
         if data is not None:
             looks.append(data)
         continue
     return looks
 
 
-def __generate_looks(categories, fetch_clothes, type, occasion_id):
+def __generate_looks(categories, fetch_clothes, look_type, occasion_id, period):
     if len(categories) < 1 or len(fetch_clothes) < 1:
         return
     clothes_by_category = []
@@ -312,54 +325,114 @@ def __generate_looks(categories, fetch_clothes, type, occasion_id):
         occasion_id,
         [], # looks
         look_template,
-        type,
+        look_type,
+        period,
         clothes
     )
     return looks
 
 
-def __get_look_count_by_day_of_week(days_of_week, type):
-    look_count_by_day_of_week = []
-    for day in days_of_week:
-        daily_look_count = 0
-        occasion_ids = []
-        for occasion in day["occasions"]:
-            occasions_length = len(occasion[type])
-            daily_look_count += occasions_length
-            if occasions_length > 0:
-                occasion_ids.append(occasion["occasion_id"])
-        occasion_and_look_count_by_day_of_week = {
-            "daily_look_count": daily_look_count,
-            "occasion_ids": occasion_ids 
-        }
-        look_count_by_day_of_week.append(occasion_and_look_count_by_day_of_week)
-    return look_count_by_day_of_week
+    # TODO: CORRIGIR PROBLEMA NA ORDENAÇÃO DOS LOOKS:
+    # UM LOOK PARA O DIA ESTÁ SENDO ALOCADO PARA UMA 
+    # OCASIÇÃO NOTURNA
 
 
-def __set_looks_ranking(looks, days_of_week, type):
-    lookcount_by_day_of_week = __get_look_count_by_day_of_week(days_of_week, type)
-    ranking = 0
+def generate_look2():
+    # FILTER CLOTHES BY OCCASION
+    # FILTER CLOTHES BY TYPE (CASUAL/SOCIAL)
+    # FILTER CLOTHES BY SEASON
+    # FILTER CLOTHES BY PERIOD (DAY/NIGHT)
+    # GENERATE LOOKS
+    # SORT LOOKS BY DAY OF WEEK ACCORDING WITH OCCASION, TYPE, SEASON AND PERIOD
+    pass
+
+
+def __set_looks_ranking(looks, days_of_week, look_type):
+    global CASUAL
+    if look_type == CASUAL:
+        days_of_week = map(__callback_set_looks_ranking_casual, days_of_week)
+    else:
+        days_of_week = map(__callback_set_looks_ranking_social, days_of_week)
+    days_of_week = list(days_of_week)
+    day_of_week_names = map(lambda day: day.get("day_of_week"), days_of_week)
+    day_of_week_names = list(day_of_week_names)
+    # sorting, first day of week must be today
+    today_day_of_week_index = int(datetime.now().date().strftime("%w"))
+    day_of_week_names = day_of_week_names[today_day_of_week_index:] + day_of_week_names[:today_day_of_week_index]
+    looks_by_day_of_week = {}
+    for name in day_of_week_names:
+        looks_by_day_of_week[name] = []
+    looks_length = len(looks)
+    for i in range(0, looks_length):
+        look = looks[i]
+        match = False
+        for day_of_week in days_of_week:
+            if match:
+                continue
+            day_of_week_name = day_of_week.get("day_of_week")
+            for daily_look in day_of_week.get("looks"):
+                if match:
+                    continue
+                match_occasion = look.get("occasion") == daily_look.get("occasion")
+                match_closet = look.get("type") == daily_look.get("type")
+                match_period = look.get("period") == daily_look.get("period")
+                # match_season = daily_look.get("season") in look.get("season")
+                if match_occasion and match_closet and match_period: # and match_season:
+                    looks_by_day_of_week[day_of_week_name].append(look)
+                    match = True
     result = []
-    occasions = map(lambda look: look.get("occasion"), looks)
-    occasions = set(occasions)
-    looks_by_occasion = {}
-    for occasion_id in occasions:
-        looks_by_occasion[occasion_id] = list(filter(
-            lambda look: look.get("occasion") == occasion_id,
-        looks))
-    while len(result) < len(looks):
-        for day_of_week in lookcount_by_day_of_week:
-            for occasion_id in day_of_week.get("occasion_ids"):
-                if occasion_id not in occasions:
-                    continue
-                if len(looks_by_occasion[occasion_id]) < 1:
-                    continue
-                look = looks_by_occasion[occasion_id].pop(0)
-                look["sort"] = ranking
-                result.append(look)
-            ranking += 1
-    # TODO: SORT BY WEATHER OF THE DAY
+    has_look = True
+    sort = 0
+    while has_look:
+        for day_of_week in days_of_week:
+            day_of_week_name = day_of_week.get("day_of_week")
+            for look_setup in day_of_week.get("looks"):
+                look_index = None
+                for index in range(0, len(looks_by_day_of_week[day_of_week_name])):
+                    if looks_by_day_of_week[day_of_week_name][index].get("occasion") == look_setup.get("occasion"):
+                        look_index = index
+                        break
+                if look_index != None:
+                    look = looks_by_day_of_week[day_of_week_name].pop(look_index)
+                    look["sort"] = sort
+                    result.append(look)
+            sort = sort + 1
+        # stop condition
+        remaining_looks = []
+        for day_of_week in days_of_week:
+            day_of_week_name = day_of_week.get("day_of_week")
+            remaining_looks = remaining_looks + looks_by_day_of_week[day_of_week_name]
+        if len(remaining_looks) == 0:
+            has_look = False
     return result
+
+
+def __callback_set_looks_ranking_social(day):
+    global SOCIAL
+    return __callback_set_looks_ranking(day, SOCIAL)
+
+
+def __callback_set_looks_ranking_casual(day):
+    global CASUAL
+    return __callback_set_looks_ranking(day, CASUAL)
+
+
+def __callback_set_looks_ranking(day, type):
+    looks = []
+    for occasion in day.get("occasions"):
+        for period in occasion[type]:
+            item = {
+                "occasion": occasion.get("occasion_id"),
+                "type": type,
+                "period": period,
+                "season": None
+            }
+            looks.append(item)
+    return {
+        "day_of_week": day.get("day_of_week"),
+        "looks": looks
+    }
+
 
 # TODO: PERMITIR REPETIÇÃO DE LOOKS QUE COMPARTILHAM MAIS DE UMA OCASIÃO
 # TODO: LEVAR EM CONTA SE O LOOK É PARA O DIA OU PARA A NOITE
