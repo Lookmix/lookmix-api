@@ -74,3 +74,9 @@ def delete_clothe_by_ids(ids):
         return result.deleted_count
     except Exception as e:
         raise e
+    
+def get_all(closet_id):
+    try:
+        return clothe_repository.get_all(closet_id=closet_id)
+    except Exception as e:
+        raise e

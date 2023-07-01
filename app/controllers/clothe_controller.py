@@ -14,7 +14,6 @@ bp = Blueprint("clothe", __name__, url_prefix="/clothe")
 @bp.route("/save", methods=["POST"])
 @jwt_required()
 def save_clothes():
-    JSON_TYPE = "/json"
     IMAGE_TYPE = "image/"
     FORMDATA_IMAGE = "file"
     FORMDATA_DOCUMENT = "document"
@@ -85,6 +84,7 @@ def get_clothe_by_id():
         }), 400
 
 
+# TODO: rename endpoint path
 @bp.route("/find_by_closet_id", methods=["GET"])
 @jwt_required()
 def get_clothes_by_closet_id():
@@ -129,5 +129,17 @@ def delete_clothes():
     except Exception as e:
         return json.dumps({
             "message": "Erro ao tentar remover peças",
+            "error": e.args[0]
+        }), 400
+    
+@bp.route("/all", methods=["GET"])
+def get_all_clothes():
+    try:
+        closet_id = request.args.get("closet_id")
+        response = clothe_service.get_all(closet_id)
+        return response, 200
+    except Exception as e:
+        return json.dumps({
+            "message": "Erro ao tentar recuperar imagem",
             "error": e.args[0]
         }), 400

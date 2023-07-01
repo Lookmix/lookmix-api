@@ -100,3 +100,13 @@ def update_clothe_occasions():
             { ID_KEY: clothe_id },
             { SET_KEY: { "occasions": clothe["occasions"] } }
         )
+
+def get_all(closet_id):
+    clothes = db[CLOTHE_COLLECTION].find({
+        CLOSET_ID_KEY: closet_id
+    })
+    clothes = list(clothes)
+    if clothes:
+        for c in clothes:
+            c[ID_KEY] = str(c[ID_KEY])
+    return clothes
