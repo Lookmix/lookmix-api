@@ -111,22 +111,25 @@ def generate_clothe_combinations_metadata(looks, look, look_type, occasion_id, p
         return
     category_ids = look.keys()
     category_ids = list(filter(lambda category_id: look[category_id] != None, category_ids))
-    if len(category_ids) > 1:
-        # TODO: REFACTOR SEASONS SELECT
-        seasons = reduce(lambda prev, curr_category_id: 
-            list(prev) + list(look[curr_category_id].get("seasons")), category_ids, []
-        )
-        result = {
-            "data": look,
-            "occasion": occasion_id,
-            "period": period, # day/night
-            # "period": "-", # day/night
-            "sort": None,
-            "season": seasons,
-            "type": look_type,
-            "repeat_count": 0
-        }
-        return result
+    min_clothes = 2
+    if len(category_ids) < min_clothes:
+        return
+    seasons = []
+    for category_id in category_ids:
+        look_seasons = look[category_id].get("seasons")
+        if len(seasons) > 0 and len(seasons) < len(look_seasons):
+            continue
+        seasons = look_seasons
+    result = {
+        "data": look,
+        "occasion": occasion_id,
+        "period": period, # day/night
+        "sort": None,
+        "season": seasons,
+        "type": look_type,
+        "repeat_count": 0
+    }
+    return result
 
 
 # recursive
