@@ -231,29 +231,6 @@ def get_look_count_by_day_of_week(days_of_week, look_type):
         look_count_by_day_of_week.append(occasion_and_look_count_by_day_of_week)
     return look_count_by_day_of_week
 
-# type: social, casual
-def get_period_by_day_occasion(days_of_week, look_type):
-    result = []
-    for day_of_week in days_of_week:
-        occasions = day_of_week.get("occasions")
-        day_of_week_occasions = []
-        for occasion in occasions:
-            occasion_id = occasion.get("occasion_id")
-            periods = occasion.get(look_type)
-            occasions = map(lambda period: { occasion_id: period }, periods)
-            day_of_week_occasions = day_of_week_occasions + list(occasions)
-        result.append(day_of_week_occasions)
-    return result
-    # [
-    #   [ # sunday
-    #       { occasion_id1: day_id },
-    #       { occasion_id1: night_id },
-    #       { occasion_id2: night_id }
-    #   ]
-    # 
-    # TODO: CORRIGIR PROBLEMA NA ORDENAÇÃO DOS LOOKS:
-    # UM LOOK PARA O DIA ESTÁ SENDO ALOCADO PARA UMA 
-    # OCASIÇÃO NOTURNA
 
 def generate_look2():
     # FILTER CLOTHES BY OCCASION
@@ -292,6 +269,11 @@ def __callback_set_looks_ranking_casual(day):
     global CASUAL
     return __callback_set_looks_ranking(day, CASUAL)
 
+# TODO: não está atribuindo o ranking corretamente
+# 1- sexta-feira está ficando vazia sendo que de 
+# acordo com o setup, deveriam existir looks (aparentemente ok)
+# 2- está repetindo o mesmo look segunda e quinta,
+# só muda o período. 
 def set_looks_ranking(looks, days_of_week, look_type):
     global CASUAL
     if look_type == CASUAL:
@@ -346,6 +328,7 @@ def set_looks_ranking(looks, days_of_week, look_type):
                 if look_index != None:
                     look = looks_by_day_of_week[day_of_week_name].pop(look_index)
                     look["sort"] = sort
+                    # look["day_of_week"] = day_of_week_name # apenas p/ testes
                     result.append(look)
             sort = sort + 1
         # stop condition
@@ -399,6 +382,11 @@ def get_daily_look_setup_by_user_id():
                             "6315604bdaf4e3d095035214"
                         ]
                     }
+                    # ,{
+                    #     "casual":["6315604bdaf4e3d095035214"],
+                    #     "social":[],
+                    #     "occasion_id":"6315604bdaf4e3d095035212"
+                    # }
                 ],
                 "sort": 0
             },
