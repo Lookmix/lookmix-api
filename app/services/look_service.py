@@ -367,23 +367,25 @@ def __set_looks_ranking(looks, days_of_week, look_type):
     for name in day_of_week_names:
         looks_by_day_of_week[name] = []
     looks_length = len(looks)
-    for i in range(0, looks_length):
-        look = looks[i]
+    i = 0
+    while (looks_length > i):
         match = False
         for day_of_week in days_of_week:
-            if match:
-                continue
             day_of_week_name = day_of_week.get("day_of_week")
             for daily_look in day_of_week.get("looks"):
-                if match:
+                if i >= looks_length:
                     continue
+                look = looks[i]
                 match_occasion = look.get("occasion") == daily_look.get("occasion")
                 match_closet = look.get("type") == daily_look.get("type")
                 match_period = look.get("period") == daily_look.get("period")
                 # match_season = daily_look.get("season") in look.get("season")
                 if match_occasion and match_closet and match_period: # and match_season:
                     looks_by_day_of_week[day_of_week_name].append(look)
+                    i = i + 1
                     match = True
+        if not match:
+            i = i + 1
     result = []
     has_look = True
     sort = 0
