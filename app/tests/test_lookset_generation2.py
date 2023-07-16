@@ -109,7 +109,7 @@ def clothe_combination_already_exists(looks, look):
 def generate_clothe_combinations_metadata(looks, look, look_type, occasion_id, period):
     if clothe_combination_already_exists(looks, look):
         return
-    category_ids = look.keys()
+    category_ids = list(look) # .keys()
     category_ids = list(filter(lambda category_id: look[category_id] != None, category_ids))
     min_clothes = 2
     if len(category_ids) < min_clothes:
