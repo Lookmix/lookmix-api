@@ -89,9 +89,9 @@ def generate_looks_by_type_and_season(days_of_week, clothes, look_type, categori
 
 
 def get_occasions_from_daily_look_setup(days_of_week):
-    day_of_week_occasions = map(lambda day: day.get("occasions"), days_of_week)
-    occasion_ids_map = map(lambda occasions: (
-        map(lambda occasion: occasion.get("occasion_id"), occasions)), day_of_week_occasions)
+    day_of_week_occasions = list(map(lambda day: day.get("occasions"), days_of_week))
+    occasion_ids_map = list(map(lambda occasions: (
+        list(map(lambda occasion: occasion.get("occasion_id"), occasions))), day_of_week_occasions))
     occasion_ids = reduce(lambda prev, curr: list(
         prev) + list(curr), occasion_ids_map, [])
     occasion_ids = set(occasion_ids)
@@ -187,7 +187,7 @@ def generate_looks(categories, fetch_clothes, look_type, occasion_id, period):
         key=(lambda clothe: clothe["total_clothes"]), reverse=True)
     if clothes_by_category[0].get("total_clothes") == 0:
         return
-    category_ids = map(lambda category: category.get("_id"), categories)
+    category_ids = list(map(lambda category: category.get("_id"), categories))
     look_template = {}
     clothes = []
     for category_id in category_ids:
