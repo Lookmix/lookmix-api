@@ -723,8 +723,8 @@ def get_casual_clothes():
                 "6315604bdaf4e3d095035216"
             ],
             "seasons": [
-                "Inverno",
-                "Outono"
+                "inverno",
+                "outono"
             ],
             "type": "casual"
         },
