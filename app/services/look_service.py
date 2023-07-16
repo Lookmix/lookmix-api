@@ -156,12 +156,13 @@ def generate_lookset(queue, user_id):
         seasons = util_service.get_seasons()
         periods = __get_periods()
         casual_clothes = __get_casual_clothes(user_id)
-        casual_looks = __generate_looks_by_type_and_season(days_of_week, casual_clothes, CASUAL, categories, seasons, periods)
+        casual_looks, casual_looks_without_match = __generate_looks_by_type_and_season(days_of_week, casual_clothes, CASUAL, categories, seasons, periods)
         social_clothes = __get_social_clothes(user_id)
-        social_looks = __generate_looks_by_type_and_season(days_of_week, social_clothes, SOCIAL, categories, seasons, periods)
+        social_looks, social_looks_without_match = __generate_looks_by_type_and_season(days_of_week, social_clothes, SOCIAL, categories, seasons, periods)
         looks = casual_looks + social_looks
         # https://stackoverflow.com/a/73050
         looks = sorted(looks, key=lambda look: look["sort"]) 
+        looks = looks + casual_looks_without_match + social_looks_without_match
         result = __save_lookset(user_id, looks)
         print(f"updated: {result}")
         break
@@ -215,8 +216,8 @@ def __generate_looks_by_type_and_season(days_of_week, clothes, look_type, catego
                     if __clothe_combination_already_exists(looks, look):
                         continue
                     looks.append(look)
-    looks = __set_looks_ranking(looks, days_of_week, look_type)
-    return looks
+    looks, looks_without_match = __set_looks_ranking(looks, days_of_week, look_type)
+    return looks, looks_without_match
 
 
 def __get_occasions_from_daily_look_setup(days_of_week):
@@ -364,6 +365,7 @@ def __set_looks_ranking(looks, days_of_week, look_type):
     today_day_of_week_index = int(datetime.now().date().strftime("%w"))
     day_of_week_names = day_of_week_names[today_day_of_week_index:] + day_of_week_names[:today_day_of_week_index]
     looks_by_day_of_week = {}
+    looks_without_match = []
     for name in day_of_week_names:
         looks_by_day_of_week[name] = []
     looks_length = len(looks)
@@ -385,6 +387,9 @@ def __set_looks_ranking(looks, days_of_week, look_type):
                     i = i + 1
                     match = True
         if not match:
+            unmatch_look = looks[i]
+            unmatch_look["sort"] = -1
+            looks_without_match.append(unmatch_look)
             i = i + 1
     result = []
     has_look = True
@@ -410,7 +415,7 @@ def __set_looks_ranking(looks, days_of_week, look_type):
             remaining_looks = remaining_looks + looks_by_day_of_week[day_of_week_name]
         if len(remaining_looks) == 0:
             has_look = False
-    return result
+    return result, looks_without_match
 
 
 def __callback_set_looks_ranking_social(day):
