@@ -18,6 +18,7 @@ from app.controllers import category_controller
 from app.controllers import util_controller
 from app.controllers import occasion_controller
 from app.controllers import look_controller
+from app.controllers import season_controller
 from app.mock import mockapi
 
 app.register_blueprint(auth_controller.bp)
@@ -27,6 +28,7 @@ app.register_blueprint(category_controller.bp)
 app.register_blueprint(util_controller.bp)
 app.register_blueprint(occasion_controller.bp)
 app.register_blueprint(look_controller.bp)
+app.register_blueprint(season_controller.bp)
 
 flask_mock_api = mockapi.app
 mock_jwt_manager = JWTManager(flask_mock_api)
@@ -38,10 +40,8 @@ def set_headers(response):
     allowed_origins = app.config.get("ALLOWED_ORIGINS")
     allowed_origin = allowed_origins[0]
     host_url = request.host_url[:-1]
-
     if host_url in allowed_origins:
         allowed_origin = host_url
-
     response.headers["Access-Control-Allow-Origin"] = allowed_origin
     response.headers["Access-Control-Allow-Headers"] = "content-type"
     response.headers["Access-Control-Allow-Credentials"] = "true"
