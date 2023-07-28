@@ -24,16 +24,16 @@ def get_seasons():
         }), 400
 
 
-@bp.route("/current_weather", methods=["GET"])
+@bp.route("/today_weather", methods=["GET"])
 @jwt_required()
-def get_daily_min_and_max_temperatures():
+def get_today_temperatures():
     try:
         # request_data = request.json
         user_id = get_jwt_identity()
         user = user_service.get_by_id(user_id)
         lat = user.get("lat")
         long = user.get("long")
-        response = season_service.get_daily_min_and_max_temperatures(lat, long)
+        response = season_service.get_today_temperatures(lat, long)
         return json.dumps(response), 200
     except Exception as e:
         return json.dumps({

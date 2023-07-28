@@ -26,7 +26,7 @@ def get_week_weather (lat, long):
     return data
 
 
-def get_daily_weather(lat, long):
+def get_today_weather(lat, long):
     global url
     global secret
     response = requests.get(url=url, params={
@@ -40,13 +40,13 @@ def get_daily_weather(lat, long):
     data = data.get("daily")
     data = sorted(data, key=lambda day: day["dt"])
     today = data[0]
-    today_temp = today.get("temp")
-    min = today_temp.get("min")
-    min = int(min)
-    max = today_temp.get("max")
-    max = int(max)
+    today_temp = today.get("feels_like")
+    day = today_temp.get("day")
+    day = int(day)
+    eve = today_temp.get("eve")
+    eve = int(eve)
     result = {
-        "min": min,
-        "max": max
+        "day": day,
+        "eve": eve
     }
     return result

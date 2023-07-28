@@ -16,9 +16,9 @@ def get_week_weather(lat, long):
     except Exception as e:
         raise e
     
-def get_daily_min_and_max_temperatures(lat, long):
+def get_today_temperatures(lat, long):
     try:
-        data = openweather.get_daily_weather(lat, long)
+        data = openweather.get_today_weather(lat, long)
         return data
     except Exception as e:
         raise e
