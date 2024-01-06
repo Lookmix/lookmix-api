@@ -9,7 +9,7 @@ def get_seasons():
         raise e
 
 
-def get_week_weather(lat, long):
+def get_week_temperatures(lat, long):
     try:
         data = openweather.get_week_weather(lat, long)
         return data
