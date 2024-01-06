@@ -4,6 +4,7 @@ from app.exceptions.error import FailToInitSeasons
 
 ENUM_COLLECTION = "enum"
 SEASONS_KEY = "seasons"
+SEASONS2_KEY = "seasons2"
 ID_KEY = "_id"
 SET_KEY = "$set"
 PUSH_KEY = "$push"
@@ -22,15 +23,31 @@ def get_seasons():
 		{ MATCH_KEY: { ID_KEY: ID_ENUM } },
 		{
 			PROJECT_KEY: {
-				"seasons": 1
+				SEASONS_KEY: 1
 			}
 		}
 	])
     seasons = list(seasons)
     if len(seasons) > 0:
-        return seasons[0].get("seasons")
+        return seasons[0].get(SEASONS_KEY)
     init_seasons()
     return get_seasons()
+
+
+def get_seasons2():
+    seasons = db[ENUM_COLLECTION].aggregate([
+		{ MATCH_KEY: { ID_KEY: ID_ENUM } },
+		{
+			PROJECT_KEY: {
+				SEASONS2_KEY: 1
+			}
+		}
+	])
+    seasons = list(seasons)
+    if len(seasons) > 0:
+        return seasons[0].get(SEASONS2_KEY)
+    init_seasons2()
+    return get_seasons2()
 
 
 def get_seasons_count():
@@ -63,6 +80,14 @@ def save_many_seasons(seasons):
     return result.matched_count
 
 
+def save_many_seasons2(seasons):
+    result = db[ENUM_COLLECTION].update_one(
+        { ID_KEY: ID_ENUM },
+        { PUSH_KEY: { SEASONS2_KEY: { EACH_KEY: seasons } } }, upsert=True
+    )
+    return result.matched_count
+
+
 def init_seasons():
     print("INIT SEASONS")
     seasons = [
@@ -77,3 +102,31 @@ def init_seasons():
         raise FailToInitSeasons()
 
 
+def init_seasons2():
+    print("INIT SEASONS2")
+    seasons = [
+		{ 
+            "name": "primavera",
+            "max_temp_celsius": 27,
+            "min_temp_celsius": 23
+        },
+		{ 
+            "name": "verão",
+            "max_temp_celsius": None,
+            "min_temp_celsius": 28
+        },
+		{ 
+            "name": "outono",
+            "max_temp_celsius": 22,
+            "min_temp_celsius": 18
+        },
+		{ 
+            "name": "inverno",
+            "max_temp_celsius": 17,
+            "min_temp_celsius": None
+        }
+	]
+    save_many_seasons2(seasons)
+    count = get_seasons_count()
+    if count != len(seasons):
+        raise FailToInitSeasons()
