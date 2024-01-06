@@ -23,9 +23,7 @@ def protected():
 def add_user():
     try:
         request_data = request.json
-
         user_id = user_service.save(request_data)
-
         return jsonify({
             "id": user_id
         }), 200
@@ -33,10 +31,8 @@ def add_user():
         validator = error.validator
         customErrorMessage = error.schema.get("errorMessage", {}).get(validator)
         message = error.message
-
         if customErrorMessage is not None:
             message = customErrorMessage
-
         return jsonify({
             "error": "validationError",
             "message": message
