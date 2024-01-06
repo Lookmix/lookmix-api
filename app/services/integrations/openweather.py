@@ -18,11 +18,17 @@ def get_week_weather (lat, long):
         "units": "metric" # celsius
     })
     data = response.json()
-    # daily = data["daily"]
-    # for day in daily:
-        # day["dt"] = datetime.fromtimestamp(day["dt"])
-        # datetime.date(datetime)
-    # data["daily"] = daily
+    daily = data.get("daily")
+    daily = sorted(daily, key=lambda day: day["dt"])
+    result = []
+    for day in daily:
+        feels_like = day.get("feels_like")
+        result.append(
+            {
+                "day": feels_like.get("day"),
+                "eve": feels_like.get("eve")
+            }
+        )
     return data
 
 
