@@ -1,5 +1,7 @@
 #!/usr/lib/python3.7
 
+source apivenv/bin/activate
+
 export FLASK_APP=app:flask_mock_api
 export FLASK_ENV=testing
 export FLASK_DEBUG=True

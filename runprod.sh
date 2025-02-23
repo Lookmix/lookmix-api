@@ -1,5 +1,7 @@
 #!/usr/lib/python3.7
 
+source apivenv/bin/activate
+
 export FLASK_APP=app
 export FLASK_ENV=production
 export FLASK_DEBUG=False
