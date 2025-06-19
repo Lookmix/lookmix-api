@@ -44,7 +44,7 @@ def get_seasons2():
 		}
 	])
     seasons = list(seasons)
-    if len(seasons) > 0:
+    if len(seasons) > 0 and seasons[0].get(SEASONS2_KEY) is not None:
         return seasons[0].get(SEASONS2_KEY)
     init_seasons2()
     return get_seasons2()
