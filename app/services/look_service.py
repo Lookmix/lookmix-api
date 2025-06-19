@@ -11,12 +11,13 @@ from app.services import category_service
 from app.services import clothe_service
 from app.services import closet_service
 from app.services import util_service
+from app.services import season_service
+from app.services import user_service
 from functools import reduce
 from threading import Thread
 from queue import Queue
 import json
-from datetime import datetime
-from datetime import date
+from datetime import (date, datetime)
 
 
 def update_daily_look_setup(user_id, data):
@@ -138,6 +139,14 @@ def __save_lookset(user_id, looks):
     return result
 
 
+def __get_week_temperatures(user_id):
+    user = user_service.get_by_id(user_id)
+    lat = user.get("lat")
+    long = user.get("long")
+    result = season_service.get_week_temperatures(lat, long)
+    return result
+
+
 # Consumer
 def generate_lookset(queue, user_id):
     print('Consumer: Running')
@@ -147,13 +156,15 @@ def generate_lookset(queue, user_id):
         queue.get()
         queue.task_done()
         # __save_lookset(user_id, []) # reset lookset
+        # week_temperatures = __get_week_temperatures(user_id)
         daily_look_setup = get_daily_look_setup_by_user_id(user_id)
         days_of_week = daily_look_setup.get("days_of_week")
         # sorting to use today as the first day of week
         today = int(datetime.now().date().strftime("%w")) # https://pynative.com/python-get-the-day-of-week/
         days_of_week = days_of_week[today:] + days_of_week[0:today]
         categories = category_service.get_categories()
-        seasons = util_service.get_seasons()
+        # TODO: https://github.com/Lookmix/lookmix-api/issues/30
+        seasons = map(lambda season: season.get("name"), util_service.get_seasons())
         periods = __get_periods()
         casual_clothes = __get_casual_clothes(user_id)
         casual_looks, casual_looks_without_match = __generate_looks_by_type_and_season(days_of_week, casual_clothes, CASUAL, categories, seasons, periods)
