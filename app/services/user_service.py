@@ -12,17 +12,14 @@ from datetime import datetime
 
 def save(user):
     try:
-        user['timestamp'] = str(datetime.now())
-
+        user["timestamp"] = str(datetime.now()) # TODO: rename to created_at
+        # lat = user["lat"]
+        # long = user["long"]
         validate_user_data(user)
-
         encrypted_password = encrypt_passoword(user['password'])
-
-        user['is_admin'] = False
-        user['password'] = encrypted_password
-
+        user["is_admin"] = False # TODO: delete this
+        user["password"] = encrypted_password
         saved_user = user_repository.save(user)
-
         return str(saved_user)
     except Exception as e:
         raise e
