@@ -40,20 +40,14 @@ expires_refresh_token = timedelta(days=2)
 
 def validate_credentials(request_data):
     validate_login_data_model(request_data)
-
     phone = request_data.get("phone")
     request_password = request_data.get("password")
-
     user = user_repository.get_by_phone(phone)
-
     if user is not None:
         db_password = user.get("password")
-
         is_password_valid = check_password_hash(db_password, request_password)
-
         if is_password_valid:
             user_id = user.get("_id")
-
             return user_id
     raise BadCredentialsException()
 
@@ -65,7 +59,6 @@ def create_tokens(user_id):
                                          expires_delta=expires_refresh_token)
     decoded_access_token = decode_token(access_token)
     decoded_refresh_token = decode_token(refresh_token)
-    
     response = {
         "access_metadata": {
             "expires": datetime.fromtimestamp(decoded_access_token["exp"]),
@@ -76,7 +69,6 @@ def create_tokens(user_id):
             "jti": decoded_refresh_token["jti"]
         }
     }
-
     return {
         "data": response,
         "access_token": access_token,
@@ -86,22 +78,16 @@ def create_tokens(user_id):
 
 def handle_tokens(user_id):
     tokens = create_tokens(user_id)
-
     access = tokens.get("access_token")
     refresh = tokens.get("refresh_token")
     auth_metadata = tokens.get("data")
-
     response = {}
     response["auth"] = auth_metadata
-
     save_auth_metadata(access)
     save_auth_metadata(refresh)
-
     response = jsonify(response)
-
     set_access_cookies(response, access)
     set_refresh_cookies(response, refresh)
-
     return response
 
 
@@ -109,15 +95,12 @@ def handle_tokens(user_id):
 def revoke_token(): # token_id):
     response = {"is_disconnected": True}
     response = jsonify(response)
-
     unset_jwt_cookies(response)
-    
     return response
 
 
 def save_auth_metadata(encoded_token, is_reset_password_token=False, is_new_user_token=False):
     decoded_token = decode_token(encoded_token)
-
     metadata = {
         "jti": decoded_token["jti"],
         "timestamp": datetime.now(),
@@ -137,71 +120,52 @@ def generate_otp():
 
 def generate_otp_jwt(sms_id, otp):
     expiration = datetime.utcnow() + timedelta(seconds=80)
-
     encoded = encode(
         {
             "smsId": sms_id,
             "exp": expiration
         },
         str(otp), # secret
-        algorithm=JWT_ALG)
+        algorithm=JWT_ALG
+    )
     return encoded
 
 
 def handle_otp(phone):
     otp = generate_otp()
-
     schedule = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
-
     msg = "Nao compartilhe este dado com ninguem. Seu codigo de verificacao é %s" % otp
-
     payload_zenvia = generate_zenvia_payload(phone, schedule, msg)
-
     response = send_sms(payload_zenvia)
-
     status_code = response.status_code
-
     data = response.json()
-
     if status_code == 201 or status_code == 200:
         payload_zenvia = loads(payload_zenvia)
-
         sms_id = payload_zenvia.get("sendSmsRequest", {}).get("id", None)
-
         otp_jwt = generate_otp_jwt(sms_id, otp)
-
         save_otp_meta(sms_id, phone)
-
         return jsonify({
             "token": otp_jwt, 
             "id": sms_id
         })
     error_message = data.get("exception", {}).get("message", {})
-
     raise FailToGenerateOTPException(error_message)
 
 
 def verify_otp(data):
     validate_otp_data_model(data)
-
     token = data.get("token")
     code = data.get("code")
     id = data.get("id")
-
     try:
         attemps = get_otp_attempts(id)
-
         if attemps > 2:
             raise AttemptsExceedException()
-
         decode(token, code, algorithms=[JWT_ALG])
-
         return { "valid": True }
     except InvalidSignatureError:
         update_otp_attempts(id)
-
         attemps = get_otp_attempts(id)
-
         if attemps > 2:
             raise AttemptsExceedException()
         raise InvalidSignatureError
@@ -240,7 +204,6 @@ def generate_otp_expires_time():
     expires_timedelta = timedelta(hours=hour, minutes=minutes, seconds=seconds)
     result = str(expires_timedelta).split(", ")
     index = 0
-
     if len(result) == 2:
         index = 1
     return "%s-%s-%s %s" % (year, month, day, result[index])
@@ -251,4 +214,4 @@ def validate_otp_data_model(otp_data_model):
 
 
 def validate_login_data_model(login_data_model):
-     validation.assert_valid_schema(login_data_model, "login.json")
+    validation.assert_valid_schema(login_data_model, "login.json")

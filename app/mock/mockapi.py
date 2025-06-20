@@ -14,10 +14,8 @@ def zenvia_send_sms():
 @app.route("/auth/get_otp", methods=['GET'])
 def get_otp():
   phone = request.args.get("phone")
-
   expiration = datetime.utcnow() + timedelta(seconds=80)
   sms_id = str(uuid.uuid4())
-
   otp_jwt = encode(
     {
       "smsId": sms_id,
@@ -25,9 +23,7 @@ def get_otp():
     },
     str(111111),
     algorithm="HS256")
-
   auth_service.save_otp_meta(sms_id, phone)
-
   return {
     "token": otp_jwt, 
     "id": sms_id
