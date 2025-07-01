@@ -2,6 +2,9 @@ import requests
 from bson.json_util import dumps
 from app import app
 
+__EMAILJS_SERVICE_ID = "acc_confirmation_service"
+__EMAILJS_TEMPLATE_ID = "acc_confirmation"
+
 def send_email(payload):
     emailjs_url = app.config.get("EMAILJS_URL")
     url = f"{emailjs_url}/email/send"
@@ -14,8 +17,8 @@ def send_email(payload):
 
 def generate_emailjs_otp_payload (to_email, to_name, code):
     payload = {
-        "service_id": app.config.get("EMAILJS_SERVICE_ID"),
-        "template_id": app.config.get("EMAILJS_TEMPLATE_ID"),
+        "service_id": __EMAILJS_SERVICE_ID,
+        "template_id": __EMAILJS_TEMPLATE_ID,
         "user_id": app.config.get("EMAILJS_USER_ID"),
         "template_params": {
             "to_email": to_email,
