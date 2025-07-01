@@ -1,11 +1,11 @@
 import requests
 from bson.json_util import dumps
 import uuid
-import os
+from app import app
 
 def send_sms(payload):
-    uri = os.environ.get("ZENVIA_URI")
-    security = os.environ.get("ZENVIA_SECURITY")
+    uri = app.config("ZENVIA_URI")
+    security = app.config("ZENVIA_SECURITY")
 
     headers = {
         "Authorization": f"Basic {security}",
