@@ -1,4 +1,5 @@
 import random
+import uuid
 
 from jwt import (
     InvalidSignatureError, 
@@ -31,6 +32,10 @@ from app.utils import validation
 from app.services.integrations.zenvia_sms import (
     generate_zenvia_payload, 
     send_sms
+)
+from app.services.integrations.emailjs import (
+    generate_emailjs_otp_payload, 
+    send_email
 )
 
 JWT_ALG = "HS256"
@@ -118,11 +123,11 @@ def generate_otp():
     return random.sample(range(100000, 999999), 1)[0]
 
 
-def generate_otp_jwt(sms_id, otp):
+def generate_otp_jwt(id, otp):
     expiration = datetime.utcnow() + timedelta(seconds=80)
     encoded = encode(
         {
-            "smsId": sms_id,
+            "id": id,
             "exp": expiration
         },
         str(otp), # secret
@@ -131,6 +136,7 @@ def generate_otp_jwt(sms_id, otp):
     return encoded
 
 
+# uses zenvia/sms to send otp
 def handle_otp(phone):
     otp = generate_otp()
     schedule = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
@@ -143,12 +149,34 @@ def handle_otp(phone):
         payload_zenvia = loads(payload_zenvia)
         sms_id = payload_zenvia.get("sendSmsRequest", {}).get("id", None)
         otp_jwt = generate_otp_jwt(sms_id, otp)
-        save_otp_meta(sms_id, phone)
+        save_otp_meta(sms_id, phone=phone)
         return jsonify({
             "token": otp_jwt, 
             "id": sms_id
         })
     error_message = data.get("exception", {}).get("message", {})
+    raise FailToGenerateOTPException(error_message)
+
+
+# uses emailjs/email to send otp
+def handle_otp2(to_email, to_name=None):
+    otp = generate_otp()
+    payload_emailjs = generate_emailjs_otp_payload(to_email, to_name, otp)
+    response = send_email(payload_emailjs)
+    status_code = response.status_code
+    # data = response.json()
+    # print(data)
+    print(response.text)
+    if status_code == 200:
+        # payload_emailjs = loads(payload_emailjs)
+        email_id = str(uuid.uuid4()) # data.get("id", None)
+        otp_jwt = generate_otp_jwt(email_id, otp)
+        save_otp_meta(email_id, email=to_email)
+        return jsonify({
+            "token": otp_jwt,
+            "id": email_id
+        })
+    error_message = "Fail" # data.get("exception", {}).get("message", {})
     raise FailToGenerateOTPException(error_message)
 
 
@@ -171,11 +199,12 @@ def verify_otp(data):
         raise InvalidSignatureError
 
 
-def save_otp_meta(id, phone):
+def save_otp_meta(id, phone=None, email=None):
     otp_meta = {
         "attempts": 0,
         "_id": id,
         "phone": phone,
+        "email": email,
         "timestamp": datetime.now(),
         "expires": generate_otp_expires_time()
     }

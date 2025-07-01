@@ -22,6 +22,13 @@ def get_by_username(username):
     return db[USERS_COLLECTION].find_one({'username': username})
 
 
+def get_by_email(email):
+    user = db[USERS_COLLECTION].find_one({'email': email})
+    if user:
+        user['_id'] = str(user['_id'])
+    return user
+
+
 def get_by_phone(phone):
     user = db[USERS_COLLECTION].find_one({'phone': phone})
 

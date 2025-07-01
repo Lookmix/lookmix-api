@@ -1,3 +1,5 @@
+import urllib.parse
+
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import (
     jwt_required, 
@@ -72,6 +74,29 @@ def get_otp():
         return jsonify({
             "error": "requiredParam", 
             "message": str(e)
+        }), 400
+
+
+# uses email instead of phone
+@bp.route("/get_otp2", methods=['GET'])
+def get_otp2():
+    try:
+        email = request.args.get("email")
+        if email is not None:
+            print("email: ", email)
+            email = urllib.parse.unquote(email)
+            print("email: ", email)
+            return auth_service.handle_otp2(email)
+        raise RequiredParamException("parameter 'email' is required")
+    except FailToGenerateOTPException as e:
+        return jsonify({
+            "message": str(e),
+            "error": "failToGenerateOTP"
+        }), 400
+    except RequiredParamException as e:
+        return jsonify({
+            "error": "requiredParam", 
+            "message": str(e) # TODO: rename key to description
         }), 400
 
 

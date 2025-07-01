@@ -4,7 +4,12 @@ from flask import jsonify
 from app.services import image_service
 from app.repositories import user_repository
 from app.utils import validation
-from app.exceptions.error import DuplicatedPhoneException, PhoneNotFoundException
+from app.exceptions.error import (
+    DuplicatedPhoneException, 
+    PhoneNotFoundException,
+    EmailNotFoundException,
+    DuplicatedEmailException
+)
 from werkzeug.security import generate_password_hash
 from bson.json_util import dumps
 from datetime import datetime
@@ -18,6 +23,21 @@ def save(user):
         validate_user_data(user)
         encrypted_password = encrypt_passoword(user['password'])
         user["is_admin"] = False # TODO: delete this
+        user["password"] = encrypted_password
+        saved_user = user_repository.save(user)
+        return str(saved_user)
+    except Exception as e:
+        raise e
+
+
+# uses email instead of phone
+def save2(user):
+    try:
+        user["timestamp"] = str(datetime.now()) # TODO: rename to created_at
+        # lat = user["lat"]
+        # long = user["long"]
+        validate_user_data2(user)
+        encrypted_password = encrypt_passoword(user['password'])
         user["password"] = encrypted_password
         saved_user = user_repository.save(user)
         return str(saved_user)
@@ -54,6 +74,13 @@ def get_by_phone(phone):
     return None
 
 
+def get_by_email(email):
+    user = user_repository.get_by_email(email)
+    if user:
+        return user
+    return None
+
+
 def get_photos():
     user = get_user_flickr()
     photos = user.getPhotos()
@@ -82,6 +109,13 @@ def validate_user_data(user):
         raise DuplicatedPhoneException()
 
 
+# uses email instead of phone
+def validate_user_data2(user):
+    validation.assert_valid_schema(user, "user.json")
+    email = user['email']
+    if not is_email_unique(email):
+        raise DuplicatedEmailException()
+
 def encrypt_passoword(password):
     return generate_password_hash(password)
 
@@ -96,6 +130,14 @@ def is_username_unique(username):
     if user:
         result = False
     return jsonify({"is_unique": result})
+
+
+def is_email_unique(email):
+    user = user_repository.get_by_email(email)
+    result = True
+    if user:
+        result = False
+    return result
 
 
 def is_phone_unique(phone):
@@ -119,5 +161,17 @@ def update_password(password, phone):
             
             return result
         raise PhoneNotFoundException()
+    except Exception as e:
+        raise e
+    
+# uses email instead of phone
+def update_password2(password, email):
+    try:
+        user = get_by_email(email)
+        if user:
+            encrypted_password = encrypt_passoword(password)
+            result = user_repository.update_password(encrypted_password, email)
+            return result
+        raise EmailNotFoundException()
     except Exception as e:
         raise e

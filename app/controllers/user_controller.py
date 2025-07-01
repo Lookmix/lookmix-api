@@ -5,7 +5,9 @@ from jsonschema import ValidationError
 from app.services import user_service, auth_service
 from app.exceptions.error import (
     DuplicatedPhoneException, 
-    PhoneNotFoundException
+    PhoneNotFoundException,
+    EmailNotFoundException,
+    DuplicatedEmailException
 )
 
 bp = Blueprint('users', __name__, url_prefix='/users')
@@ -41,6 +43,38 @@ def add_user():
         return jsonify({
             "error": "duplicatedPhone",
             "message": "Duplicated phone"
+        }), 400
+    except Exception as e:
+        return jsonify({
+            "error": "unknow",
+            "message": str(e)
+        }), 400
+
+
+# uses email instead of phone
+@bp.route("/save2", methods=['POST'])
+@jwt_required()
+def add_user2():
+    try:
+        request_data = request.json
+        user_id = user_service.save2(request_data)
+        return jsonify({
+            "id": user_id
+        }), 200
+    except ValidationError as error:
+        validator = error.validator
+        customErrorMessage = error.schema.get("errorMessage", {}).get(validator)
+        message = error.message
+        if customErrorMessage is not None:
+            message = customErrorMessage
+        return jsonify({
+            "error": "validationError",
+            "message": message
+        }), 400
+    except DuplicatedEmailException:
+        return jsonify({
+            "error": "duplicatedEmail",
+            "message": "Duplicated email"
         }), 400
     except Exception as e:
         return jsonify({
@@ -95,12 +129,44 @@ def update_password():
         }), 400
 
 
+# uses email instead of phone
+@bp.route("/update_password2", methods=['PUT'])
+@jwt_required()
+def update_password2():
+    try:
+        request_data = request.json
+        email = request_data['email']
+        new_password = request_data['password']
+        result = user_service.update_password(new_password, email)
+        if result > 0:
+            response = auth_service.revoke_token()
+            return response, 200
+        raise EmailNotFoundException
+    except EmailNotFoundException:
+        return jsonify({
+            "error": "emailNotFound",
+            "message": "Email does exist"
+        }), 400
+    except Exception as e:
+        return jsonify({
+            "error": "unknow",
+            "message": str(e)
+        }), 400
+
+
 @bp.route("/get_photos", methods=['GET'])
 @jwt_required()
 def get_photos():
     photos = user_service.get_photos()
 
     return json.dumps(photos), 200
+
+
+@bp.route("/is_email_unique", methods=['GET'])
+def is_email_unique():
+    phone = request.args.get("email")
+    result = user_service.is_email_unique(phone)
+    return {"is_unique": result}, 200
 
 
 @bp.route("/is_phone_unique", methods=['GET'])

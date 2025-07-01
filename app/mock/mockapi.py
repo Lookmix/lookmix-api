@@ -18,7 +18,7 @@ def get_otp():
   sms_id = str(uuid.uuid4())
   otp_jwt = encode(
     {
-      "smsId": sms_id,
+      "id": sms_id,
       "exp": expiration
     },
     str(111111),

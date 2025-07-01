@@ -7,7 +7,13 @@ class DuplicatedUsernameException(Exception):
 class DuplicatedPhoneException(Exception):
     pass
 
+class DuplicatedEmailException(Exception):
+    pass
+
 class PhoneNotFoundException(Exception):
+    pass
+
+class EmailNotFoundException(Exception):
     pass
 
 class FailToGenerateOTPException(Exception):
