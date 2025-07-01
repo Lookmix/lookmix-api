@@ -48,7 +48,7 @@
   },
   "required": [
     "password",
-    "phone",
+    "email",
     "timestamp"
   ],
   "additionalProperties": false
