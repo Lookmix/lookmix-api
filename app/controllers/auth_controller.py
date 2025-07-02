@@ -39,6 +39,25 @@ def login():
         }), 401
 
 
+# uses email instead of phone
+@bp.route('/login2', methods=['POST'])
+def login2():
+    try:
+        user_id = auth_service.validate_credentials2(request.json)
+        response = auth_service.handle_tokens(user_id)
+        return response, 200
+    except ValidationError as error:
+        return jsonify({
+            "message": error.message,
+            "error": "validationError"
+        }), 400
+    except BadCredentialsException:
+        return jsonify({
+            "message": "Bad credentials",
+            "error":"badCredentials"
+        }), 401
+
+
 @bp.route('/refresh', methods=['POST'])
 @jwt_required(refresh=True)
 def refresh():
@@ -83,9 +102,7 @@ def get_otp2():
     try:
         email = request.args.get("email")
         if email is not None:
-            print("email: ", email)
             email = urllib.parse.unquote(email)
-            print("email: ", email)
             return auth_service.handle_otp2(email)
         raise RequiredParamException("parameter 'email' is required")
     except FailToGenerateOTPException as e:

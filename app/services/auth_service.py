@@ -57,6 +57,21 @@ def validate_credentials(request_data):
     raise BadCredentialsException()
 
 
+# uses email instead of phone
+def validate_credentials2(request_data):
+    validate_login_data_model2(request_data)
+    email = request_data.get("email")
+    request_password = request_data.get("password")
+    user = user_repository.get_by_email(email)
+    if user is not None:
+        db_password = user.get("password")
+        is_password_valid = check_password_hash(db_password, request_password)
+        if is_password_valid:
+            user_id = user.get("_id")
+            return user_id
+    raise BadCredentialsException()
+
+
 def create_tokens(user_id):
     access_token = create_access_token(identity=user_id,
                                        expires_delta=expires_access_token)
@@ -244,3 +259,8 @@ def validate_otp_data_model(otp_data_model):
 
 def validate_login_data_model(login_data_model):
     validation.assert_valid_schema(login_data_model, "login.json")
+
+
+# uses email instead of phone
+def validate_login_data_model2(login_data_model):
+    validation.assert_valid_schema(login_data_model, "login2.json")
