@@ -14,7 +14,8 @@ from app.exceptions.error import (
     BadCredentialsException,
     FailToGenerateOTPException,
     AttemptsExceedException,
-    RequiredParamException
+    RequiredParamException,
+    FailToSendEmailException
 )
 
 bp = Blueprint('auth', __name__, url_prefix='/auth')
@@ -105,6 +106,11 @@ def get_otp2():
             email = urllib.parse.unquote(email)
             return auth_service.handle_otp2(email)
         raise RequiredParamException("parameter 'email' is required")
+    except FailToSendEmailException as e:
+        return jsonify({
+            "error": "failToSendEmail",
+            "message": str(e) # TODO: rename key to description
+        }), 400
     except FailToGenerateOTPException as e:
         return jsonify({
             "message": str(e),

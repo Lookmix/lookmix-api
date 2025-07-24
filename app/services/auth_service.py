@@ -22,7 +22,8 @@ from app import app #, jwt
 from app.exceptions.error import (
     BadCredentialsException,
     FailToGenerateOTPException,
-    AttemptsExceedException
+    AttemptsExceedException,
+    FailToSendEmailException
 )
 from app.repositories import (
     auth_repository, 
@@ -181,7 +182,10 @@ def handle_otp2(to_email, to_name=None):
     status_code = response.status_code
     # data = response.json()
     # print(data)
-    print(response.text)
+    # print(response.text)
+    if status_code != 200:
+        error_description = "Fail to send email"
+        raise FailToSendEmailException(error_description)
     if status_code == 200:
         # payload_emailjs = loads(payload_emailjs)
         email_id = str(uuid.uuid4()) # data.get("id", None)

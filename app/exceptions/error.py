@@ -16,6 +16,9 @@ class PhoneNotFoundException(Exception):
 class EmailNotFoundException(Exception):
     pass
 
+class FailToSendEmailException(Exception):
+    pass
+
 class FailToGenerateOTPException(Exception):
     pass
 
