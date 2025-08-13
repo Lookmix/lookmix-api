@@ -137,7 +137,7 @@ def update_password2():
         request_data = request.json
         email = request_data['email']
         new_password = request_data['password']
-        result = user_service.update_password(new_password, email)
+        result = user_service.update_password2(new_password, email)
         if result > 0:
             response = auth_service.revoke_token()
             return response, 200

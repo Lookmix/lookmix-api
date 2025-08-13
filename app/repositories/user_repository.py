@@ -49,3 +49,11 @@ def update_password(new_password, phone):
                                           {'password': new_password}
                                       }).modified_count
     return result
+
+# uses email instead of phone
+def update_password2(new_password, email):
+    result = db[USERS_COLLECTION].update_one({'email': email},
+                                     {'$set':
+                                          {'password': new_password}
+                                      }).modified_count
+    return result

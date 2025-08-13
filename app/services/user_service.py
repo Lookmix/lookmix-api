@@ -170,7 +170,7 @@ def update_password2(password, email):
         user = get_by_email(email)
         if user:
             encrypted_password = encrypt_passoword(password)
-            result = user_repository.update_password(encrypted_password, email)
+            result = user_repository.update_password2(encrypted_password, email)
             return result
         raise EmailNotFoundException()
     except Exception as e:
