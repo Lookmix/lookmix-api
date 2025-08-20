@@ -35,7 +35,8 @@ from app.services.integrations.zenvia_sms import (
     send_sms
 )
 from app.services.integrations.emailjs import (
-    generate_emailjs_otp_payload, 
+    generate_acc_confirmation_payload, 
+    generate_password_reset_payload,
     send_email
 )
 
@@ -175,9 +176,13 @@ def handle_otp(phone):
 
 
 # uses emailjs/email to send otp
-def handle_otp2(to_email, to_name=None):
+def handle_otp2(to_email, to_name=None, is_pass_reset=False):
     otp = generate_otp()
-    payload_emailjs = generate_emailjs_otp_payload(to_email, to_name, otp)
+    payload_emailjs = None
+    if is_pass_reset:
+        payload_emailjs = generate_password_reset_payload(to_email, to_name, otp)
+    else:
+        payload_emailjs = generate_acc_confirmation_payload(to_email, to_name, otp)
     response = send_email(payload_emailjs)
     status_code = response.status_code
     # data = response.json()

@@ -102,9 +102,10 @@ def get_otp():
 def get_otp2():
     try:
         email = request.args.get("email")
+        is_pass_reset = request.args.get("is_pass_reset", False, type=bool)
         if email is not None:
             email = urllib.parse.unquote(email)
-            return auth_service.handle_otp2(email)
+            return auth_service.handle_otp2(email, is_pass_reset=is_pass_reset)
         raise RequiredParamException("parameter 'email' is required")
     except FailToSendEmailException as e:
         return jsonify({
