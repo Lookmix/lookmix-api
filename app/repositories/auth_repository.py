@@ -1,4 +1,4 @@
-from app import db
+from app.application import db
 
 
 def save_auth_metadata(data):

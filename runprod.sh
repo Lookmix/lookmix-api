@@ -2,7 +2,7 @@
 
 source apivenv/bin/activate
 
-export FLASK_APP=app
+export FLASK_APP=app.application
 export FLASK_ENV=production
 export FLASK_DEBUG=False
 export FLASK_RUN_HOST=api.lookmix.app

@@ -1,4 +1,4 @@
-from app import db
+from app.application import db
 from bson.objectid import ObjectId
 from app.exceptions.error import FailToInitCategories
 

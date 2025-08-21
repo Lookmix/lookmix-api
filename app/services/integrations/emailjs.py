@@ -1,13 +1,13 @@
 import requests
 from bson.json_util import dumps
-from app import app
+from app.application import application
 
 __SERVICE_ID = "acc_service"
 __ACC_CONFIRMATION_TEMPLATE_ID = "acc_confirmation"
 __PASS_RESET_TEMPLATE_ID = "pass_reset"
 
 def send_email(payload):
-    emailjs_url = app.config.get("EMAILJS_URL")
+    emailjs_url = application.config.get("EMAILJS_URL")
     url = f"{emailjs_url}/email/send"
     headers = {
         "Content-Type": "application/json",
@@ -20,7 +20,7 @@ def generate_password_reset_payload(to_email, to_name, code):
     payload = {
         "service_id": __SERVICE_ID,
         "template_id": __PASS_RESET_TEMPLATE_ID,
-        "user_id": app.config.get("EMAILJS_USER_ID"),
+        "user_id": application.config.get("EMAILJS_USER_ID"),
         "template_params": {
             "to_email": to_email,
             "to_name": to_name,
@@ -35,7 +35,7 @@ def generate_acc_confirmation_payload (to_email, to_name, code):
     payload = {
         "service_id": __SERVICE_ID,
         "template_id": __ACC_CONFIRMATION_TEMPLATE_ID,
-        "user_id": app.config.get("EMAILJS_USER_ID"),
+        "user_id": application.config.get("EMAILJS_USER_ID"),
         "template_params": {
             "to_email": to_email,
             "to_name": to_name,

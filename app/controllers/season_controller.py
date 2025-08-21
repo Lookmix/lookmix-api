@@ -6,7 +6,7 @@ from flask_jwt_extended import (
 )
 from app.services import season_service
 from app.services import user_service
-# from app import app
+# from app.application import application
 
 bp = Blueprint("season", __name__, url_prefix="/season")
 

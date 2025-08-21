@@ -1,4 +1,4 @@
-from app import db
+from app.application import db
 from bson.objectid import ObjectId
 
 DAILY_LOOK_SETUP_COLLECTION = "daily_look_setup"

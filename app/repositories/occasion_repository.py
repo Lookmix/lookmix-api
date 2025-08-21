@@ -1,4 +1,4 @@
-from app import db
+from app.application import db
 from app.exceptions.error import FailToInitOccasions
 from bson.objectid import ObjectId
 

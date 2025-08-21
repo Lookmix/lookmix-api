@@ -1,9 +1,9 @@
-from app import app
+from app.application import application
 import requests
 from datetime import datetime
 
-url = app.config.get("OPEN_WEATHER_URL")
-secret = app.config.get("OPEN_WEATHER_SECRET")
+url = application.config.get("OPEN_WEATHER_URL")
+secret = application.config.get("OPEN_WEATHER_SECRET")
 
 # https://openweathermap.org/api/one-call-3#data
 # https://openweathermap.org/api/geocoding-api

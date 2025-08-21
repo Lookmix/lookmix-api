@@ -18,7 +18,7 @@ from flask_jwt_extended import (
     set_refresh_cookies, 
 )
 from bson.json_util import loads
-from app import app #, jwt
+# from app.application import application #, jwt
 from app.exceptions.error import (
     BadCredentialsException,
     FailToGenerateOTPException,
