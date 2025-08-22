@@ -1,9 +1,0 @@
-apivenv
-docs
-.gcloudignore
-app.yaml
-Procfile
-README.md
-rundev.sh
-runmock.sh
-__pycache__/
