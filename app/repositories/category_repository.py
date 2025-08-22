@@ -77,7 +77,7 @@ def init_categories():
         },
         {
             "name": "Pés",
-            "description": "Calçados ou meias",
+            "description": "Tênis, sapatos, botas ou sandálias",
             "sort": 3
         },
         {
