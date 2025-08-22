@@ -1,5 +1,6 @@
 from flask import Flask, request
 from flask_jwt_extended import JWTManager
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 application = Flask(__name__)
 application.config.from_object("app.config")
@@ -46,3 +47,7 @@ def set_headers(response):
     response.headers["Access-Control-Allow-Headers"] = "content-type"
     response.headers["Access-Control-Allow-Credentials"] = "true"
     return response
+
+application.wsgi_app = ProxyFix(
+    application.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1
+)
