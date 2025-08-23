@@ -5,4 +5,4 @@ runmock:
 	bash runmock.sh
 
 runprod:
-	bash runprod.sh
+	tmux new -s gunicorn "bash runprod.sh"
