@@ -44,8 +44,9 @@ def set_headers(response):
     if host_url in allowed_origins:
         allowed_origin = host_url
     response.headers["Access-Control-Allow-Origin"] = allowed_origin
-    response.headers["Access-Control-Allow-Headers"] = "content-type"
+    response.headers["Access-Control-Allow-Headers"] = "content-type, X-CSRF-TOKEN"
     response.headers["Access-Control-Allow-Credentials"] = "true"
+    response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS, PATCH"
     return response
 
 application.wsgi_app = ProxyFix(
