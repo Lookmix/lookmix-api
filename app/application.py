@@ -40,9 +40,9 @@ mock_jwt_manager = JWTManager(flask_mock_api)
 def set_headers(response):
     allowed_origins = application.config.get("ALLOWED_ORIGINS")
     allowed_origin = allowed_origins[0]
-    host_url = request.host_url[:-1]
-    if host_url in allowed_origins:
-        allowed_origin = host_url
+    client_origin = request.headers.get("Origin")
+    if client_origin in allowed_origins:
+        allowed_origin = client_origin
     response.headers["Access-Control-Allow-Origin"] = allowed_origin
     response.headers["Access-Control-Allow-Headers"] = "content-type, X-CSRF-TOKEN"
     response.headers["Access-Control-Allow-Credentials"] = "true"
