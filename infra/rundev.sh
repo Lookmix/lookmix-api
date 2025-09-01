@@ -7,6 +7,6 @@ export FLASK_ENV=development
 export FLASK_DEBUG=True
 export FLASK_RUN_HOST=127.10.10.10
 export FLASK_RUN_PORT=5000
-export ENVVAR_FILE=./../deploy/.env.cfg
+export ENVVAR_FILE=./../infra/.env.cfg
 
 flask run
