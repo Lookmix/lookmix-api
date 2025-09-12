@@ -164,7 +164,7 @@ def generate_lookset(queue, user_id):
         days_of_week = days_of_week[today:] + days_of_week[0:today]
         categories = category_service.get_categories()
         # TODO: https://github.com/Lookmix/lookmix-api/issues/30
-        seasons = map(lambda season: season.get("name"), util_service.get_seasons())
+        seasons = list(map(lambda season: season.get("name"), util_service.get_seasons()))
         periods = __get_periods()
         casual_clothes = __get_casual_clothes(user_id)
         casual_looks, casual_looks_without_match = __generate_looks_by_type_and_season(days_of_week, casual_clothes, CASUAL, categories, seasons, periods)
@@ -223,6 +223,8 @@ def __generate_looks_by_type_and_season(days_of_week, clothes, look_type, catego
                     occasion_id=occasion_id
                     ,period=period.get("_id")
                 )
+                if result is None:
+                    continue
                 for look in result:
                     if __clothe_combination_already_exists(looks, look):
                         continue
