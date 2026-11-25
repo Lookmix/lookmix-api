@@ -1,0 +1,382 @@
+Vou mapear stack, modelos, consultas e configuração do MongoDB; em seguida, concentro o plano em uma migração incremental e testável.
+
+Find files matching `*`
+
+Find files matching `**/{package.json,pyproject.toml,requirements*.txt,go.mod,Cargo.toml,prisma.sc...`
+
+Search for `mongoose|mongodb|MongoClient|mongo:|prisma|sequelize|typeorm|drizzle|knex`
+
+Read 
+Completed with input: {
+  "path": "/home/vinicius/workspace/lookmix-api"
+}
+
+Read 
+Completed with input: {
+  "path": "/home/vinicius/workspace/lookmix-api/app/config.py"
+}
+
+Read 
+Completed with input: {
+  "path": "/home/vinicius/workspace/lookmix-api/app/application.py"
+}
+
+Read 
+Completed with input: {
+  "path": "/home/vinicius/workspace/lookmix-api/app/services/integrations/mongodb.py"
+}
+
+Search for `mongodb|pymongo|motor|mongo`
+
+Search for `\bdb\b|\.(find|find_one|insert|insert_one|update|update_one|delete|delete_one...`
+
+Read 
+Completed with input: {
+  "path": "/home/vinicius/workspace/lookmix-api/infra"
+}
+
+Read 
+Completed with input: {
+  "path": "/home/vinicius/workspace/lookmix-api/README.md"
+}
+
+Read 
+Completed with input: {
+  "path": "/home/vinicius/workspace/lookmix-api/infra/requirements.txt"
+}
+
+Find files matching `app/repositories/*.py`
+
+A base já separa escrita/consulta em repositories, mas o acoplamento é direto ao `db`/Mongo; vou detalhar quais operações e relações precisam virar esquema antes de recomendar SQLAlchemy.
+
+Read 
+Completed with input: {
+  "path": "/home/vinicius/workspace/lookmix-api/app/repositories/user_repository.py"
+}
+
+Read 
+Completed with input: {
+  "path": "/home/vinicius/workspace/lookmix-api/app/repositories/closet_repository.py"
+}
+
+Read 
+Completed with input: {
+  "path": "/home/vinicius/workspace/lookmix-api/app/repositories/clothe_repository.py"
+}
+
+Read 
+Completed with input: {
+  "path": "/home/vinicius/workspace/lookmix-api/app/repositories/category_repository.py"
+}
+
+Read 
+Completed with input: {
+  "path": "/home/vinicius/workspace/lookmix-api/app/repositories/occasion_repository.py"
+}
+
+Read 
+Completed with input: {
+  "path": "/home/vinicius/workspace/lookmix-api/app/repositories/look_repository.py"
+}
+
+Read 
+Completed with input: {
+  "path": "/home/vinicius/workspace/lookmix-api/app/repositories/enum_repository.py"
+}
+
+Read 
+Completed with input: {
+  "path": "/home/vinicius/workspace/lookmix-api/app/repositories/auth_repository.py"
+}
+
+Read 
+Completed with input: {
+  "path": "/home/vinicius/workspace/lookmix-api/app/models/user.json"
+}
+
+Read 
+Completed with input: {
+  "path": "/home/vinicius/workspace/lookmix-api/app/models/clothe.json"
+}
+
+Read 
+Completed with input: {
+  "path": "/home/vinicius/workspace/lookmix-api/app/models/look.json"
+}
+
+Read 
+Completed with input: {
+  "path": "/home/vinicius/workspace/lookmix-api/app/models/closet.json"
+}
+
+Read 
+Completed with input: {
+  "path": "/home/vinicius/workspace/lookmix-api/app/models/daily_look_setup.json"
+}
+
+Read 
+Completed with input: {
+  "path": "/home/vinicius/workspace/lookmix-api/app/models/lookset.json"
+}
+
+Read 
+Completed with input: {
+  "path": "/home/vinicius/workspace/lookmix-api/app/models/category.json"
+}
+
+Read 
+Completed with input: {
+  "path": "/home/vinicius/workspace/lookmix-api/app/models/occasion.json"
+}
+
+Read 
+Completed with input: {
+  "path": "/home/vinicius/workspace/lookmix-api/app/models/otp.json"
+}
+
+Read 
+Completed with input: {
+  "path": "/home/vinicius/workspace/lookmix-api/app/models/login.json"
+}
+
+Read 
+Completed with input: {
+  "path": "/home/vinicius/workspace/lookmix-api/app/services/clothe_service.py"
+}
+
+Read 
+Completed with input: {
+  "path": "/home/vinicius/workspace/lookmix-api/app/services/look_service.py"
+}
+
+Read 
+Completed with input: {
+  "path": "/home/vinicius/workspace/lookmix-api/app/services/user_service.py"
+}
+
+Read 
+Completed with input: {
+  "path": "/home/vinicius/workspace/lookmix-api/infra/Makefile"
+}
+
+Search for `repository\.|_repository`
+
+Read 
+Completed with input: {
+  "path": "/home/vinicius/workspace/lookmix-api/infra/.env.cfg"
+}
+
+## Diagnóstico atual
+
+O projeto é uma API Flask/Python com MongoDB acessado diretamente pelo padrão Repository:
+
+- Inicialização do MongoDB em `mongodb.py`.
+- Banco exposto globalmente em `application.py`.
+- `PyMongo`, `bson` e ObjectIds estão usados pelos repositories em `repositories/`.
+- Não há ORM ou migrations SQL.
+- Controllers e services dependem das assinaturas atuais dos repositories, mas não conhecem MongoDB diretamente.
+- Existem JSON Schemas que podem orientar validações e servirem como base para o modelo SQL.
+- `MONGODB_HOST` está na configuração de ambiente em `infra/.env.cfg`.
+
+As principais entidades detectadas são:
+
+- `User`
+- `Closet`
+- `Clothe`
+- `Category`
+- `Occasion`
+- `Season`
+- `DailyLookSetup`
+- `Lookset`
+- `Look`
+- OTP/auth metadata
+
+## Recomendação
+
+Adotar PostgreSQL com **SQLAlchemy 2 + Alembic**, mantendo o Flask atual.
+
+Essa combinação oferece o menor impacto porque:
+
+- A aplicação já usa repositories, então os services/controllers podem continuar quase intactos.
+- Os dados Mongo atualmente possuem referências explícitas e relações facilmente normalizáveis.
+- Os relacionamentos muitos-para-muitos serão representados por tabelas associativas em vez de listas embutidas.
+- Alembic permitirá evoluir o esquema sem um processo manual de criação de tabelas.
+- Não há migração de dados existente necessária.
+
+## Esquema SQL proposto
+
+### Entidades principais
+
+| Tabela | Campos principais |
+|---|---|
+| `users` | id, username, phone, email, password, name, last_name, timestamp, lat, long, utc, is_admin |
+| `closets` | id, user_id |
+| `categories` | id, name, description, sort |
+| `occasions` | id, name, card_look_title, type |
+| `occasion_tags` | occasion_id, tag |
+| `clothes` | id, closet_id, category_id, type, image, created_at |
+| `clothe_occasions` | clothe_id, occasion_id |
+| `clothe_seasons` | clothe_id, season |
+| `seasons` | id/name, max_temp_celsius, min_temp_celsius |
+
+### Configuração diária
+
+- `daily_look_setups`: id, user_id
+- `daily_look_days`: id, daily_look_setup_id, day_of_week, sort
+- `daily_look_occasions`: id, daily_look_day_id, occasion_id
+- `daily_look_periods`: daily_look_occasion_id, period, type
+
+Aqui `casual` e `social` devem virar registros com `look_type`, conforme a estrutura de `daily_look_setup.json`.
+
+### Looksets
+
+- `looksets`: id, user_id, created_at, total_days
+- `looks`: id, lookset_id, occasion_id, period, type, sort, repeat_count
+- `look_clothes`: look_id, category_id, clothe_id
+
+O campo dinâmico `data`, cuja chave depende da categoria, pode ser montado pelo repository a partir de `look_clothes`; assim o formato JSON da API atual permanece intacto.
+
+Isso evita armazenar a estrutura aninhada em JSON e facilita consultas por peça, categoria, ocasião e período.
+
+### Autenticação
+
+- `otp_metadata`: id/phone/email, attempts, expires/created_at conforme os dados atuais
+- `auth_metadata`: manter apenas os campos efetivamente usados
+- Revoked/refresh-token pode continuar em tabela própria se o código futuro passar a utilizá-lo
+
+Evitar armazenar tokens sensíveis em texto puro; usar apenas hashes ou não persistir dados não utilizados.
+
+## Plano de implementação
+
+### 1. Preparar infraestrutura
+
+Adicionar dependências:
+
+- `SQLAlchemy`
+- `Flask-SQLAlchemy`
+- `Alembic`
+- `psycopg[binary]`
+
+Adicionar uma configuração `DATABASE_URL` separada de `MONGODB_HOST`.
+
+Não iniciar o PostgreSQL no mesmo processo da aplicação. Para desenvolvimento e testes, utilizar Docker Compose ou PostgreSQL local.
+
+### 2. Criar a camada de banco
+
+Adicionar os módulos:
+
+- `app/extensions.py`: engine/session ou Flask-SQLAlchemy
+- `app/models/sql.py`: entidades SQLAlchemy
+- `app/database.py`: inicialização da aplicação
+- `app/repositories/base.py`: conversão de ORM para o formato antigo da API
+- `alembic/`: migrations
+
+Substituir a importação global:
+
+```python
+from app.application import db
+```
+
+por:
+
+```python
+from app.extensions import db
+```
+
+Mas, preferencialmente, encapsular o acesso no repository e não expor `db` aos services.
+
+As tabelas e seeds serão criadas por migrations Alembic; não haverá script manual de `create table`.
+
+### 3. Mapear os repositories existentes
+
+Manter os nomes e assinaturas atuais dos repositories sempre que possível.
+
+- `user_repository.py`: substituir ObjectId por UUID/inteiro SQL e mapear lookup por phone/email/username.
+- `closet_repository.py`: preservar uma roupa por usuário ou aplicar unique constraint em `user_id`.
+- `clothe_repository.py`: substituir o array Mongo por consultas nas tabelas associativas.
+- `category_repository.py`: manter inicialização automática via migration/seed.
+- `occasion_repository.py`: separar tags em tabela própria.
+- `enum_repository.py`: substituir arrays `seasons/seasons2` por tabela `seasons`.
+- `look_repository.py`: substituir agregações Mongo por consultas/joins SQL.
+- `auth_repository.py`: migrar OTP e atualizar incrementos com `attempts = attempts + 1`.
+
+A substituição deve ocorrer por repository, sem alteração inicial em services/controllers.
+
+### 4. Normalizar IDs
+
+Usar UUID como chave SQL para manter o formato string já usado pela API.
+
+Em cada repository, converter o ORM em um dicionário contendo:
+
+```python
+"_id": str(record.id)
+```
+
+Isso preserva a maior parte dos contratos atuais e evita que o frontend precise receber outro formato.
+
+Para campos de referência existentes, como `category_id`, `occasion_id`, `closet_id` e `clothe_id`, continuar serializando-os como strings.
+
+### 5. Migrar migrations e seeds
+
+A primeira migration deve criar todo o esquema.
+
+Uma segunda migration ou seed idempotente deve carregar:
+
+- Categorias atuais do código
+- Ocasiões atuais do código
+- Estações
+- Configuração `seasons2`
+
+Isso remove a necessidade dos métodos `init_*` consultarem o banco e criarem dados em runtime.
+
+### 6. Manter compatibilidade temporária
+
+Inicialmente:
+
+- Manter Mongo e SQL desacoplados
+- Primeiro implementar SQL em todos os repositories
+- Remover Mongo apenas após os testes
+- Não manter um backend alternável no runtime a longo prazo
+
+Como não há migração de dados nem produção, não é necessário dual-write, feature flags ou adaptação gradual de dados.
+
+### 7. Remover MongoDB
+
+Após os testes:
+
+- Remover `pymongo` e `bson`
+- Remover `mongodb.py`
+- Remover `MONGODB_HOST`
+- Remover todas as conversões `ObjectId(...)`
+- Remover o carregamento Mongo em `application.py`
+
+## Testes mínimos
+
+Adicionar testes focados em:
+
+- CRUD de usuário e unicidade de email/phone
+- Criação de closet por usuário
+- CRUD de roupas
+- Relacionamentos de roupa com ocasiões e categorias
+- CRUD de looksets
+- Montagem e filtros de looks
+- Upsert de configuração diária
+- Incremento de tentativas OTP
+- Inicialização idempotente das seeds
+- Resposta dos repositories com `_id` como string
+
+Preferencialmente usar PostgreSQL real nos testes, em vez de SQLite, para validar constraints e tipos de forma fiel.
+
+## Ordem recomendada
+
+1. Adicionar SQLAlchemy/Alembic/PostgreSQL.
+2. Criar migrations e entidades SQL.
+3. Migrar categoria, season e occasion.
+4. Migrar user e closet.
+5. Migrar clothe e relacionamentos.
+6. Migrar daily look setup.
+7. Migrar lookset/look.
+8. Migrar OTP/auth metadata.
+9. Atualizar testes e remover MongoDB.
+
+Essa ordem evita migrar primeiro o fluxo mais complexo e mantém os services praticamente inalterados até o final.
