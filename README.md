@@ -1,6 +1,6 @@
 ### Requirements
 
-- Python =3.10
+- Python >=3.10
 
 ### INSTALL virtualenv (if not installed yet)
 `sudo apt update`
@@ -8,13 +8,34 @@
 `sudo apt install python3.12-venv`
 
 ### CREATE VIRTUAL ENV (if not created yet)
-`python3.12 -m venv apivenv`
+From `infra/`, run:
+`make venv`
 
-### ACTIVATE VIRTUAL ENV
-`. apivenv/bin/activate`
+This creates `apivenv` in the project root.
 
 ### INSTALL PYTHON BACKEND DEPENDENCIES (if not installed yet)
 `pip3 install -r requirements.txt`
+
+### RUN
+
+Use makefile targets to run the API:
+`cd infra`
+`make rundev`
+
+then:
+`make runmock`
+
+
+### RUN BOTH APIS
+
+From `infra/`, run: 
+`make envrun`
+
+This ensures the virtual environment exists,
+then starts `rundev` and `runmock` in separate windows of a `lookmix-api` tmux
+session. Use `Ctrl-b` followed by `n` or `p` to switch windows, and `Ctrl-b`
+followed by `d` to detach while leaving both APIs running. Reattach with
+`tmux attach -t lookmix-api`.
 
 #### TROUBLESHOOTING 
 
